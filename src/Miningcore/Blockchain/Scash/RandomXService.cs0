@@ -1,0 +1,124 @@
+using Miningcore.Blockchain.Scash;
+using Miningcore.Native;
+using System;
+
+namespace Miningcore.Crypto
+{
+    public class RandomXService : IRandomX, IHashAlgorithm
+    {
+        /// <summary>
+        /// Crée un seed pour RandomX avec un realm spécifique, un seedHex, et des paramètres supplémentaires.
+        /// </summary>
+        public void CreateSeed(string realm, string seedHex, RandomX.randomx_flags? flagsOverride = null, int vmCount = 1)
+        {
+            RandomX.CreateSeed(realm, seedHex, flagsOverride, null, vmCount);
+        }
+
+        /// <summary>
+        /// Supprime un seed RandomX spécifique.
+        /// </summary>
+        public void DeleteSeed(string realm, string seedHex)
+        {
+            RandomX.DeleteSeed(realm, seedHex);
+        }
+
+        /// <summary>
+        /// Récupère le seed RandomX sous forme de contexte et de collection de machines virtuelles.
+        /// </summary>
+        public Tuple<RandomX.GenContext, System.Collections.Concurrent.BlockingCollection<RandomX.RxVm>> GetSeed(string realm, string seedHex)
+        {
+            return RandomX.GetSeed(realm, seedHex);
+        }
+
+        /// <summary>
+        /// Exécute une action sous verrouillage pour assurer la sécurité du traitement concurrent.
+        /// </summary>
+        public void WithLock(Action action)
+        {
+            RandomX.WithLock(action);
+        }
+
+        /// <summary>
+        /// Calcule un hash RandomX avec un realm et un seed spécifiques.
+        /// </summary>
+        public void CalculateHash(string realm, string seedHex, ReadOnlySpan<byte> data, Span<byte> result)
+        {
+            RandomX.CalculateHash(realm, seedHex, data, result);
+        }
+
+        /// <summary>
+        /// Calcule un hash RandomX avec des paramètres par défaut.
+        /// </summary>
+        public void Digest(ReadOnlySpan<byte> data, Span<byte> result)
+        {
+            try
+            {
+                // Utilise le realm et seed par défaut
+                CalculateHash("default-realm", "default-seed", data, result);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Erreur lors du calcul RandomX Digest : {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Calcule un hash RandomX avec des paramètres supplémentaires.
+        /// </summary>
+
+
+public void Digest(ReadOnlySpan<byte> data, Span<byte> result, params object[] extra)
+{
+    Console.WriteLine("[DEBUG] RandomXService.Digest : Début du calcul du hachage RandomX avec extra params.");
+
+    try
+    {
+        if (extra == null || extra.Length < 2)
+        {
+            throw new ArgumentException("[ERROR] Paramètres extra manquants ou insuffisants.");
+        }
+
+        // Traitement de realm
+        string realm = extra[0] switch
+        {
+            string str => str,
+            ulong val => val.ToString(),
+            _ => throw new InvalidCastException($"[ERROR] Paramètre 'realm' doit être une chaîne, obtenu : {extra[0]?.GetType().Name}")
+        };
+
+        // Traitement de seedHex
+        string seedHex = extra[1] switch
+        {
+            string str => str,
+            ulong val => val.ToString(),
+            _ => throw new InvalidCastException($"[ERROR] Paramètre 'seedHex' doit être une chaîne, obtenu : {extra[1]?.GetType().Name}")
+        };
+
+        Console.WriteLine($"[DEBUG] RandomXService.Digest : Realm={realm}, SeedHex={seedHex}");
+
+        if (string.IsNullOrEmpty(realm) || string.IsNullOrEmpty(seedHex))
+        {
+            throw new ArgumentException("[ERROR] RandomXService.Digest : Realm ou SeedHex est nul ou vide.");
+        }
+
+        RandomX.CalculateHash(realm, seedHex, data, result);
+        Console.WriteLine("[DEBUG] RandomXService.Digest : Hachage RandomX calculé avec succès.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[ERROR] RandomXService.Digest : Exception - {ex.Message}");
+        throw;
+    }
+    finally
+    {
+        Console.WriteLine("[DEBUG] RandomXService.Digest : Fin du calcul du hachage RandomX.");
+    }
+}
+
+
+
+
+
+
+    }
+}

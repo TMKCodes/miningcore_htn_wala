@@ -8,7 +8,7 @@ public partial class ErgoClient
 
     private Task PrepareRequestAsync(HttpClient client, HttpRequestMessage request, StringBuilder url, CancellationToken ct)
     {
-        foreach(var pair in RequestHeaders)
+        foreach (var pair in RequestHeaders)
             request.Headers.Add(pair.Key, pair.Value);
 
         return Task.CompletedTask;

@@ -13,7 +13,7 @@ public class EquihashConstants
 public class VeruscoinConstants
 {
     public const int SolutionSlice = 6;
-  //  public const string HashVersion2b2 = "2b2";
+    //  public const string HashVersion2b2 = "2b2";
     public const string HashVersion2b2 = "2b2"; // PBaaS detection
     public const string HashVersion2b2o = "2b2o";
     public const string HashVersion2b1 = "2b1";

@@ -90,14 +90,14 @@ public class MetricsPublisher : BackgroundService
 
     private void OnTelemetryEvent(TelemetryEvent msg)
     {
-        switch(msg.Category)
+        switch (msg.Category)
         {
             case TelemetryCategory.Share:
                 shareCounter.WithLabels(msg.GroupId).Inc();
 
-                if(msg.Success.HasValue)
+                if (msg.Success.HasValue)
                 {
-                    if(msg.Success.Value)
+                    if (msg.Success.Value)
                         validShareCounter.WithLabels(msg.GroupId).Inc();
                     else
                         invalidShareCounter.WithLabels(msg.GroupId).Inc();
@@ -135,13 +135,13 @@ public class MetricsPublisher : BackgroundService
     {
         var telemetryEvents = messageBus.Listen<TelemetryEvent>()
             .ObserveOn(TaskPoolScheduler.Default)
-            .Do(x=> Guard(()=> OnTelemetryEvent(x), ex=> logger.Error(ex.Message)))
-            .Select(_=> Unit.Default);
+            .Do(x => Guard(() => OnTelemetryEvent(x), ex => logger.Error(ex.Message)))
+            .Select(_ => Unit.Default);
 
         var hashrateNotifications = messageBus.Listen<HashrateNotification>()
             .ObserveOn(TaskPoolScheduler.Default)
-            .Do(x=> Guard(()=> OnHashrateNotification(x), ex=> logger.Error(ex.Message)))
-            .Select(_=> Unit.Default);
+            .Do(x => Guard(() => OnHashrateNotification(x), ex => logger.Error(ex.Message)))
+            .Select(_ => Unit.Default);
 
         return Observable.Merge(telemetryEvents, hashrateNotifications)
             .ToTask(ct);

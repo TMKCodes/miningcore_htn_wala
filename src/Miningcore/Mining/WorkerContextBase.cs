@@ -41,7 +41,7 @@ public class WorkerContextBase
     /// Arbitrary worker identififer for miners using multiple rigs
     /// </summary>
     public virtual string Worker { get; set; }
-    
+
     /// <summary>
     /// UserAgent reported by Stratum
     /// </summary>
@@ -65,7 +65,7 @@ public class WorkerContextBase
         Created = clock.Now;
         Stats = new ShareStats();
 
-        if(varDiffConfig != null)
+        if (varDiffConfig != null)
         {
             VarDiff = new VarDiffContext
             {
@@ -84,7 +84,7 @@ public class WorkerContextBase
 
     public bool ApplyPendingDifficulty()
     {
-        if(pendingDifficulty.HasValue)
+        if (pendingDifficulty.HasValue)
         {
             SetDifficulty(pendingDifficulty.Value);
             pendingDifficulty = null;

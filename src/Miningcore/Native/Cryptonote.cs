@@ -9,7 +9,7 @@ public static unsafe class CryptonoteBindings
 {
     [DllImport("libcryptonote", EntryPoint = "convert_blob_export", CallingConvention = CallingConvention.Cdecl)]
     private static extern bool convert_blob(byte* input, int inputSize, byte* output, ref int outputSize, int blobType);
-    
+
     [DllImport("libcryptonote", EntryPoint = "get_block_id_export", CallingConvention = CallingConvention.Cdecl)]
     private static extern bool get_block_id(byte* input, int inputSize, byte* output, int blobType);
 
@@ -41,10 +41,10 @@ public static unsafe class CryptonoteBindings
                     success = convert_blob(input, size, output, ref outputBufferLength, blobType);
                 }
 
-                if(!success)
+                if (!success)
                 {
                     // if we get false, the buffer might have been too small
-                    if(outputBufferLength == 0)
+                    if (outputBufferLength == 0)
                         return null; // nope, other error
 
                     // retry with correctly sized buffer
@@ -56,7 +56,7 @@ public static unsafe class CryptonoteBindings
                         success = convert_blob(input, size, output, ref outputBufferLength, blobType);
                     }
 
-                    if(!success)
+                    if (!success)
                         return null; // sorry
                 }
 
@@ -73,7 +73,7 @@ public static unsafe class CryptonoteBindings
             }
         }
     }
-    
+
     public static void GetBlockId(ReadOnlySpan<byte> data, Span<byte> result, int blobType = 0)
     {
         Contract.Requires<ArgumentException>(result.Length >= 32);
@@ -123,7 +123,7 @@ public static unsafe class CryptonoteBindings
         {
             fixed (byte* output = result)
             {
-                cn_fast_hash(input, output, (uint) data.Length);
+                cn_fast_hash(input, output, (uint)data.Length);
             }
         }
     }

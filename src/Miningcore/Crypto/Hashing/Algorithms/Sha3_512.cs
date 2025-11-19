@@ -15,7 +15,7 @@ public unsafe class Sha3_512 : IHashAlgorithm
         {
             fixed (byte* output = result)
             {
-                Multihash.sha3_512(input, output, (uint) data.Length);
+                Multihash.sha3_512(input, output, (uint)data.Length);
             }
         }
     }

@@ -9,7 +9,7 @@ public class AlephiumPoolConfigExtra
     /// Default: 8
     /// </summary>
     public int? MaxActiveJobs { get; set; }
-    
+
     /// <summary>
     /// Maximum size of buffer when receiving job message
     /// Default: 131072

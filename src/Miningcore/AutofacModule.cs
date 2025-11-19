@@ -99,7 +99,7 @@ public class AutofacModule : Module
         builder.RegisterAssemblyTypes(ThisAssembly)
             .Where(t => t.GetCustomAttributes<IdentifierAttribute>().Any() &&
                 t.GetInterfaces().Any(i => i.IsAssignableFrom(typeof(IHashAlgorithm))))
-            .Named<IHashAlgorithm>(t=> t.GetCustomAttributes<IdentifierAttribute>().First().Name)
+            .Named<IHashAlgorithm>(t => t.GetCustomAttributes<IdentifierAttribute>().First().Name)
             .PropertiesAutowired();
 
         builder.RegisterAssemblyTypes(ThisAssembly)
@@ -266,23 +266,23 @@ public class AutofacModule : Module
         // Warthog
         builder.RegisterType<WarthogJobManager>();
 
-                //////////////////////
+        //////////////////////
         // Scash
 
-    // Enregistrer RandomXService comme RandomX et IHashAlgorithm
-builder.RegisterType<RandomXService>()
-    .As<RandomX>()                        // Pour injection directe de RandomX
-    .As<IHashAlgorithm>()                 // Pour injection via IHashAlgorithm
-    .Named<IHashAlgorithm>("randomx")     // Résolution nommée via "randomx"
-    .SingleInstance();
+        // Enregistrer RandomXService comme RandomX et IHashAlgorithm
+        builder.RegisterType<RandomXService>()
+            .As<RandomX>()                        // Pour injection directe de RandomX
+            .As<IHashAlgorithm>()                 // Pour injection via IHashAlgorithm
+            .Named<IHashAlgorithm>("randomx")     // Résolution nommée via "randomx"
+            .SingleInstance();
 
-// Enregistrer ScashJobManager et injecter RandomX
-builder.RegisterType<ScashJobManager>()
-    .WithParameter(
-        (pi, ctx) => pi.ParameterType == typeof(RandomX),
-        (pi, ctx) => ctx.Resolve<RandomX>()
-    )
-    .SingleInstance();
+        // Enregistrer ScashJobManager et injecter RandomX
+        builder.RegisterType<ScashJobManager>()
+            .WithParameter(
+                (pi, ctx) => pi.ParameterType == typeof(RandomX),
+                (pi, ctx) => ctx.Resolve<RandomX>()
+            )
+            .SingleInstance();
 
     }
 }

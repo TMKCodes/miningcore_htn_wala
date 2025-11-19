@@ -28,10 +28,10 @@ public unsafe class FishHash : IHashAlgorithm
         var started = DateTime.Now;
         logger.Debug(() => $"Generating light cache");
 
-        lock(genLock)
+        lock (genLock)
         {
             this.handle = Multihash.fishhashGetContext(fullContext);
-            if(fullContext)
+            if (fullContext)
                 Multihash.fishhashPrebuildDataset(this.handle, threads);
         }
 
@@ -43,11 +43,11 @@ public unsafe class FishHash : IHashAlgorithm
         Contract.Requires<ArgumentException>(this.handle != IntPtr.Zero);
         Contract.Requires<ArgumentException>(result.Length >= 32);
 
-        fixed(byte* input = data)
+        fixed (byte* input = data)
         {
             fixed (byte* output = result)
             {
-                Multihash.fishhash(output, this.handle, input, (uint) data.Length, this.fishHashKernel);
+                Multihash.fishhash(output, this.handle, input, (uint)data.Length, this.fishHashKernel);
             }
         }
     }

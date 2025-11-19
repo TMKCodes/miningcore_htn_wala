@@ -40,7 +40,7 @@ public class JsonRpcResponse<T>
         Error = ex;
         Id = id;
 
-        if(result != null)
+        if (result != null)
             Result = JToken.FromObject(result);
     }
 
@@ -61,9 +61,9 @@ public class JsonRpcResponse<T>
 
     public TParam ResultAs<TParam>() where TParam : class
     {
-        if(Result is JToken token)
+        if (Result is JToken token)
             return token.ToObject<TParam>();
 
-        return (TParam) Result;
+        return (TParam)Result;
     }
 }

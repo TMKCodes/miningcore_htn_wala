@@ -34,7 +34,7 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
     {
         var result = base.GetBlockTemplateParams();
 
-        if(coin.HasMWEB)
+        if (coin.HasMWEB)
         {
             result = new object[]
             {
@@ -45,12 +45,12 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
             };
         }
 
-        if(coin.BlockTemplateRpcExtraParams != null)
+        if (coin.BlockTemplateRpcExtraParams != null)
         {
-            if(coin.BlockTemplateRpcExtraParams.Type == JTokenType.Array)
+            if (coin.BlockTemplateRpcExtraParams.Type == JTokenType.Array)
                 result = result.Concat(coin.BlockTemplateRpcExtraParams.ToObject<object[]>() ?? Array.Empty<object>()).ToArray();
             else
-                result = result.Concat(new []{ coin.BlockTemplateRpcExtraParams.ToObject<object>()}).ToArray();
+                result = result.Concat(new[] { coin.BlockTemplateRpcExtraParams.ToObject<object>() }).ToArray();
         }
 
         return result;
@@ -69,7 +69,7 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
 
             var isSynched = response.Error == null;
 
-            if(isSynched)
+            if (isSynched)
             {
                 logger.Info(() => "All daemons synched with blockchain");
                 break;
@@ -79,20 +79,20 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
                 logger.Debug(() => $"Daemon reports error: {response.Error?.Message}");
             }
 
-            if(!syncPendingNotificationShown)
+            if (!syncPendingNotificationShown)
             {
                 logger.Info(() => "Daemon is still syncing with network. Manager will be started once synced.");
                 syncPendingNotificationShown = true;
             }
 
             await ShowDaemonSyncProgressAsync(ct);
-        } while(await timer.WaitForNextTickAsync(ct));
+        } while (await timer.WaitForNextTickAsync(ct));
     }
 
     protected async Task<RpcResponse<BlockTemplate>> GetBlockTemplateAsync(CancellationToken ct)
     {
         var result = await rpc.ExecuteAsync<BlockTemplate>(logger,
-            BitcoinCommands.GetBlockTemplate, ct, extraPoolConfig?.GBTArgs ?? (object) GetBlockTemplateParams());
+            BitcoinCommands.GetBlockTemplate, ct, extraPoolConfig?.GBTArgs ?? (object)GetBlockTemplateParams());
 
         return result;
     }
@@ -113,10 +113,10 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
     {
         base.PostChainIdentifyConfigure();
 
-        if(poolConfig.EnableInternalStratum == true && coin.HeaderHasherValue is IHashAlgorithmInit hashInit)
+        if (poolConfig.EnableInternalStratum == true && coin.HeaderHasherValue is IHashAlgorithmInit hashInit)
         {
-            if(!hashInit.DigestInit(poolConfig))
-                logger.Error(()=> $"{hashInit.GetType().Name} initialization failed");
+            if (!hashInit.DigestInit(poolConfig))
+                logger.Error(() => $"{hashInit.GetType().Name} initialization failed");
         }
     }
 
@@ -124,7 +124,7 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
     {
         try
         {
-            if(forceUpdate)
+            if (forceUpdate)
                 lastJobRebroadcast = clock.Now;
 
             var response = string.IsNullOrEmpty(json) ?
@@ -132,7 +132,7 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
                 GetBlockTemplateFromJson(json);
 
             // may happen if daemon is currently not connected to peers
-            if(response.Error != null)
+            if (response.Error != null)
             {
                 logger.Warn(() => $"Unable to update job. Daemon responded with: {response.Error.Message} Code {response.Error.Code}");
                 return (false, forceUpdate);
@@ -146,10 +146,10 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
                     (job.BlockTemplate?.PreviousBlockhash != blockTemplate.PreviousBlockhash ||
                         blockTemplate.Height > job.BlockTemplate?.Height));
 
-            if(isNew)
+            if (isNew)
                 messageBus.NotifyChainHeight(poolConfig.Id, blockTemplate.Height, poolConfig.Template);
 
-            if(isNew || forceUpdate)
+            if (isNew || forceUpdate)
             {
                 job = CreateJob();
 
@@ -158,18 +158,18 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
                     ShareMultiplier, coin.CoinbaseHasherValue, coin.HeaderHasherValue,
                     !isPoS ? coin.BlockHasherValue : coin.PoSBlockHasherValue ?? coin.BlockHasherValue);
 
-                lock(jobLock)
+                lock (jobLock)
                 {
                     validJobs.Insert(0, job);
 
                     // trim active jobs
-                    while(validJobs.Count > maxActiveJobs)
+                    while (validJobs.Count > maxActiveJobs)
                         validJobs.RemoveAt(validJobs.Count - 1);
                 }
 
-                if(isNew)
+                if (isNew)
                 {
-                    if(via != null)
+                    if (via != null)
                         logger.Info(() => $"Detected new block {blockTemplate.Height} [{via}]");
                     else
                         logger.Info(() => $"Detected new block {blockTemplate.Height}");
@@ -184,7 +184,7 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
 
                 else
                 {
-                    if(via != null)
+                    if (via != null)
                         logger.Debug(() => $"Template update {blockTemplate?.Height} [{via}]");
                     else
                         logger.Debug(() => $"Template update {blockTemplate?.Height}");
@@ -196,12 +196,12 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
             return (isNew, forceUpdate);
         }
 
-        catch(OperationCanceledException)
+        catch (OperationCanceledException)
         {
             // ignored
         }
 
-        catch(Exception ex)
+        catch (Exception ex)
         {
             logger.Error(ex, () => $"Error during {nameof(UpdateJob)}");
         }
@@ -223,7 +223,7 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
         extraPoolConfig = pc.Extra.SafeExtensionDataAs<BitcoinPoolConfigExtra>();
         extraPoolPaymentProcessingConfig = pc.PaymentProcessing?.Extra?.SafeExtensionDataAs<BitcoinPoolPaymentProcessingConfigExtra>();
 
-        if(extraPoolConfig?.MaxActiveJobs.HasValue == true)
+        if (extraPoolConfig?.MaxActiveJobs.HasValue == true)
             maxActiveJobs = extraPoolConfig.MaxActiveJobs.Value;
 
         hasLegacyDaemon = extraPoolConfig?.HasLegacyDaemon == true;
@@ -256,7 +256,7 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
         Contract.RequiresNonNull(worker);
         Contract.RequiresNonNull(submission);
 
-        if(submission is not object[] submitParams)
+        if (submission is not object[] submitParams)
             throw new StratumException(StratumError.Other, "invalid params");
 
         var context = worker.ContextAs<BitcoinWorkerContext>();
@@ -269,17 +269,17 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
         var nonce = submitParams[4] as string;
         var versionBits = context.VersionRollingMask.HasValue ? submitParams[5] as string : null;
 
-        if(string.IsNullOrEmpty(workerValue))
+        if (string.IsNullOrEmpty(workerValue))
             throw new StratumException(StratumError.Other, "missing or invalid workername");
 
         BitcoinJob job;
 
-        lock(jobLock)
+        lock (jobLock)
         {
             job = validJobs.FirstOrDefault(x => x.JobId == jobId);
         }
 
-        if(job == null)
+        if (job == null)
             throw new StratumException(StratumError.JobNotFound, "job not found");
 
         // validate & process
@@ -295,7 +295,7 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
         share.Created = clock.Now;
 
         // if block candidate, submit & check if accepted by network
-        if(share.IsBlockCandidate)
+        if (share.IsBlockCandidate)
         {
             logger.Info(() => $"Submitting block {share.BlockHeight} [{share.BlockHash}]");
 
@@ -304,7 +304,7 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
             // is it still a block candidate?
             share.IsBlockCandidate = acceptResponse.Accepted;
 
-            if(share.IsBlockCandidate)
+            if (share.IsBlockCandidate)
             {
                 logger.Info(() => $"Daemon accepted block {share.BlockHeight} block [{share.BlockHash}] submitted by {context.Miner}");
 

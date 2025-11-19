@@ -7,7 +7,7 @@ public class TransferDestination
     public string Address { get; set; }
     public ulong Amount { get; set; }
 
-        // Salvium
+    // Salvium
     /// <summary>
     /// Define the type of coin to be received
     /// </summary>

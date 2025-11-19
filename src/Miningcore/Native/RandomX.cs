@@ -93,7 +93,7 @@ public unsafe class RandomX : IHashAlgorithm, IDisposable
 
         public void Dispose()
         {
-            if(dataset != IntPtr.Zero)
+            if (dataset != IntPtr.Zero)
             {
                 release_dataset(dataset);
                 dataset = IntPtr.Zero;
@@ -119,7 +119,7 @@ public unsafe class RandomX : IHashAlgorithm, IDisposable
 
         public void Dispose()
         {
-            if(vm != IntPtr.Zero)
+            if (vm != IntPtr.Zero)
             {
                 destroy_vm(vm);
                 vm = IntPtr.Zero;
@@ -127,7 +127,7 @@ public unsafe class RandomX : IHashAlgorithm, IDisposable
 
             ds?.Dispose();
 
-            if(cache != IntPtr.Zero)
+            if (cache != IntPtr.Zero)
             {
                 release_cache(cache);
                 cache = IntPtr.Zero;
@@ -142,13 +142,13 @@ public unsafe class RandomX : IHashAlgorithm, IDisposable
             cache = alloc_cache(flags);
 
             // init cache
-            fixed(byte* key_ptr = key)
+            fixed (byte* key_ptr = key)
             {
-                init_cache(cache, (IntPtr) key_ptr, key.Length);
+                init_cache(cache, (IntPtr)key_ptr, key.Length);
             }
 
             // Enable fast-mode? (requires 2GB+ memory per VM)
-            if((flags & randomx_flags.RANDOMX_FLAG_FULL_MEM) != 0)
+            if ((flags & randomx_flags.RANDOMX_FLAG_FULL_MEM) != 0)
             {
                 ds = new RxDataSet();
                 ds_ptr = ds.Init(flags, cache);
@@ -175,7 +175,7 @@ public unsafe class RandomX : IHashAlgorithm, IDisposable
 
     public static void WithLock(Action action)
     {
-        lock(realms)
+        lock (realms)
         {
             action();
         }
@@ -184,20 +184,20 @@ public unsafe class RandomX : IHashAlgorithm, IDisposable
     public static void CreateSeed(string realm, string seedHex,
         randomx_flags? flagsOverride = null, randomx_flags? flagsAdd = null, int vmCount = 1)
     {
-        lock(realms)
+        lock (realms)
         {
-            if(!realms.TryGetValue(realm, out var seeds))
+            if (!realms.TryGetValue(realm, out var seeds))
             {
                 seeds = new Dictionary<string, Tuple<GenContext, BlockingCollection<RxVm>>>();
 
                 realms[realm] = seeds;
             }
 
-            if(!seeds.TryGetValue(seedHex, out var seed))
+            if (!seeds.TryGetValue(seedHex, out var seed))
             {
                 var flags = flagsOverride ?? randomx_get_flags();
 
-                if(flagsAdd.HasValue)
+                if (flagsAdd.HasValue)
                     flags |= flagsAdd.Value;
 
                 if (vmCount == -1)
@@ -230,7 +230,8 @@ public unsafe class RandomX : IHashAlgorithm, IDisposable
             vms.Add(vm);
 
             logger.Info(() => $"Created VM {realm}@{index + 1} in {DateTime.Now - start}");
-        };
+        }
+        ;
 
         Parallel.For(0, vmCount, createVm);
 
@@ -241,12 +242,12 @@ public unsafe class RandomX : IHashAlgorithm, IDisposable
     {
         Tuple<GenContext, BlockingCollection<RxVm>> seed;
 
-        lock(realms)
+        lock (realms)
         {
-            if(!realms.TryGetValue(realm, out var seeds))
+            if (!realms.TryGetValue(realm, out var seeds))
                 return;
 
-            if(!seeds.Remove(seedHex, out seed))
+            if (!seeds.Remove(seedHex, out seed))
                 return;
         }
 
@@ -267,12 +268,12 @@ public unsafe class RandomX : IHashAlgorithm, IDisposable
 
     public static Tuple<GenContext, BlockingCollection<RxVm>> GetSeed(string realm, string seedHex)
     {
-        lock(realms)
+        lock (realms)
         {
-            if(!realms.TryGetValue(realm, out var seeds))
+            if (!realms.TryGetValue(realm, out var seeds))
                 return null;
 
-            if(!seeds.TryGetValue(seedHex, out var seed))
+            if (!seeds.TryGetValue(seedHex, out var seed))
                 return null;
 
             return seed;
@@ -288,7 +289,7 @@ public unsafe class RandomX : IHashAlgorithm, IDisposable
 
         var (ctx, seedVms) = GetSeed(realm, seedHex);
 
-        if(ctx != null)
+        if (ctx != null)
         {
             RxVm vm = null;
 
@@ -305,7 +306,7 @@ public unsafe class RandomX : IHashAlgorithm, IDisposable
                 messageBus?.SendTelemetry("RandomX", TelemetryCategory.Hash, sw.Elapsed, true);
             }
 
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.Error(() => ex.Message);
             }
@@ -313,12 +314,12 @@ public unsafe class RandomX : IHashAlgorithm, IDisposable
             finally
             {
                 // return it
-                if(vm != null)
+                if (vm != null)
                     seedVms.Add(vm);
             }
         }
 
-        if(!success)
+        if (!success)
         {
             // clear result on failure
             empty.CopyTo(result);
@@ -330,78 +331,78 @@ public unsafe class RandomX : IHashAlgorithm, IDisposable
 
 
 
-public static void InitForScash(string realm, string seedHex, randomx_flags? flagsOverride = null, int vmCount = 1)
-{
-    lock (realms)
+    public static void InitForScash(string realm, string seedHex, randomx_flags? flagsOverride = null, int vmCount = 1)
     {
-        if (!realms.TryGetValue(realm, out var seeds))
+        lock (realms)
         {
-            seeds = new Dictionary<string, Tuple<GenContext, BlockingCollection<RxVm>>>();
-            realms[realm] = seeds;
+            if (!realms.TryGetValue(realm, out var seeds))
+            {
+                seeds = new Dictionary<string, Tuple<GenContext, BlockingCollection<RxVm>>>();
+                realms[realm] = seeds;
+            }
+
+            if (!seeds.TryGetValue(seedHex, out var seed))
+            {
+                var flags = flagsOverride ?? randomx_get_flags();
+                flags |= randomx_flags.RANDOMX_FLAG_FULL_MEM;
+
+                if (vmCount == -1)
+                    vmCount = Environment.ProcessorCount;
+
+                seed = CreateSeed(realm, seedHex, flags, vmCount);
+
+                seeds[seedHex] = seed;
+            }
+        }
+    }
+    public void DigestForScash(ReadOnlySpan<byte> data, Span<byte> result)
+    {
+        var sw = Stopwatch.StartNew();
+        var success = false;
+
+        try
+        {
+            var vm = new RxVm();
+            vm.Init(data, randomx_flags.RANDOMX_FLAG_DEFAULT | randomx_flags.RANDOMX_FLAG_FULL_MEM);
+            vm.CalculateHash(data, result);
+            success = true;
+
+            messageBus?.SendTelemetry("RandomX_SCASH", TelemetryCategory.Hash, sw.Elapsed, true);
+        }
+        catch (Exception ex)
+        {
+            logger.Error(() => $"SCASH Digest Error: {ex.Message}");
         }
 
-        if (!seeds.TryGetValue(seedHex, out var seed))
+        if (!success)
         {
-            var flags = flagsOverride ?? randomx_get_flags();
-            flags |= randomx_flags.RANDOMX_FLAG_FULL_MEM;
-
-            if (vmCount == -1)
-                vmCount = Environment.ProcessorCount;
-
-            seed = CreateSeed(realm, seedHex, flags, vmCount);
-
-            seeds[seedHex] = seed;
+            empty.CopyTo(result);
         }
     }
-}
-public void DigestForScash(ReadOnlySpan<byte> data, Span<byte> result)
-{
-    var sw = Stopwatch.StartNew();
-    var success = false;
-
-    try
-    {
-        var vm = new RxVm();
-        vm.Init(data, randomx_flags.RANDOMX_FLAG_DEFAULT | randomx_flags.RANDOMX_FLAG_FULL_MEM);
-        vm.CalculateHash(data, result);
-        success = true;
-
-        messageBus?.SendTelemetry("RandomX_SCASH", TelemetryCategory.Hash, sw.Elapsed, true);
-    }
-    catch (Exception ex)
-    {
-        logger.Error(() => $"SCASH Digest Error: {ex.Message}");
-    }
-
-    if (!success)
-    {
-        empty.CopyTo(result);
-    }
-}
 
     public void Digest(ReadOnlySpan<byte> data, Span<byte> result, params object[] extra)
     {
-          var sw = Stopwatch.StartNew();
-    var success = false;
+        var sw = Stopwatch.StartNew();
+        var success = false;
 
-    try
-    {
-        var vm = new RxVm();
-        vm.Init(data, randomx_flags.RANDOMX_FLAG_DEFAULT | randomx_flags.RANDOMX_FLAG_FULL_MEM);
-        vm.CalculateHash(data, result);
-        success = true;
+        try
+        {
+            var vm = new RxVm();
+            vm.Init(data, randomx_flags.RANDOMX_FLAG_DEFAULT | randomx_flags.RANDOMX_FLAG_FULL_MEM);
+            vm.CalculateHash(data, result);
+            success = true;
 
-        messageBus?.SendTelemetry("RandomX_SCASH", TelemetryCategory.Hash, sw.Elapsed, true);
-    }
-    catch (Exception ex)
-    {
-        logger.Error(() => $"SCASH Digest Error: {ex.Message}");
-    }
+            messageBus?.SendTelemetry("RandomX_SCASH", TelemetryCategory.Hash, sw.Elapsed, true);
+        }
+        catch (Exception ex)
+        {
+            logger.Error(() => $"SCASH Digest Error: {ex.Message}");
+        }
 
-    if (!success)
-    {
-        empty.CopyTo(result);
-    }
+        if (!success)
+        {
+            empty.CopyTo(result);
+        }
     }
 
 

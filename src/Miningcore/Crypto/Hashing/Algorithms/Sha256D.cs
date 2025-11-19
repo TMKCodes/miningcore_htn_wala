@@ -13,7 +13,7 @@ public class Sha256D : IHashAlgorithm
     {
         Contract.Requires<ArgumentException>(result.Length >= 32);
 
-        using(var hasher = SHA256.Create())
+        using (var hasher = SHA256.Create())
         {
             hasher.TryComputeHash(data, result, out _);
             hasher.TryComputeHash(result, result, out _);

@@ -21,7 +21,7 @@ public unsafe class BeamHash
     /// <returns>boolean</returns>
     [DllImport("libbeamhash", EntryPoint = "beamhash_verify_export", CallingConvention = CallingConvention.Cdecl)]
     public static extern bool beamhash_verify(byte* header, int header_length, byte* solution, int solution_length, byte* nonce, int nonce_length, int pow);
-    
+
     private static int maxThreads = 1;
 
     public static int MaxThreads
@@ -29,7 +29,7 @@ public unsafe class BeamHash
         get => maxThreads;
         set
         {
-            if(sem.IsValueCreated)
+            if (sem.IsValueCreated)
                 throw new InvalidOperationException("Too late: semaphore already created");
 
             maxThreads = value;

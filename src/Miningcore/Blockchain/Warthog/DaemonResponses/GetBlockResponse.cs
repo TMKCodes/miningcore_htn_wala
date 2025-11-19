@@ -54,7 +54,7 @@ public class WarthogBlockDataHeader
 {
     public double Difficulty { get; set; }
     public string Hash { get; set; }
-    
+
     [JsonPropertyName("merkleroot")]
     public string MerkleRoot { get; set; }
 

@@ -49,12 +49,12 @@ public class CryptonotePool : PoolBase
         var request = tsRequest.Value;
         var context = connection.ContextAs<CryptonoteWorkerContext>();
 
-        if(request.Id == null)
+        if (request.Id == null)
             throw new StratumException(StratumError.MinusOne, "missing request id");
 
         var loginRequest = request.ParamsAs<CryptonoteLoginRequest>();
 
-        if(string.IsNullOrEmpty(loginRequest?.Login))
+        if (string.IsNullOrEmpty(loginRequest?.Login))
             throw new StratumException(StratumError.MinusOne, "missing login");
 
         // extract worker/miner/paymentid
@@ -67,12 +67,12 @@ public class CryptonotePool : PoolBase
 
         // extract paymentid
         var index = context.Miner.IndexOf('#');
-        if(index != -1)
+        if (index != -1)
         {
             var paymentId = context.Miner[(index + 1)..].Trim();
 
             // validate
-            if(!string.IsNullOrEmpty(paymentId) && paymentId.Length != CryptonoteConstants.PaymentIdHexLength)
+            if (!string.IsNullOrEmpty(paymentId) && paymentId.Length != CryptonoteConstants.PaymentIdHexLength)
                 throw new StratumException(StratumError.MinusOne, "invalid payment id");
 
             // re-append to address
@@ -86,7 +86,7 @@ public class CryptonotePool : PoolBase
         context.IsSubscribed = result;
         context.IsAuthorized = result;
 
-        if(context.IsAuthorized)
+        if (context.IsAuthorized)
         {
             // extract control vars from password
             var passParts = loginRequest.Password?.Split(PasswordControlVarsSeparator);
@@ -95,9 +95,9 @@ public class CryptonotePool : PoolBase
             // Nicehash support
             var nicehashDiff = await GetNicehashStaticMinDiff(context, manager.Coin.Name, manager.Coin.GetAlgorithmName());
 
-            if(nicehashDiff.HasValue)
+            if (nicehashDiff.HasValue)
             {
-                if(!staticDiff.HasValue || nicehashDiff > staticDiff)
+                if (!staticDiff.HasValue || nicehashDiff > staticDiff)
                 {
                     logger.Info(() => $"[{connection.ConnectionId}] Nicehash detected. Using API supplied difficulty of {nicehashDiff.Value}");
 
@@ -109,7 +109,7 @@ public class CryptonotePool : PoolBase
             }
 
             // Static diff
-            if(staticDiff.HasValue &&
+            if (staticDiff.HasValue &&
                (context.VarDiff != null && staticDiff.Value >= context.VarDiff.Config.MinDiff ||
                    context.VarDiff == null && staticDiff.Value > context.Difficulty))
             {
@@ -129,7 +129,7 @@ public class CryptonotePool : PoolBase
             await connection.RespondAsync(loginResponse, request.Id);
 
             // log association
-            if(!string.IsNullOrEmpty(context.Worker))
+            if (!string.IsNullOrEmpty(context.Worker))
                 logger.Info(() => $"[{connection.ConnectionId}] Authorized worker {context.Worker}@{context.Miner}");
             else
                 logger.Info(() => $"[{connection.ConnectionId}] Authorized miner {context.Miner}");
@@ -139,7 +139,7 @@ public class CryptonotePool : PoolBase
         {
             await connection.RespondErrorAsync(StratumError.MinusOne, "invalid login", request.Id);
 
-            if(clusterConfig?.Banning?.BanOnLoginFailure is null or true)
+            if (clusterConfig?.Banning?.BanOnLoginFailure is null or true)
             {
                 logger.Info(() => $"[{connection.ConnectionId}] Banning unauthorized worker {context.Miner} for {loginFailureBanTimeout.TotalSeconds} sec");
 
@@ -155,13 +155,13 @@ public class CryptonotePool : PoolBase
         var request = tsRequest.Value;
         var context = connection.ContextAs<CryptonoteWorkerContext>();
 
-        if(request.Id == null)
+        if (request.Id == null)
             throw new StratumException(StratumError.MinusOne, "missing request id");
 
         var getJobRequest = request.ParamsAs<CryptonoteGetJobRequest>();
 
         // validate worker
-        if(connection.ConnectionId != getJobRequest?.WorkerId || !context.IsAuthorized)
+        if (connection.ConnectionId != getJobRequest?.WorkerId || !context.IsAuthorized)
             throw new StratumException(StratumError.MinusOne, "unauthorized");
 
         // respond
@@ -177,7 +177,7 @@ public class CryptonotePool : PoolBase
         manager.PrepareWorkerJob(job, out var blob, out var target);
 
         // should never happen
-        if(string.IsNullOrEmpty(blob) || string.IsNullOrEmpty(blob))
+        if (string.IsNullOrEmpty(blob) || string.IsNullOrEmpty(blob))
             return null;
 
         var result = new CryptonoteJobParams
@@ -189,11 +189,11 @@ public class CryptonotePool : PoolBase
             SeedHash = job.SeedHash,
         };
 
-        if(!string.IsNullOrEmpty(minerAlgo))
+        if (!string.IsNullOrEmpty(minerAlgo))
             result.Algorithm = minerAlgo;
 
         // update context
-        lock(context)
+        lock (context)
         {
             context.AddJob(job);
         }
@@ -208,13 +208,13 @@ public class CryptonotePool : PoolBase
 
         try
         {
-            if(request.Id == null)
+            if (request.Id == null)
                 throw new StratumException(StratumError.MinusOne, "missing request id");
 
             // check age of submission (aged submissions are usually caused by high server load)
             var requestAge = clock.Now - tsRequest.Timestamp.UtcDateTime;
 
-            if(requestAge > maxShareAge)
+            if (requestAge > maxShareAge)
             {
                 logger.Warn(() => $"[{connection.ConnectionId}] Dropping stale share submission request (server overloaded?)");
                 return;
@@ -224,7 +224,7 @@ public class CryptonotePool : PoolBase
             var submitRequest = request.ParamsAs<CryptonoteSubmitShareRequest>();
 
             // validate worker
-            if(connection.ConnectionId != submitRequest?.WorkerId || !context.IsAuthorized)
+            if (connection.ConnectionId != submitRequest?.WorkerId || !context.IsAuthorized)
                 throw new StratumException(StratumError.MinusOne, "unauthorized");
 
             // recognize activity
@@ -232,16 +232,16 @@ public class CryptonotePool : PoolBase
 
             CryptonoteWorkerJob job;
 
-            lock(context)
+            lock (context)
             {
                 var jobId = submitRequest?.JobId;
 
-                if((job = context.FindJob(jobId)) == null)
+                if ((job = context.FindJob(jobId)) == null)
                     throw new StratumException(StratumError.MinusOne, "invalid jobid");
             }
 
             // dupe check
-            if(!job.Submissions.TryAdd(submitRequest.Nonce, true))
+            if (!job.Submissions.TryAdd(submitRequest.Nonce, true))
                 throw new StratumException(StratumError.MinusOne, "duplicate share");
 
             // submit
@@ -254,11 +254,11 @@ public class CryptonotePool : PoolBase
             // telemetry
             PublishTelemetry(TelemetryCategory.Share, clock.Now - tsRequest.Timestamp.UtcDateTime, true);
 
-// elva - suppression de la ligne en dessous
-      //      logger.Info(() => $"[{connection.ConnectionId}] Share accepted: D={Math.Round(share.Difficulty, 3)}");
+            // elva - suppression de la ligne en dessous
+            //      logger.Info(() => $"[{connection.ConnectionId}] Share accepted: D={Math.Round(share.Difficulty, 3)}");
 
             // update pool stats
-            if(share.IsBlockCandidate)
+            if (share.IsBlockCandidate)
                 poolStats.LastPoolBlockTime = clock.Now;
 
             // update client stats
@@ -267,7 +267,7 @@ public class CryptonotePool : PoolBase
             await UpdateVarDiffAsync(connection, false, ct);
         }
 
-        catch(StratumException ex)
+        catch (StratumException ex)
         {
             // telemetry
             PublishTelemetry(TelemetryCategory.Share, clock.Now - tsRequest.Timestamp.UtcDateTime, false);
@@ -294,7 +294,7 @@ public class CryptonotePool : PoolBase
     {
 
         // elva - suppression de la ligne en dessous
-   //     logger.Info(() => "Broadcasting jobs");
+        //     logger.Info(() => "Broadcasting jobs");
 
         await Guard(() => ForEachMinerAsync(async (connection, ct) =>
         {
@@ -313,14 +313,14 @@ public class CryptonotePool : PoolBase
 
         await manager.StartAsync(ct);
 
-        if(poolConfig.EnableInternalStratum == true)
+        if (poolConfig.EnableInternalStratum == true)
         {
             minerAlgo = GetMinerAlgo();
 
             disposables.Add(manager.Blocks
                 .Select(_ => Observable.FromAsync(() =>
                     Guard(OnNewJobAsync,
-                        ex=> logger.Debug(() => $"{nameof(OnNewJobAsync)}: {ex.Message}"))))
+                        ex => logger.Debug(() => $"{nameof(OnNewJobAsync)}: {ex.Message}"))))
                 .Concat()
                 .Subscribe(_ => { }, ex =>
                 {
@@ -340,7 +340,7 @@ public class CryptonotePool : PoolBase
 
     private string GetMinerAlgo()
     {
-        switch(manager.Coin.Hash)
+        switch (manager.Coin.Hash)
         {
             case CryptonightHashType.RandomX:
                 return $"rx/{manager.Coin.HashVariant}";
@@ -369,7 +369,7 @@ public class CryptonotePool : PoolBase
 
         try
         {
-            switch(request.Method)
+            switch (request.Method)
             {
                 case CryptonoteStratumMethods.Login:
                     await OnLoginAsync(connection, tsRequest);
@@ -401,7 +401,7 @@ public class CryptonotePool : PoolBase
             }
         }
 
-        catch(StratumException ex)
+        catch (StratumException ex)
         {
             await connection.RespondErrorAsync(ex.Code, ex.Message, request.Id, false);
         }
@@ -419,7 +419,7 @@ public class CryptonotePool : PoolBase
     {
         await base.OnVarDiffUpdateAsync(connection, newDiff, ct);
 
-        if(connection.Context.ApplyPendingDifficulty())
+        if (connection.Context.ApplyPendingDifficulty())
         {
             // re-send job
             var job = CreateWorkerJob(connection);

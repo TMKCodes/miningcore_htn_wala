@@ -34,7 +34,7 @@ public unsafe class ScryptN : IHashAlgorithm
         Contract.Requires<ArgumentException>(result.Length >= 32);
 
         // get nFactor
-        var ts = ((DateTimeOffset) Clock.Now).ToUnixTimeSeconds();
+        var ts = ((DateTimeOffset)Clock.Now).ToUnixTimeSeconds();
         var n = timetable.First(x => ts >= x.Item2).Item1;
         var nFactor = Math.Log(n) / Math.Log(2);
 
@@ -42,7 +42,7 @@ public unsafe class ScryptN : IHashAlgorithm
         {
             fixed (byte* output = result)
             {
-                Multihash.scryptn(input, output, (uint) nFactor, (uint) data.Length);
+                Multihash.scryptn(input, output, (uint)nFactor, (uint)data.Length);
             }
         }
     }

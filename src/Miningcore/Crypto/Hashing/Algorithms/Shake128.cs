@@ -15,7 +15,7 @@ public unsafe class Shake128 : IHashAlgorithm
         {
             fixed (byte* output = result)
             {
-                Multihash.shake128(input, (uint) data.Length, output, (uint) result.Length);
+                Multihash.shake128(input, (uint)data.Length, output, (uint)result.Length);
             }
         }
     }

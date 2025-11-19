@@ -54,7 +54,7 @@ public class ErgoJobManager : JobManagerBase<ErgoJob>
             blockFound.Select(_ => (false, JobRefreshBy.BlockFound, (string) null))
         };
 
-        if(extraPoolConfig?.BtStream != null)
+        if (extraPoolConfig?.BtStream != null)
         {
             var btStream = BtStreamSubscribe(extraPoolConfig.BtStream);
 
@@ -69,12 +69,12 @@ public class ErgoJobManager : JobManagerBase<ErgoJob>
 
         triggers.Add(Observable.Timer(TimeSpan.FromMilliseconds(pollingInterval))
             .TakeUntil(pollTimerRestart)
-            .Select(_ => (false, JobRefreshBy.Poll, (string) null))
+            .Select(_ => (false, JobRefreshBy.Poll, (string)null))
             .Repeat());
 
         // get initial blocktemplate
         triggers.Add(Observable.Interval(TimeSpan.FromMilliseconds(1000))
-            .Select(_ => (false, JobRefreshBy.Initial, (string) null))
+            .Select(_ => (false, JobRefreshBy.Initial, (string)null))
             .TakeWhile(_ => !hasInitialBlockTemplate));
 
         Jobs = triggers.Merge()
@@ -83,7 +83,7 @@ public class ErgoJobManager : JobManagerBase<ErgoJob>
             .Where(x => x.IsNew || x.Force)
             .Do(x =>
             {
-                if(x.IsNew)
+                if (x.IsNew)
                     hasInitialBlockTemplate = true;
             })
             .Select(x => GetJobParamsForStratum(x.IsNew))
@@ -106,27 +106,27 @@ public class ErgoJobManager : JobManagerBase<ErgoJob>
                     (job.BlockTemplate?.Msg != blockTemplate.Msg ||
                         blockTemplate.Height > job.BlockTemplate.Height));
 
-            if(isNew)
+            if (isNew)
                 messageBus.NotifyChainHeight(poolConfig.Id, blockTemplate.Height, poolConfig.Template);
 
-            if(isNew || forceUpdate)
+            if (isNew || forceUpdate)
             {
                 job = new ErgoJob();
 
                 job.Init(blockTemplate, blockVersion, extraNonceSize, NextJobId());
 
-                lock(jobLock)
+                lock (jobLock)
                 {
                     validJobs.Insert(0, job);
 
                     // trim active jobs
-                    while(validJobs.Count > maxActiveJobs)
+                    while (validJobs.Count > maxActiveJobs)
                         validJobs.RemoveAt(validJobs.Count - 1);
                 }
 
-                if(isNew)
+                if (isNew)
                 {
-                    if(via != null)
+                    if (via != null)
                         logger.Info(() => $"Detected new block {job.Height} [{via}]");
                     else
                         logger.Info(() => $"Detected new block {job.Height}");
@@ -141,13 +141,13 @@ public class ErgoJobManager : JobManagerBase<ErgoJob>
                     BlockchainStats.LastNetworkBlockTime = clock.Now;
                     BlockchainStats.BlockHeight = job.Height;
                     BlockchainStats.ConnectedPeers = info.PeersCount;
-                    BlockchainStats.NetworkDifficulty = (double) info.Difficulty;
+                    BlockchainStats.NetworkDifficulty = (double)info.Difficulty;
                     BlockchainStats.NetworkHashrate = BlockchainStats.NetworkDifficulty / blockTimeAvg;
                 }
 
                 else
                 {
-                    if(via != null)
+                    if (via != null)
                         logger.Debug(() => $"Template update {job.Height} [{via}]");
                     else
                         logger.Debug(() => $"Template update {job.Height}");
@@ -159,17 +159,17 @@ public class ErgoJobManager : JobManagerBase<ErgoJob>
             return (isNew, forceUpdate);
         }
 
-        catch(OperationCanceledException)
+        catch (OperationCanceledException)
         {
             // ignored
         }
 
-        catch(ApiException<ApiError> ex)
+        catch (ApiException<ApiError> ex)
         {
             logger.Error(() => $"Error during {nameof(UpdateJob)}: {ex.Result.Detail ?? ex.Result.Reason}");
         }
 
-        catch(Exception ex)
+        catch (Exception ex)
         {
             logger.Error(ex, () => $"Error during {nameof(UpdateJob)}");
         }
@@ -194,9 +194,9 @@ public class ErgoJobManager : JobManagerBase<ErgoJob>
         var info = await Guard(() => rpc.GetNodeInfoAsync(),
             ex => logger.Debug(ex));
 
-        if(info?.FullHeight.HasValue == true && info.HeadersHeight.HasValue)
+        if (info?.FullHeight.HasValue == true && info.HeadersHeight.HasValue)
         {
-            var percent = (double) info.FullHeight.Value / info.HeadersHeight.Value * 100;
+            var percent = (double)info.FullHeight.Value / info.HeadersHeight.Value * 100;
 
             logger.Info(() => $"Daemon has downloaded {percent:0.00}% of blockchain from {info.PeersCount} peers");
         }
@@ -217,13 +217,13 @@ public class ErgoJobManager : JobManagerBase<ErgoJob>
             return true;
         }
 
-        catch(ApiException<ApiError> ex)
+        catch (ApiException<ApiError> ex)
         {
             logger.Warn(() => $"Block {share.BlockHeight} submission failed with: {ex.Result.Detail ?? ex.Result.Reason ?? ex.Message}");
             messageBus.SendMessage(new AdminNotification("Block submission failed", $"Pool {poolConfig.Id} {(!string.IsNullOrEmpty(share.Source) ? $"[{share.Source.ToUpper()}] " : string.Empty)}failed to submit block {share.BlockHeight}: {ex.Result.Detail ?? ex.Result.Reason}"));
         }
 
-        catch(Exception ex)
+        catch (Exception ex)
         {
             logger.Warn(() => $"Block {share.BlockHeight} submission failed with: {ex.Message}");
             messageBus.SendMessage(new AdminNotification("Block submission failed", $"Pool {poolConfig.Id} {(!string.IsNullOrEmpty(share.Source) ? $"[{share.Source.ToUpper()}] " : string.Empty)}failed to submit block {share.BlockHeight}: {ex.Message}"));
@@ -264,7 +264,7 @@ public class ErgoJobManager : JobManagerBase<ErgoJob>
         Contract.RequiresNonNull(worker);
         Contract.RequiresNonNull(submission);
 
-        if(submission is not object[] submitParams)
+        if (submission is not object[] submitParams)
             throw new StratumException(StratumError.Other, "invalid params");
 
         var context = worker.ContextAs<ErgoWorkerContext>();
@@ -276,17 +276,17 @@ public class ErgoJobManager : JobManagerBase<ErgoJob>
         var nTime = submitParams[3] as string;
         var nonce = submitParams[4] as string;
 
-        if(string.IsNullOrEmpty(workerValue))
+        if (string.IsNullOrEmpty(workerValue))
             throw new StratumException(StratumError.Other, "missing or invalid workername");
 
         ErgoJob job;
 
-        lock(jobLock)
+        lock (jobLock)
         {
             job = validJobs.FirstOrDefault(x => x.JobId == jobId);
         }
 
-        if(job == null)
+        if (job == null)
             throw new StratumException(StratumError.JobNotFound, "job not found");
 
         // validate & process
@@ -302,7 +302,7 @@ public class ErgoJobManager : JobManagerBase<ErgoJob>
         share.Created = clock.Now;
 
         // if block candidate, submit & check if accepted by network
-        if(share.IsBlockCandidate)
+        if (share.IsBlockCandidate)
         {
             logger.Info(() => $"Submitting block {share.BlockHeight} [{share.BlockHash}]");
 
@@ -311,7 +311,7 @@ public class ErgoJobManager : JobManagerBase<ErgoJob>
             // is it still a block candidate?
             share.IsBlockCandidate = acceptResponse;
 
-            if(share.IsBlockCandidate)
+            if (share.IsBlockCandidate)
             {
                 logger.Info(() => $"Daemon accepted block {share.BlockHeight} block [{share.BlockHash}] submitted by {context.Miner}");
 
@@ -333,7 +333,7 @@ public class ErgoJobManager : JobManagerBase<ErgoJob>
 
     public async Task<bool> ValidateAddress(string address, CancellationToken ct)
     {
-        if(string.IsNullOrEmpty(address))
+        if (string.IsNullOrEmpty(address))
             return false;
 
         var validity = await Guard(() => rpc.CheckAddressValidityAsync(address, ct),
@@ -349,39 +349,39 @@ public class ErgoJobManager : JobManagerBase<ErgoJob>
     protected override async Task PostStartInitAsync(CancellationToken ct)
     {
         // validate pool address
-        if(string.IsNullOrEmpty(poolConfig.Address))
+        if (string.IsNullOrEmpty(poolConfig.Address))
             throw new PoolStartupException($"Pool address is not configured", poolConfig.Id);
 
         var validity = await Guard(() => rpc.CheckAddressValidityAsync(poolConfig.Address, ct),
-            ex=> throw new PoolStartupException($"Error validating pool address: {ex}", poolConfig.Id));
+            ex => throw new PoolStartupException($"Error validating pool address: {ex}", poolConfig.Id));
 
-        if(!validity.IsValid)
+        if (!validity.IsValid)
             throw new PoolStartupException($"Daemon reports pool address {poolConfig.Address} as invalid: {validity.Error}", poolConfig.Id);
 
         var info = await Guard(() => rpc.GetNodeInfoAsync(ct),
-            ex=> throw new PoolStartupException($"Daemon reports: {ex.Message}", poolConfig.Id));
+            ex => throw new PoolStartupException($"Daemon reports: {ex.Message}", poolConfig.Id));
 
         blockVersion = info.Parameters.BlockVersion;
 
         // chain detection
-        if(!string.IsNullOrEmpty(info.Network))
+        if (!string.IsNullOrEmpty(info.Network))
             network = info.Network.ToLower();
         else
         {
             var m = ErgoConstants.RegexChain.Match(info.Name);
-            if(!m.Success)
+            if (!m.Success)
                 throw new PoolStartupException($"Unable to identify network type ({info.Name}", poolConfig.Id);
 
             network = m.Groups[1].Value.ToLower();
         }
 
         // Payment-processing setup
-        if(clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
+        if (clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
         {
             // check configured address belongs to wallet
             var walletAddresses = await rpc.WalletAddressesAsync(ct);
 
-            if(!walletAddresses.Contains(poolConfig.Address))
+            if (!walletAddresses.Contains(poolConfig.Address))
                 throw new PoolStartupException($"Pool address {poolConfig.Address} is not controlled by wallet", poolConfig.Id);
         }
 
@@ -398,7 +398,7 @@ public class ErgoJobManager : JobManagerBase<ErgoJob>
 
         extraPoolConfig = pc.Extra.SafeExtensionDataAs<ErgoPoolConfigExtra>();
 
-        if(extraPoolConfig?.MaxActiveJobs.HasValue == true)
+        if (extraPoolConfig?.MaxActiveJobs.HasValue == true)
             maxActiveJobs = extraPoolConfig.MaxActiveJobs.Value;
 
         base.Configure(pc, cc);
@@ -412,13 +412,13 @@ public class ErgoJobManager : JobManagerBase<ErgoJob>
     protected override async Task<bool> AreDaemonsHealthyAsync(CancellationToken ct)
     {
         var info = await Guard(() => rpc.GetNodeInfoAsync(ct),
-            ex=> throw new PoolStartupException($"Daemon reports: {ex.Message}", poolConfig.Id));
+            ex => throw new PoolStartupException($"Daemon reports: {ex.Message}", poolConfig.Id));
 
-        if(info?.IsMining != true)
+        if (info?.IsMining != true)
             throw new PoolStartupException("Mining is disabled in Ergo Daemon", poolConfig.Id);
 
         // update stats
-        if(!string.IsNullOrEmpty(info?.AppVersion))
+        if (!string.IsNullOrEmpty(info?.AppVersion))
             BlockchainStats.NodeVersion = info?.AppVersion;
 
         return true;
@@ -427,7 +427,7 @@ public class ErgoJobManager : JobManagerBase<ErgoJob>
     protected override async Task<bool> AreDaemonsConnectedAsync(CancellationToken ct)
     {
         var info = await Guard(() => rpc.GetNodeInfoAsync(ct),
-            ex=> logger.Debug(ex));
+            ex => logger.Debug(ex));
 
         return info?.PeersCount > 0;
     }
@@ -441,24 +441,24 @@ public class ErgoJobManager : JobManagerBase<ErgoJob>
         do
         {
             var work = await Guard(() => rpc.MiningRequestBlockCandidateAsync(ct),
-                ex=> logger.Debug(ex));
+                ex => logger.Debug(ex));
 
             var isSynched = !string.IsNullOrEmpty(work?.Msg);
 
-            if(isSynched)
+            if (isSynched)
             {
                 logger.Info(() => "Daemon is synced with blockchain");
                 break;
             }
 
-            if(!syncPendingNotificationShown)
+            if (!syncPendingNotificationShown)
             {
                 logger.Info(() => "Daemon is still syncing with network. Manager will be started once synced.");
                 syncPendingNotificationShown = true;
             }
 
             await ShowDaemonSyncProgressAsync();
-        } while(await timer.WaitForNextTickAsync(ct));
+        } while (await timer.WaitForNextTickAsync(ct));
     }
 
     private object[] GetJobParamsForStratum(bool isNew)

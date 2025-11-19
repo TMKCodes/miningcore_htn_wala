@@ -42,15 +42,15 @@ public class BtStreamReceiver : BackgroundService
     {
         var subSocket = new ZSocket(ZSocketType.SUB);
 
-        if(!string.IsNullOrEmpty(relay.SharedEncryptionKey))
+        if (!string.IsNullOrEmpty(relay.SharedEncryptionKey))
             subSocket.SetupCurveTlsClient(relay.SharedEncryptionKey, logger);
 
         subSocket.Connect(relay.Url);
         subSocket.SubscribeAll();
 
-        if(!silent)
+        if (!silent)
         {
-            if(subSocket.CurveServerKey != null && subSocket.CurveServerKey.Any(x => x != 0))
+            if (subSocket.CurveServerKey != null && subSocket.CurveServerKey.Any(x => x != 0))
                 logger.Info($"Monitoring Bt-Stream source {relay.Url} using key {subSocket.CurveServerKey.ToHexString()}");
             else
                 logger.Info($"Monitoring Bt-Stream source {relay.Url}");
@@ -68,13 +68,13 @@ public class BtStreamReceiver : BackgroundService
         var sent = DateTimeOffset.FromUnixTimeMilliseconds(msg[3].ReadInt64()).DateTime;
 
         // compressed
-        if((flags & 1) == 1)
+        if ((flags & 1) == 1)
         {
-            using(var stm = new MemoryStream(data))
+            using (var stm = new MemoryStream(data))
             {
-                using(var stmOut = new MemoryStream())
+                using (var stmOut = new MemoryStream())
                 {
-                    using(var ds = new DeflateStream(stm, CompressionMode.Decompress))
+                    using (var ds = new DeflateStream(stm, CompressionMode.Decompress))
                     {
                         ds.CopyTo(stmOut);
                     }
@@ -100,7 +100,7 @@ public class BtStreamReceiver : BackgroundService
             .DistinctBy(x => $"{x.Url}:{x.SharedEncryptionKey}")
             .ToArray();
 
-        if(!endpoints.Any())
+        if (!endpoints.Any())
             return;
 
         await Task.Run(() =>
@@ -114,7 +114,7 @@ public class BtStreamReceiver : BackgroundService
 
             logger.Info(() => "Online");
 
-            while(!ct.IsCancellationRequested)
+            while (!ct.IsCancellationRequested)
             {
                 // track last message received per endpoint
                 var lastMessageReceived = relays.Select(_ => clock.Now).ToArray();
@@ -122,31 +122,31 @@ public class BtStreamReceiver : BackgroundService
                 try
                 {
                     // setup sockets
-                    var sockets = relays.Select(x=> SetupSubSocket(x)).ToArray();
+                    var sockets = relays.Select(x => SetupSubSocket(x)).ToArray();
 
-                    using(new CompositeDisposable(sockets))
+                    using (new CompositeDisposable(sockets))
                     {
                         var pollItems = sockets.Select(_ => ZPollItem.CreateReceiver()).ToArray();
 
-                        while(!ct.IsCancellationRequested)
+                        while (!ct.IsCancellationRequested)
                         {
-                            if(sockets.PollIn(pollItems, out var messages, out var error, timeout))
+                            if (sockets.PollIn(pollItems, out var messages, out var error, timeout))
                             {
-                                for(var i = 0; i < messages.Length; i++)
+                                for (var i = 0; i < messages.Length; i++)
                                 {
                                     var msg = messages[i];
 
-                                    if(msg != null)
+                                    if (msg != null)
                                     {
                                         lastMessageReceived[i] = clock.Now;
 
-                                        using(msg)
+                                        using (msg)
                                         {
                                             ProcessMessage(msg);
                                         }
                                     }
 
-                                    else if(clock.Now - lastMessageReceived[i] > reconnectTimeout)
+                                    else if (clock.Now - lastMessageReceived[i] > reconnectTimeout)
                                     {
                                         // re-create socket
                                         sockets[i].Dispose();
@@ -159,16 +159,16 @@ public class BtStreamReceiver : BackgroundService
                                     }
                                 }
 
-                                if(error != null)
+                                if (error != null)
                                     logger.Error(() => $"{nameof(ShareReceiver)}: {error.Name} [{error.Name}] during receive");
                             }
 
                             else
                             {
                                 // check for timeouts
-                                for(var i = 0; i < messages.Length; i++)
+                                for (var i = 0; i < messages.Length; i++)
                                 {
-                                    if(clock.Now - lastMessageReceived[i] > reconnectTimeout)
+                                    if (clock.Now - lastMessageReceived[i] > reconnectTimeout)
                                     {
                                         // re-create socket
                                         sockets[i].Dispose();
@@ -185,11 +185,11 @@ public class BtStreamReceiver : BackgroundService
                     }
                 }
 
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     logger.Error(() => $"{nameof(ShareReceiver)}: {ex}");
 
-                    if(!ct.IsCancellationRequested)
+                    if (!ct.IsCancellationRequested)
                         Thread.Sleep(1000);
                 }
             }

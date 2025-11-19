@@ -20,7 +20,7 @@ namespace Miningcore.Blockchain.Scash;
 
 public class ScashJobManager : ScashJobManagerBase<ScashJob>
 {
-        private readonly RandomX randomX;
+    private readonly RandomX randomX;
 
     public ScashJobManager(
         IComponentContext ctx,
@@ -41,7 +41,7 @@ public class ScashJobManager : ScashJobManagerBase<ScashJob>
     {
         var result = base.GetBlockTemplateParams();
 
-        if(coin.HasMWEB)
+        if (coin.HasMWEB)
         {
             result = new object[]
             {
@@ -52,12 +52,12 @@ public class ScashJobManager : ScashJobManagerBase<ScashJob>
             };
         }
 
-        if(coin.BlockTemplateRpcExtraParams != null)
+        if (coin.BlockTemplateRpcExtraParams != null)
         {
-            if(coin.BlockTemplateRpcExtraParams.Type == JTokenType.Array)
+            if (coin.BlockTemplateRpcExtraParams.Type == JTokenType.Array)
                 result = result.Concat(coin.BlockTemplateRpcExtraParams.ToObject<object[]>() ?? Array.Empty<object>()).ToArray();
             else
-                result = result.Concat(new []{ coin.BlockTemplateRpcExtraParams.ToObject<object>()}).ToArray();
+                result = result.Concat(new[] { coin.BlockTemplateRpcExtraParams.ToObject<object>() }).ToArray();
         }
 
         return result;
@@ -76,7 +76,7 @@ public class ScashJobManager : ScashJobManagerBase<ScashJob>
 
             var isSynched = response.Error == null;
 
-            if(isSynched)
+            if (isSynched)
             {
                 logger.Info(() => "All daemons synched with blockchain");
                 break;
@@ -86,20 +86,20 @@ public class ScashJobManager : ScashJobManagerBase<ScashJob>
                 logger.Debug(() => $"Daemon reports error: {response.Error?.Message}");
             }
 
-            if(!syncPendingNotificationShown)
+            if (!syncPendingNotificationShown)
             {
                 logger.Info(() => "Daemon is still syncing with network. Manager will be started once synced.");
                 syncPendingNotificationShown = true;
             }
 
             await ShowDaemonSyncProgressAsync(ct);
-        } while(await timer.WaitForNextTickAsync(ct));
+        } while (await timer.WaitForNextTickAsync(ct));
     }
 
     protected async Task<RpcResponse<BlockTemplate>> GetBlockTemplateAsync(CancellationToken ct)
     {
         var result = await rpc.ExecuteAsync<BlockTemplate>(logger,
-            ScashCommands.GetBlockTemplate, ct, extraPoolConfig?.GBTArgs ?? (object) GetBlockTemplateParams());
+            ScashCommands.GetBlockTemplate, ct, extraPoolConfig?.GBTArgs ?? (object)GetBlockTemplateParams());
 
         return result;
     }
@@ -120,10 +120,10 @@ public class ScashJobManager : ScashJobManagerBase<ScashJob>
     {
         base.PostChainIdentifyConfigure();
 
-        if(poolConfig.EnableInternalStratum == true && coin.HeaderHasherValue is IHashAlgorithmInit hashInit)
+        if (poolConfig.EnableInternalStratum == true && coin.HeaderHasherValue is IHashAlgorithmInit hashInit)
         {
-            if(!hashInit.DigestInit(poolConfig))
-                logger.Error(()=> $"{hashInit.GetType().Name} initialization failed");
+            if (!hashInit.DigestInit(poolConfig))
+                logger.Error(() => $"{hashInit.GetType().Name} initialization failed");
         }
 
         RandomX.WithLock(() =>
@@ -136,7 +136,7 @@ public class ScashJobManager : ScashJobManagerBase<ScashJob>
             Console.WriteLine($"elva Debug ScashJob -----> WithLock: Seed '{seedHex}' créé avec succès pour Realm='scash'.");
         });
 
-            logger.Info(() => "ScashJobManager RandomX seed configured successfully.");
+        logger.Info(() => "ScashJobManager RandomX seed configured successfully.");
 
     }
 
@@ -144,7 +144,7 @@ public class ScashJobManager : ScashJobManagerBase<ScashJob>
     {
         try
         {
-            if(forceUpdate)
+            if (forceUpdate)
                 lastJobRebroadcast = clock.Now;
 
             var response = string.IsNullOrEmpty(json) ?
@@ -152,7 +152,7 @@ public class ScashJobManager : ScashJobManagerBase<ScashJob>
                 GetBlockTemplateFromJson(json);
 
             // may happen if daemon is currently not connected to peers
-            if(response.Error != null)
+            if (response.Error != null)
             {
                 logger.Warn(() => $"Unable to update job. Daemon responded with: {response.Error.Message} Code {response.Error.Code}");
                 return (false, forceUpdate);
@@ -166,10 +166,10 @@ public class ScashJobManager : ScashJobManagerBase<ScashJob>
                     (job.BlockTemplate?.PreviousBlockhash != blockTemplate.PreviousBlockhash ||
                         blockTemplate.Height > job.BlockTemplate?.Height));
 
-            if(isNew)
+            if (isNew)
                 messageBus.NotifyChainHeight(poolConfig.Id, blockTemplate.Height, poolConfig.Template);
 
-            if(isNew || forceUpdate)
+            if (isNew || forceUpdate)
             {
                 job = CreateJob();
 
@@ -178,18 +178,18 @@ public class ScashJobManager : ScashJobManagerBase<ScashJob>
                     ShareMultiplier, coin.CoinbaseHasherValue, coin.HeaderHasherValue,
                     !isPoS ? coin.BlockHasherValue : coin.PoSBlockHasherValue ?? coin.BlockHasherValue);
 
-                lock(jobLock)
+                lock (jobLock)
                 {
                     validJobs.Insert(0, job);
 
                     // trim active jobs
-                    while(validJobs.Count > maxActiveJobs)
+                    while (validJobs.Count > maxActiveJobs)
                         validJobs.RemoveAt(validJobs.Count - 1);
                 }
 
-                if(isNew)
+                if (isNew)
                 {
-                    if(via != null)
+                    if (via != null)
                         logger.Info(() => $"Detected new block {blockTemplate.Height} [{via}]");
                     else
                         logger.Info(() => $"Detected new block {blockTemplate.Height}");
@@ -204,7 +204,7 @@ public class ScashJobManager : ScashJobManagerBase<ScashJob>
 
                 else
                 {
-                    if(via != null)
+                    if (via != null)
                         logger.Debug(() => $"Template update {blockTemplate?.Height} [{via}]");
                     else
                         logger.Debug(() => $"Template update {blockTemplate?.Height}");
@@ -216,12 +216,12 @@ public class ScashJobManager : ScashJobManagerBase<ScashJob>
             return (isNew, forceUpdate);
         }
 
-        catch(OperationCanceledException)
+        catch (OperationCanceledException)
         {
             // ignored
         }
 
-        catch(Exception ex)
+        catch (Exception ex)
         {
             logger.Error(ex, () => $"Error during {nameof(UpdateJob)}");
         }
@@ -239,35 +239,35 @@ public class ScashJobManager : ScashJobManagerBase<ScashJob>
 
 
 
-/*
+    /*
+        public override void Configure(PoolConfig pc, ClusterConfig cc)
+        {
+            coin = pc.Template.As<ScashTemplate>();
+            extraPoolConfig = pc.Extra.SafeExtensionDataAs<ScashPoolConfigExtra>();
+            extraPoolPaymentProcessingConfig = pc.PaymentProcessing?.Extra?.SafeExtensionDataAs<ScashPoolPaymentProcessingConfigExtra>();
+
+            if(extraPoolConfig?.MaxActiveJobs.HasValue == true)
+                maxActiveJobs = extraPoolConfig.MaxActiveJobs.Value;
+
+            hasLegacyDaemon = extraPoolConfig?.HasLegacyDaemon == true;
+
+            base.Configure(pc, cc);
+        }
+    */
     public override void Configure(PoolConfig pc, ClusterConfig cc)
     {
         coin = pc.Template.As<ScashTemplate>();
         extraPoolConfig = pc.Extra.SafeExtensionDataAs<ScashPoolConfigExtra>();
         extraPoolPaymentProcessingConfig = pc.PaymentProcessing?.Extra?.SafeExtensionDataAs<ScashPoolPaymentProcessingConfigExtra>();
 
-        if(extraPoolConfig?.MaxActiveJobs.HasValue == true)
+        // Définir le nombre maximal de jobs actifs
+        if (extraPoolConfig?.MaxActiveJobs.HasValue == true)
             maxActiveJobs = extraPoolConfig.MaxActiveJobs.Value;
 
         hasLegacyDaemon = extraPoolConfig?.HasLegacyDaemon == true;
 
         base.Configure(pc, cc);
     }
-*/
-public override void Configure(PoolConfig pc, ClusterConfig cc)
-{
-    coin = pc.Template.As<ScashTemplate>();
-    extraPoolConfig = pc.Extra.SafeExtensionDataAs<ScashPoolConfigExtra>();
-    extraPoolPaymentProcessingConfig = pc.PaymentProcessing?.Extra?.SafeExtensionDataAs<ScashPoolPaymentProcessingConfigExtra>();
-
-    // Définir le nombre maximal de jobs actifs
-    if (extraPoolConfig?.MaxActiveJobs.HasValue == true)
-        maxActiveJobs = extraPoolConfig.MaxActiveJobs.Value;
-
-    hasLegacyDaemon = extraPoolConfig?.HasLegacyDaemon == true;
-
-    base.Configure(pc, cc);
-}
 
 
 
@@ -318,7 +318,7 @@ public override void Configure(PoolConfig pc, ClusterConfig cc)
         Contract.RequiresNonNull(worker);
         Contract.RequiresNonNull(submission);
 
-        if(submission is not object[] submitParams)
+        if (submission is not object[] submitParams)
             throw new StratumException(StratumError.Other, "invalid params");
 
         var context = worker.ContextAs<ScashWorkerContext>();
@@ -331,17 +331,17 @@ public override void Configure(PoolConfig pc, ClusterConfig cc)
         var nonce = submitParams[4] as string;
         var versionBits = context.VersionRollingMask.HasValue ? submitParams[5] as string : null;
 
-        if(string.IsNullOrEmpty(workerValue))
+        if (string.IsNullOrEmpty(workerValue))
             throw new StratumException(StratumError.Other, "missing or invalid workername");
 
         ScashJob job;
 
-        lock(jobLock)
+        lock (jobLock)
         {
             job = validJobs.FirstOrDefault(x => x.JobId == jobId);
         }
 
-        if(job == null)
+        if (job == null)
             throw new StratumException(StratumError.JobNotFound, "job not found");
 
         // validate & process
@@ -357,7 +357,7 @@ public override void Configure(PoolConfig pc, ClusterConfig cc)
         share.Created = clock.Now;
 
         // if block candidate, submit & check if accepted by network
-        if(share.IsBlockCandidate)
+        if (share.IsBlockCandidate)
         {
             logger.Info(() => $"Submitting block {share.BlockHeight} [{share.BlockHash}]");
 
@@ -366,7 +366,7 @@ public override void Configure(PoolConfig pc, ClusterConfig cc)
             // is it still a block candidate?
             share.IsBlockCandidate = acceptResponse.Accepted;
 
-            if(share.IsBlockCandidate)
+            if (share.IsBlockCandidate)
             {
                 logger.Info(() => $"Daemon accepted block {share.BlockHeight} block [{share.BlockHash}] submitted by {context.Miner}");
 

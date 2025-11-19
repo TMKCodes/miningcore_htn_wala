@@ -51,7 +51,7 @@ public class StratumConnectionBenchmarks : TestBase
     [Benchmark]
     public async Task ProcessRequest_Handle_Valid_Request()
     {
-        await (Task) wrapper.Invoke(ProcessRequestAsyncMethod,
+        await (Task)wrapper.Invoke(ProcessRequestAsyncMethod,
             CancellationToken.None,
             OnPlaceholderRequestAsync,
             new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(requestString)));

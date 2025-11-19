@@ -7,7 +7,8 @@
 #pragma warning disable 0414, 1591, 8981, 0612
 #region Designer generated code
 
-namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
+namespace Miningcore.Blockchain.Hoosat.HtnWalletd
+{
 
   using grpc = global::Grpc.Core;
 
@@ -82,7 +83,7 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static void __Helper_SerializeMessage(global::Google.Protobuf.IMessage message, grpc::SerializationContext context)
     {
-      #if !GRPC_DISABLE_PROTOBUF_BUFFER_SERIALIZATION
+#if !GRPC_DISABLE_PROTOBUF_BUFFER_SERIALIZATION
       if (message is global::Google.Protobuf.IBufferMessage)
       {
         context.SetPayloadLength(message.CalculateSize());
@@ -90,7 +91,7 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
         context.Complete();
         return;
       }
-      #endif
+#endif
       context.Complete(global::Google.Protobuf.MessageExtensions.ToByteArray(message));
     }
 
@@ -103,12 +104,12 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static T __Helper_DeserializeMessage<T>(grpc::DeserializationContext context, global::Google.Protobuf.MessageParser<T> parser) where T : global::Google.Protobuf.IMessage<T>
     {
-      #if !GRPC_DISABLE_PROTOBUF_BUFFER_SERIALIZATION
+#if !GRPC_DISABLE_PROTOBUF_BUFFER_SERIALIZATION
       if (__Helper_MessageCache<T>.IsBufferMessage)
       {
         return parser.ParseFrom(context.PayloadAsReadOnlySequence());
       }
-      #endif
+#endif
       return parser.ParseFrom(context.PayloadAsNewBuffer());
     }
 

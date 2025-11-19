@@ -14,7 +14,7 @@ public unsafe class CpuPower : IHashAlgorithm
         {
             fixed (byte* output = result)
             {
-                Multihash.cpupower(input, output, (uint) data.Length);
+                Multihash.cpupower(input, output, (uint)data.Length);
             }
         }
     }

@@ -7,7 +7,7 @@ public class GetChainInfoData
     public double Difficulty { get; set; }
     public string Hash { get; set; }
     public uint Height { get; set; }
-    
+
     [JsonPropertyName("is_janushash")]
     public bool IsJanusHash { get; set; }
 

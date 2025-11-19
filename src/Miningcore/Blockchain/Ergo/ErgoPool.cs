@@ -49,7 +49,7 @@ public class ErgoPool : PoolBase
     {
         var request = tsRequest.Value;
 
-        if(request.Id == null)
+        if (request.Id == null)
             throw new StratumException(StratumError.MinusOne, "missing request id");
 
         var context = connection.ContextAs<ErgoWorkerContext>();
@@ -77,7 +77,7 @@ public class ErgoPool : PoolBase
     {
         var request = tsRequest.Value;
 
-        if(request.Id == null)
+        if (request.Id == null)
             throw new StratumException(StratumError.MinusOne, "missing request id");
 
         var context = connection.ContextAs<ErgoWorkerContext>();
@@ -96,7 +96,7 @@ public class ErgoPool : PoolBase
         context.Miner = minerName;
         context.Worker = workerName;
 
-        if(context.IsAuthorized)
+        if (context.IsAuthorized)
         {
             // respond
             await connection.RespondAsync(context.IsAuthorized, request.Id);
@@ -110,9 +110,9 @@ public class ErgoPool : PoolBase
             // Nicehash support
             var nicehashDiff = await GetNicehashStaticMinDiff(context, coin.Name, coin.GetAlgorithmName());
 
-            if(nicehashDiff.HasValue)
+            if (nicehashDiff.HasValue)
             {
-                if(!staticDiff.HasValue || nicehashDiff > staticDiff)
+                if (!staticDiff.HasValue || nicehashDiff > staticDiff)
                 {
                     logger.Info(() => $"[{connection.ConnectionId}] Nicehash detected. Using API supplied difficulty of {nicehashDiff.Value}");
 
@@ -124,7 +124,7 @@ public class ErgoPool : PoolBase
             }
 
             // Static diff
-            if(staticDiff.HasValue &&
+            if (staticDiff.HasValue &&
                (context.VarDiff != null && staticDiff.Value >= context.VarDiff.Config.MinDiff ||
                    context.VarDiff == null && staticDiff.Value > context.Difficulty))
             {
@@ -142,7 +142,7 @@ public class ErgoPool : PoolBase
         {
             await connection.RespondErrorAsync(StratumError.UnauthorizedWorker, "Authorization failed", request.Id, context.IsAuthorized);
 
-            if(clusterConfig?.Banning?.BanOnLoginFailure is null or true)
+            if (clusterConfig?.Banning?.BanOnLoginFailure is null or true)
             {
                 // issue short-time ban if unauthorized to prevent DDos on daemon (validateaddress RPC)
                 logger.Info(() => $"[{connection.ConnectionId}] Banning unauthorized worker {minerName} for {loginFailureBanTimeout.TotalSeconds} sec");
@@ -161,13 +161,13 @@ public class ErgoPool : PoolBase
 
         try
         {
-            if(request.Id == null)
+            if (request.Id == null)
                 throw new StratumException(StratumError.MinusOne, "missing request id");
 
             // check age of submission (aged submissions are usually caused by high server load)
             var requestAge = clock.Now - tsRequest.Timestamp.UtcDateTime;
 
-            if(requestAge > maxShareAge)
+            if (requestAge > maxShareAge)
             {
                 logger.Warn(() => $"[{connection.ConnectionId}] Dropping stale share submission request (server overloaded?)");
                 return;
@@ -177,9 +177,9 @@ public class ErgoPool : PoolBase
             context.LastActivity = clock.Now;
 
             // validate worker
-            if(!context.IsAuthorized)
+            if (!context.IsAuthorized)
                 throw new StratumException(StratumError.UnauthorizedWorker, "unauthorized worker");
-            else if(!context.IsSubscribed)
+            else if (!context.IsSubscribed)
                 throw new StratumException(StratumError.NotSubscribed, "not subscribed");
 
             var requestParams = request.ParamsAs<string[]>();
@@ -194,11 +194,11 @@ public class ErgoPool : PoolBase
             // telemetry
             PublishTelemetry(TelemetryCategory.Share, clock.Now - tsRequest.Timestamp.UtcDateTime, true);
 
-// elva - suppression de la ligne en dessous
-       //     logger.Info(() => $"[{connection.ConnectionId}] Share accepted: D={Math.Round(share.Difficulty * ErgoConstants.ShareMultiplier, 3)}");
+            // elva - suppression de la ligne en dessous
+            //     logger.Info(() => $"[{connection.ConnectionId}] Share accepted: D={Math.Round(share.Difficulty * ErgoConstants.ShareMultiplier, 3)}");
 
             // update pool stats
-            if(share.IsBlockCandidate)
+            if (share.IsBlockCandidate)
                 poolStats.LastPoolBlockTime = clock.Now;
 
             // update client stats
@@ -207,7 +207,7 @@ public class ErgoPool : PoolBase
             await UpdateVarDiffAsync(connection, false, ct);
         }
 
-        catch(StratumException ex)
+        catch (StratumException ex)
         {
             // telemetry
             PublishTelemetry(TelemetryCategory.Share, clock.Now - tsRequest.Timestamp.UtcDateTime, false);
@@ -229,8 +229,8 @@ public class ErgoPool : PoolBase
     {
         currentJobParams = jobParams;
 
-// elva - suppression de la ligne en dessous
-  //      logger.Info(() => $"Broadcasting job {jobParams[0]}");
+        // elva - suppression de la ligne en dessous
+        //      logger.Info(() => $"Broadcasting job {jobParams[0]}");
 
         await Guard(() => ForEachMinerAsync(async (connection, ct) =>
         {
@@ -245,10 +245,10 @@ public class ErgoPool : PoolBase
         // clone job params
         var jobParamsActual = new object[jobParams.Length];
 
-        for(var i = 0; i < jobParamsActual.Length; i++)
+        for (var i = 0; i < jobParamsActual.Length; i++)
             jobParamsActual[i] = jobParams[i];
 
-        var target = new BigRational(BitcoinConstants.Diff1 * (BigInteger) (1 / context.Difficulty * 0x10000), 0x10000).GetWholePart();
+        var target = new BigRational(BitcoinConstants.Diff1 * (BigInteger)(1 / context.Difficulty * 0x10000), 0x10000).GetWholePart();
         jobParamsActual[6] = target.ToString();
 
         var notifyArgs = !context.IsNicehash ?
@@ -295,12 +295,12 @@ public class ErgoPool : PoolBase
 
         await manager.StartAsync(ct);
 
-        if(poolConfig.EnableInternalStratum == true)
+        if (poolConfig.EnableInternalStratum == true)
         {
             disposables.Add(manager.Jobs
                 .Select(job => Observable.FromAsync(() =>
-                    Guard(()=> OnNewJobAsync(job),
-                        ex=> logger.Debug(() => $"{nameof(OnNewJobAsync)}: {ex.Message}"))))
+                    Guard(() => OnNewJobAsync(job),
+                        ex => logger.Debug(() => $"{nameof(OnNewJobAsync)}: {ex.Message}"))))
                 .Concat()
                 .Subscribe(_ => { }, ex =>
                 {
@@ -337,7 +337,7 @@ public class ErgoPool : PoolBase
 
         try
         {
-            switch(request.Method)
+            switch (request.Method)
             {
                 case BitcoinStratumMethods.Subscribe:
                     await OnSubscribeAsync(connection, tsRequest);
@@ -359,7 +359,7 @@ public class ErgoPool : PoolBase
             }
         }
 
-        catch(StratumException ex)
+        catch (StratumException ex)
         {
             await connection.RespondErrorAsync(ex.Code, ex.Message, request.Id, false);
         }
@@ -367,10 +367,10 @@ public class ErgoPool : PoolBase
 
     protected override async Task<double?> GetNicehashStaticMinDiff(WorkerContextBase context, string coinName, string algoName)
     {
-        var result= await base.GetNicehashStaticMinDiff(context, coinName, algoName);
+        var result = await base.GetNicehashStaticMinDiff(context, coinName, algoName);
 
         // adjust value to fit with our target value calculation
-        if(result.HasValue)
+        if (result.HasValue)
             result = result.Value / uint.MaxValue;
 
         return result;
@@ -382,7 +382,7 @@ public class ErgoPool : PoolBase
 
         var context = connection.ContextAs<ErgoWorkerContext>();
 
-        if(context.ApplyPendingDifficulty())
+        if (context.ApplyPendingDifficulty())
         {
             await SendJob(connection, context, currentJobParams);
         }

@@ -28,7 +28,7 @@ public class Cache : IProgpowCache
 
     public void Dispose()
     {
-        if(handle != IntPtr.Zero)
+        if (handle != IntPtr.Zero)
         {
             KawPow.DestroyContext(handle);
             handle = IntPtr.Zero;
@@ -37,16 +37,16 @@ public class Cache : IProgpowCache
 
     public async Task GenerateAsync(ILogger logger, CancellationToken ct)
     {
-        if(handle == IntPtr.Zero)
+        if (handle == IntPtr.Zero)
         {
             await Task.Run(() =>
             {
-                lock(genLock)
+                lock (genLock)
                 {
-                    if(!isGenerated)
+                    if (!isGenerated)
                     {
                         // re-check after obtaining lock
-                        if(handle != IntPtr.Zero)
+                        if (handle != IntPtr.Zero)
                             return;
 
                         var started = DateTime.Now;
@@ -60,7 +60,7 @@ public class Cache : IProgpowCache
                         var res = KawPow.calculate_epoch_seed(Epoch);
                         SeedHash = res.bytes;
                         logger.Info(() => $"Seed hash for epoch {Epoch} is {SeedHash.ToHexString()}");
-                        
+
                         isGenerated = true;
                     }
                 }
@@ -82,12 +82,12 @@ public class Cache : IProgpowCache
         var inputHash = new KawPow.Ethash_hash256();
         inputHash.bytes = hash;
 
-        fixed(byte* input = hash)
+        fixed (byte* input = hash)
         {
             value = KawPow.hash(handle, blockNumber, ref inputHash, nonce);
         }
 
-        if(value.final_hash.bytes == null)
+        if (value.final_hash.bytes == null)
         {
             logger.Error(() => $"KawPow.hash returned null");
             return false;

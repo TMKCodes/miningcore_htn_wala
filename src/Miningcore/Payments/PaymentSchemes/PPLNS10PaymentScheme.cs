@@ -77,29 +77,30 @@ public class PPLNS10PaymentScheme : IPayoutScheme
         var shareCutOffDate = await CalculateRewardsAsync(pool, payoutHandler, window, block, blockReward, shares, rewards, ct);
 
         // update balances
-        foreach(var address in rewards.Keys)
+        foreach (var address in rewards.Keys)
         {
             var amount = rewards[address];
 
-            if(amount > 0)
+            if (amount > 0)
             {
-if (shares.ContainsKey(address))
-{
-    logger.Info(() => $"elva PPLNS10 - Crediting {address} with {payoutHandler.FormatAmount(amount)} for {FormatUtil.FormatQuantity(shares[address])} ({shares[address]}) shares for block {block.BlockHeight}");
-}
-else
-{
-    logger.Warn(() => $"elva PPLNS10 - Address {address} not found in shares dictionary for block {block.BlockHeight}. Skipping crediting process for this entry.");
-}                await balanceRepo.AddAmountAsync(con, tx, poolConfig.Id, address, amount, $"Reward for {FormatUtil.FormatQuantity(shares[address])} shares for block {block.BlockHeight}");
+                if (shares.ContainsKey(address))
+                {
+                    logger.Info(() => $"elva PPLNS10 - Crediting {address} with {payoutHandler.FormatAmount(amount)} for {FormatUtil.FormatQuantity(shares[address])} ({shares[address]}) shares for block {block.BlockHeight}");
+                }
+                else
+                {
+                    logger.Warn(() => $"elva PPLNS10 - Address {address} not found in shares dictionary for block {block.BlockHeight}. Skipping crediting process for this entry.");
+                }
+                await balanceRepo.AddAmountAsync(con, tx, poolConfig.Id, address, amount, $"Reward for {FormatUtil.FormatQuantity(shares[address])} shares for block {block.BlockHeight}");
             }
         }
 
         // delete discarded shares
-        if(shareCutOffDate.HasValue)
+        if (shareCutOffDate.HasValue)
         {
             var cutOffCount = await shareRepo.CountSharesBeforeAsync(con, tx, poolConfig.Id, shareCutOffDate.Value, ct);
 
-            if(cutOffCount > 0)
+            if (cutOffCount > 0)
             {
                 await LogDiscardedSharesAsync(ct, poolConfig, block, shareCutOffDate.Value);
 
@@ -112,8 +113,8 @@ else
         var totalShareCount = shares.Values.ToList().Sum(x => new decimal(x));
         var totalRewards = rewards.Values.ToList().Sum(x => x);
 
-        if(totalRewards > 0)
-            logger.Info(() => $"{FormatUtil.FormatQuantity((double) totalShareCount)} ({Math.Round(totalShareCount, 2)}) shares contributed to a total payout of {payoutHandler.FormatAmount(totalRewards)} ({totalRewards / blockReward * 100:0.00}% of block reward) to {rewards.Keys.Count} addresses");
+        if (totalRewards > 0)
+            logger.Info(() => $"{FormatUtil.FormatQuantity((double)totalShareCount)} ({Math.Round(totalShareCount, 2)}) shares contributed to a total payout of {payoutHandler.FormatAmount(totalRewards)} ({totalRewards / blockReward * 100:0.00}% of block reward) to {rewards.Keys.Count} addresses");
     }
 
     private async Task LogDiscardedSharesAsync(CancellationToken ct, PoolConfig poolConfig, Block block, DateTime value)
@@ -123,7 +124,7 @@ else
         var currentPage = 0;
         var shares = new Dictionary<string, double>();
 
-        while(true)
+        while (true)
         {
             logger.Info(() => $"Fetching page {currentPage} of discarded shares for pool {poolConfig.Id}, block {block.BlockHeight}");
 
@@ -132,174 +133,174 @@ else
 
             currentPage++;
 
-            for(var i = 0; i < page.Length; i++)
+            for (var i = 0; i < page.Length; i++)
             {
                 var share = page[i];
                 var address = share.Miner;
 
                 // record attributed shares for diagnostic purposes
-                if(!shares.ContainsKey(address))
+                if (!shares.ContainsKey(address))
                     shares[address] = share.Difficulty;
                 else
                     shares[address] += share.Difficulty;
             }
 
-            if(page.Length < pageSize)
+            if (page.Length < pageSize)
                 break;
 
             before = page[^1].Created;
         }
 
-        if(shares.Keys.Count > 0)
+        if (shares.Keys.Count > 0)
         {
             // sort addresses by shares
             var addressesByShares = shares.Keys.OrderByDescending(x => shares[x]);
 
             logger.Info(() => $"{FormatUtil.FormatQuantity(shares.Values.Sum())} ({shares.Values.Sum()}) total discarded shares, block {block.BlockHeight}");
 
-            foreach(var address in addressesByShares)
+            foreach (var address in addressesByShares)
                 logger.Info(() => $"{address} = {FormatUtil.FormatQuantity(shares[address])} ({shares[address]}) discarded shares, block {block.BlockHeight}");
         }
     }
 
     #endregion // IPayoutScheme
 
-private async Task<DateTime?> CalculateRewardsAsync(IMiningPool pool, IPayoutHandler payoutHandler, decimal window, Block block, decimal blockReward,
-    Dictionary<string, double> shares, Dictionary<string, decimal> rewards, CancellationToken ct)
-{
-    logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> CalculateRewardsAsync Starting for block {block.BlockHeight}");
-
-    var poolConfig = pool.Config;
-    var done = false;
-    var before = block.Created;
-    var inclusive = true;
-    var pageSize = 50000;
-    var currentPage = 0;
-    var accumulatedScore = 0.0m;
-
-    // Calcul de la récompense initiale pour le mineur ayant trouvé le bloc
-    var finderReward = blockReward * 0.10m;
-    var remainingReward = blockReward - finderReward; // 90 % restants pour distribution proportionnelle
-
-    var blockFinder = block.Miner; // Le mineur du bloc
-
-    // Allouer les 10 % initiaux au mineur du bloc
-    if (blockFinder != null)
+    private async Task<DateTime?> CalculateRewardsAsync(IMiningPool pool, IPayoutHandler payoutHandler, decimal window, Block block, decimal blockReward,
+        Dictionary<string, double> shares, Dictionary<string, decimal> rewards, CancellationToken ct)
     {
-        // Ajouter ou mettre à jour la récompense pour le mineur finder
-        if (!rewards.ContainsKey(blockFinder))
+        logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> CalculateRewardsAsync Starting for block {block.BlockHeight}");
+
+        var poolConfig = pool.Config;
+        var done = false;
+        var before = block.Created;
+        var inclusive = true;
+        var pageSize = 50000;
+        var currentPage = 0;
+        var accumulatedScore = 0.0m;
+
+        // Calcul de la récompense initiale pour le mineur ayant trouvé le bloc
+        var finderReward = blockReward * 0.10m;
+        var remainingReward = blockReward - finderReward; // 90 % restants pour distribution proportionnelle
+
+        var blockFinder = block.Miner; // Le mineur du bloc
+
+        // Allouer les 10 % initiaux au mineur du bloc
+        if (blockFinder != null)
         {
-            rewards[blockFinder] = finderReward;
-            logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Allocated {payoutHandler.FormatAmount(finderReward)} to block finder {blockFinder} for block {block.BlockHeight}");
-        }
-        else
-        {
-            rewards[blockFinder] += finderReward;
-            logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Updated reward for block finder {blockFinder}: total {rewards[blockFinder]} for block {block.BlockHeight}");
-        }
-
-        // Ajouter une part symbolique dans `shares` pour inclure le block finder dans la distribution des 90 % restants
-        if (!shares.ContainsKey(blockFinder))
-        {
-            shares[blockFinder] = 0.1; // Part symbolique minimale
-            logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Added symbolic share for block finder {blockFinder} for block {block.BlockHeight}");
-        }
-
-        // Vérifier si le block finder est le seul mineur actif
-        if (shares.Count == 1 && shares.ContainsKey(blockFinder) && shares[blockFinder] > 0)
-        {
-            // Allouer les 90 % restants au block finder
-            rewards[blockFinder] += remainingReward;
-            logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Allocated remaining {payoutHandler.FormatAmount(remainingReward)} to block finder {blockFinder} as the only active miner for block {block.BlockHeight}");
-            return null; // Pas besoin de continuer, car tous les rewards ont été distribués
-        }
-    }
-    else
-    {
-        logger.Warn(() => $"elva Debug PPLNS10PayementScheme -----> Block finder for block {block.BlockHeight} is null, skipping block finder reward allocation.");
-    }
-
-    // Si le block finder n'est pas le seul actif, distribuer les 90 % restants de manière proportionnelle
-    DateTime? shareCutOffDate = null;
-
-    while (!done && !ct.IsCancellationRequested)
-    {
-        logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Fetching page {currentPage} of shares for pool {poolConfig.Id}, block {block.BlockHeight}");
-
-        var page = await shareReadFaultPolicy.ExecuteAsync(() =>
-            cf.Run(con => shareRepo.ReadSharesBeforeAsync(con, poolConfig.Id, before, inclusive, pageSize, ct)));
-
-        inclusive = false;
-        currentPage++;
-
-        for (var i = 0; !done && i < page.Length; i++)
-        {
-            var share = page[i];
-            var address = share.Miner;
-
-            var shareDiffAdjusted = payoutHandler.AdjustShareDifficulty(share.Difficulty);
-
-            // Ajouter ou mettre à jour les parts du mineur
-            if (!shares.ContainsKey(address))
+            // Ajouter ou mettre à jour la récompense pour le mineur finder
+            if (!rewards.ContainsKey(blockFinder))
             {
-                shares[address] = shareDiffAdjusted;
-                logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Added new share for miner {address} at adjusted difficulty {shareDiffAdjusted} for block {block.BlockHeight}");
+                rewards[blockFinder] = finderReward;
+                logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Allocated {payoutHandler.FormatAmount(finderReward)} to block finder {blockFinder} for block {block.BlockHeight}");
             }
             else
             {
-                shares[address] += shareDiffAdjusted;
-                logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Updated share for miner {address}: total difficulty {shares[address]} for block {block.BlockHeight}");
+                rewards[blockFinder] += finderReward;
+                logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Updated reward for block finder {blockFinder}: total {rewards[blockFinder]} for block {block.BlockHeight}");
             }
 
-            var score = (decimal)(shareDiffAdjusted / share.NetworkDifficulty);
-            accumulatedScore += score;
-
-            // Limiter le score accumulé
-            if (accumulatedScore >= window)
+            // Ajouter une part symbolique dans `shares` pour inclure le block finder dans la distribution des 90 % restants
+            if (!shares.ContainsKey(blockFinder))
             {
-                score = window - accumulatedScore;
-                shareCutOffDate = share.Created;
-                done = true;
+                shares[blockFinder] = 0.1; // Part symbolique minimale
+                logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Added symbolic share for block finder {blockFinder} for block {block.BlockHeight}");
             }
 
-            // Calcul de la récompense pour chaque mineur, basé sur 90% du blockReward
-            var reward = score * remainingReward / window;
-            remainingReward -= reward;
-
-            logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Reward calculated for miner {address}: {reward} for block {block.BlockHeight}");
-
-            if (reward > 0)
+            // Vérifier si le block finder est le seul mineur actif
+            if (shares.Count == 1 && shares.ContainsKey(blockFinder) && shares[blockFinder] > 0)
             {
-                if (!rewards.ContainsKey(address))
+                // Allouer les 90 % restants au block finder
+                rewards[blockFinder] += remainingReward;
+                logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Allocated remaining {payoutHandler.FormatAmount(remainingReward)} to block finder {blockFinder} as the only active miner for block {block.BlockHeight}");
+                return null; // Pas besoin de continuer, car tous les rewards ont été distribués
+            }
+        }
+        else
+        {
+            logger.Warn(() => $"elva Debug PPLNS10PayementScheme -----> Block finder for block {block.BlockHeight} is null, skipping block finder reward allocation.");
+        }
+
+        // Si le block finder n'est pas le seul actif, distribuer les 90 % restants de manière proportionnelle
+        DateTime? shareCutOffDate = null;
+
+        while (!done && !ct.IsCancellationRequested)
+        {
+            logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Fetching page {currentPage} of shares for pool {poolConfig.Id}, block {block.BlockHeight}");
+
+            var page = await shareReadFaultPolicy.ExecuteAsync(() =>
+                cf.Run(con => shareRepo.ReadSharesBeforeAsync(con, poolConfig.Id, before, inclusive, pageSize, ct)));
+
+            inclusive = false;
+            currentPage++;
+
+            for (var i = 0; !done && i < page.Length; i++)
+            {
+                var share = page[i];
+                var address = share.Miner;
+
+                var shareDiffAdjusted = payoutHandler.AdjustShareDifficulty(share.Difficulty);
+
+                // Ajouter ou mettre à jour les parts du mineur
+                if (!shares.ContainsKey(address))
                 {
-                    rewards[address] = reward;
-                    logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Added new reward entry for miner {address}: {reward} for block {block.BlockHeight}");
+                    shares[address] = shareDiffAdjusted;
+                    logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Added new share for miner {address} at adjusted difficulty {shareDiffAdjusted} for block {block.BlockHeight}");
                 }
                 else
                 {
-                    rewards[address] += reward;
-                    logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Updated reward for miner {address}: total {rewards[address]} for block {block.BlockHeight}");
+                    shares[address] += shareDiffAdjusted;
+                    logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Updated share for miner {address}: total difficulty {shares[address]} for block {block.BlockHeight}");
+                }
+
+                var score = (decimal)(shareDiffAdjusted / share.NetworkDifficulty);
+                accumulatedScore += score;
+
+                // Limiter le score accumulé
+                if (accumulatedScore >= window)
+                {
+                    score = window - accumulatedScore;
+                    shareCutOffDate = share.Created;
+                    done = true;
+                }
+
+                // Calcul de la récompense pour chaque mineur, basé sur 90% du blockReward
+                var reward = score * remainingReward / window;
+                remainingReward -= reward;
+
+                logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Reward calculated for miner {address}: {reward} for block {block.BlockHeight}");
+
+                if (reward > 0)
+                {
+                    if (!rewards.ContainsKey(address))
+                    {
+                        rewards[address] = reward;
+                        logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Added new reward entry for miner {address}: {reward} for block {block.BlockHeight}");
+                    }
+                    else
+                    {
+                        rewards[address] += reward;
+                        logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Updated reward for miner {address}: total {rewards[address]} for block {block.BlockHeight}");
+                    }
+                }
+
+                // Vérification de l'épuisement de la récompense restante
+                if (remainingReward <= 0 && !done)
+                {
+                    logger.Warn(() => $"elva Debug PPLNS10PayementScheme -----> Remaining reward exhausted for block {block.BlockHeight}");
+                    done = true;
                 }
             }
 
-            // Vérification de l'épuisement de la récompense restante
-            if (remainingReward <= 0 && !done)
-            {
-                logger.Warn(() => $"elva Debug PPLNS10PayementScheme -----> Remaining reward exhausted for block {block.BlockHeight}");
-                done = true;
-            }
+            if (page.Length < pageSize)
+                break;
+
+            before = page[^1].Created;
         }
 
-        if (page.Length < pageSize)
-            break;
+        logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Balance-calculation completed for block {block.BlockHeight} with accumulated score {accumulatedScore:0.####} ({(accumulatedScore / window) * 100:0.#}%)");
 
-        before = page[^1].Created;
+        return shareCutOffDate;
     }
-
-    logger.Info(() => $"elva Debug PPLNS10PayementScheme -----> Balance-calculation completed for block {block.BlockHeight} with accumulated score {accumulatedScore:0.####} ({(accumulatedScore / window) * 100:0.#}%)");
-
-    return shareCutOffDate;
-}
 
 
 

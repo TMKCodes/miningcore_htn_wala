@@ -47,7 +47,7 @@ public static class KaspaClientFactory
         return new kaspad.KaspadRPC.KaspadRPCClient(new kaspad.KaspadRPC(protobufDaemonRpcServiceName), channel);
     }
 
-        public static kaspaWalletd.KaspaWalletdRPC.KaspaWalletdRPCClient CreateKaspaWalletdRPCClient(DaemonEndpointConfig[] daemonEndpoints, string protobufWalletRpcServiceName)
+    public static kaspaWalletd.KaspaWalletdRPC.KaspaWalletdRPCClient CreateKaspaWalletdRPCClient(DaemonEndpointConfig[] daemonEndpoints, string protobufWalletRpcServiceName)
     {
         var daemonEndpoint = daemonEndpoints.First();
 

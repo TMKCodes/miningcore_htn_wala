@@ -17,7 +17,7 @@ public static class LogUtil
 
     public static string DotTerminate(string msg)
     {
-        if(!msg.EndsWith("."))
+        if (!msg.EndsWith("."))
             msg += ".";
 
         return msg;

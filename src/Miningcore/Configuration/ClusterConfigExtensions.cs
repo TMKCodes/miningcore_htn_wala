@@ -24,13 +24,13 @@ namespace Miningcore.Configuration
             return (T)this;
         }
 
-  /*      public static T As<T>(this CoinTemplate coin) where T : CoinTemplate
-        {
-            if (coin is T template)
-                return template;
-            throw new InvalidCastException($"Unable to cast object of type '{coin.GetType()}' to type '{typeof(T)}'");
-        }
-*/
+        /*      public static T As<T>(this CoinTemplate coin) where T : CoinTemplate
+              {
+                  if (coin is T template)
+                      return template;
+                  throw new InvalidCastException($"Unable to cast object of type '{coin.GetType()}' to type '{typeof(T)}'");
+              }
+      */
 
         /// <summary>
         /// JSON source file where this template originated from
@@ -60,76 +60,76 @@ namespace Miningcore.Configuration
         }
     }
 
-public partial class BitcoinTemplate
-{
-    public BitcoinNetworkParams GetNetwork(ChainName chain)
+    public partial class BitcoinTemplate
     {
-        if(Networks == null || Networks.Count == 0)
-            return null;
-
-        if(chain == ChainName.Mainnet)
-            return Networks["main"];
-        else if(chain == ChainName.Testnet)
-            return Networks["test"];
-        else if(chain == ChainName.Regtest)
-            return Networks["regtest"];
-
-        throw new NotSupportedException("unsupported network type");
-    }
-
-    #region Overrides of CoinTemplate
-
-    public override string GetAlgorithmName()
-    {
-        switch(Symbol)
+        public BitcoinNetworkParams GetNetwork(ChainName chain)
         {
-            case "HNS":
-                return HeaderHasherValue.GetType().Name + " + " + ShareHasherValue.GetType().Name;
-            case "KCN":
-                return HeaderHasherValue.GetType().Name;
-            default:
-                var hash = HeaderHasherValue;
+            if (Networks == null || Networks.Count == 0)
+                return null;
 
-                if(hash.GetType() == typeof(DigestReverser))
-                    return ((DigestReverser) hash).Upstream.GetType().Name;
+            if (chain == ChainName.Mainnet)
+                return Networks["main"];
+            else if (chain == ChainName.Testnet)
+                return Networks["test"];
+            else if (chain == ChainName.Regtest)
+                return Networks["regtest"];
 
-                return hash.GetType().Name;
+            throw new NotSupportedException("unsupported network type");
         }
-    }
 
-    #endregion
-}
+        #region Overrides of CoinTemplate
 
-/*
-public partial class ScashTemplate : CoinTemplate
-    {
-        /// <summary>
-        /// Retourne le nom de l'algorithme de hachage utilisé par SCASH.
-        /// </summary>
         public override string GetAlgorithmName()
         {
-            return Algorithm;
+            switch (Symbol)
+            {
+                case "HNS":
+                    return HeaderHasherValue.GetType().Name + " + " + ShareHasherValue.GetType().Name;
+                case "KCN":
+                    return HeaderHasherValue.GetType().Name;
+                default:
+                    var hash = HeaderHasherValue;
+
+                    if (hash.GetType() == typeof(DigestReverser))
+                        return ((DigestReverser)hash).Upstream.GetType().Name;
+
+                    return hash.GetType().Name;
+            }
         }
 
-        /// <summary>
-        /// Algorithme de hachage pour Scash.
-        /// </summary>
-        [JsonProperty("algorithm")]
-        public string Algorithm { get; set; } = "randomx";
-
-        /// <summary>
-        /// Domaine spécifique pour RandomX.
-        /// </summary>
-        [JsonProperty("RandomXRealm")]
-        public string RandomXRealm { get; set; } = "default-realm";
-
-        /// <summary>
-        /// Indique si l'algorithme est basé sur RandomX.
-        /// </summary>
-        [JsonIgnore]
-        public bool IsRandomX => Algorithm.Equals("randomx", StringComparison.OrdinalIgnoreCase);
+        #endregion
     }
-*/
+
+    /*
+    public partial class ScashTemplate : CoinTemplate
+        {
+            /// <summary>
+            /// Retourne le nom de l'algorithme de hachage utilisé par SCASH.
+            /// </summary>
+            public override string GetAlgorithmName()
+            {
+                return Algorithm;
+            }
+
+            /// <summary>
+            /// Algorithme de hachage pour Scash.
+            /// </summary>
+            [JsonProperty("algorithm")]
+            public string Algorithm { get; set; } = "randomx";
+
+            /// <summary>
+            /// Domaine spécifique pour RandomX.
+            /// </summary>
+            [JsonProperty("RandomXRealm")]
+            public string RandomXRealm { get; set; } = "default-realm";
+
+            /// <summary>
+            /// Indique si l'algorithme est basé sur RandomX.
+            /// </summary>
+            [JsonIgnore]
+            public bool IsRandomX => Algorithm.Equals("randomx", StringComparison.OrdinalIgnoreCase);
+        }
+    */
 
 
 
@@ -181,73 +181,73 @@ public partial class ScashTemplate : CoinTemplate
 
 
 
-public partial class EquihashCoinTemplate
-{
-    public partial class EquihashNetworkParams
+    public partial class EquihashCoinTemplate
     {
-        public EquihashNetworkParams()
+        public partial class EquihashNetworkParams
         {
-            diff1Value = new Lazy<Org.BouncyCastle.Math.BigInteger>(() =>
+            public EquihashNetworkParams()
             {
-                if(string.IsNullOrEmpty(Diff1))
-                    throw new InvalidOperationException("Diff1 has not yet been initialized");
+                diff1Value = new Lazy<Org.BouncyCastle.Math.BigInteger>(() =>
+                {
+                    if (string.IsNullOrEmpty(Diff1))
+                        throw new InvalidOperationException("Diff1 has not yet been initialized");
 
-                return new Org.BouncyCastle.Math.BigInteger(Diff1, 16);
-            });
+                    return new Org.BouncyCastle.Math.BigInteger(Diff1, 16);
+                });
 
-            diff1BValue = new Lazy<BigInteger>(() =>
-            {
-                if(string.IsNullOrEmpty(Diff1))
-                    throw new InvalidOperationException("Diff1 has not yet been initialized");
+                diff1BValue = new Lazy<BigInteger>(() =>
+                {
+                    if (string.IsNullOrEmpty(Diff1))
+                        throw new InvalidOperationException("Diff1 has not yet been initialized");
 
-                return BigInteger.Parse(Diff1, NumberStyles.HexNumber);
-            });
+                    return BigInteger.Parse(Diff1, NumberStyles.HexNumber);
+                });
+            }
+
+            private readonly Lazy<Org.BouncyCastle.Math.BigInteger> diff1Value;
+            private readonly Lazy<BigInteger> diff1BValue;
+
+            [JsonIgnore]
+            public Org.BouncyCastle.Math.BigInteger Diff1Value => diff1Value.Value;
+
+            [JsonIgnore]
+            public BigInteger Diff1BValue => diff1BValue.Value;
+
+            [JsonIgnore]
+            public ulong FoundersRewardSubsidySlowStartShift => FoundersRewardSubsidySlowStartInterval / 2;
+
+            [JsonIgnore]
+            public ulong LastFoundersRewardBlockHeight => FoundersRewardSubsidyHalvingInterval + FoundersRewardSubsidySlowStartShift - 1;
         }
 
-        private readonly Lazy<Org.BouncyCastle.Math.BigInteger> diff1Value;
-        private readonly Lazy<BigInteger> diff1BValue;
-
-        [JsonIgnore]
-        public Org.BouncyCastle.Math.BigInteger Diff1Value => diff1Value.Value;
-
-        [JsonIgnore]
-        public BigInteger Diff1BValue => diff1BValue.Value;
-
-        [JsonIgnore]
-        public ulong FoundersRewardSubsidySlowStartShift => FoundersRewardSubsidySlowStartInterval / 2;
-
-        [JsonIgnore]
-        public ulong LastFoundersRewardBlockHeight => FoundersRewardSubsidyHalvingInterval + FoundersRewardSubsidySlowStartShift - 1;
-    }
-
-    public EquihashNetworkParams GetNetwork(ChainName chain)
-    {
-        if(chain == ChainName.Mainnet)
-            return Networks["main"];
-        else if(chain == ChainName.Testnet)
-            return Networks["test"];
-        else if(chain == ChainName.Regtest)
-            return Networks["regtest"];
-
-        throw new NotSupportedException("unsupported network type");
-    }
-
-    #region Overrides of CoinTemplate
-
-    public override string GetAlgorithmName()
-    {
-        switch(Symbol)
+        public EquihashNetworkParams GetNetwork(ChainName chain)
         {
-            case "VRSC":
-                return "Verushash";
-            default:
-                // TODO: return variant
-                return "Equihash";
-        }
-    }
+            if (chain == ChainName.Mainnet)
+                return Networks["main"];
+            else if (chain == ChainName.Testnet)
+                return Networks["test"];
+            else if (chain == ChainName.Regtest)
+                return Networks["regtest"];
 
-    #endregion
-}
+            throw new NotSupportedException("unsupported network type");
+        }
+
+        #region Overrides of CoinTemplate
+
+        public override string GetAlgorithmName()
+        {
+            switch (Symbol)
+            {
+                case "VRSC":
+                    return "Verushash";
+                default:
+                    // TODO: return variant
+                    return "Equihash";
+            }
+        }
+
+        #endregion
+    }
 
     public partial class EthereumCoinTemplate : CoinTemplate
     {
@@ -273,87 +273,87 @@ public partial class EquihashCoinTemplate
         }
 
         public string Symbol { get; set; } = "ETH";
-     //   public string Ethasher { get; set; } = "ethash";
+        //   public string Ethasher { get; set; } = "ethash";
     }
 
-public partial class KaspaCoinTemplate
-{
-    #region Overrides of CoinTemplate
-
-    public override string GetAlgorithmName()
+    public partial class KaspaCoinTemplate
     {
-        // Ajouter un log initial pour signaler l'exécution de la méthode
-        Console.WriteLine($"[INFO] Execution de GetAlgorithmName pour le Symbol : {Symbol}");
+        #region Overrides of CoinTemplate
 
-        switch(Symbol)
+        public override string GetAlgorithmName()
         {
-            case "PUG":
-                Console.WriteLine($"[INFO] Symbol reconnu : {Symbol} - Algorithme : Hoohash");
-                return "Hoohash";
+            // Ajouter un log initial pour signaler l'exécution de la méthode
+            Console.WriteLine($"[INFO] Execution de GetAlgorithmName pour le Symbol : {Symbol}");
 
-            case "WALA":
-                Console.WriteLine($"[INFO] Symbol reconnu : {Symbol} - Algorithme : WalaHash");
-                return "WalaHash";
+            switch (Symbol)
+            {
+                case "PUG":
+                    Console.WriteLine($"[INFO] Symbol reconnu : {Symbol} - Algorithme : Hoohash");
+                    return "Hoohash";
 
-            case "AIX":
-                Console.WriteLine($"[INFO] Symbol reconnu : {Symbol} - Algorithme : AstrixHash");
-                return "AstrixHash";
+                case "WALA":
+                    Console.WriteLine($"[INFO] Symbol reconnu : {Symbol} - Algorithme : WalaHash");
+                    return "WalaHash";
 
-            case "KLS":
-                Console.WriteLine($"[INFO] Symbol reconnu : {Symbol} - Algorithme : Karlsenhashv2");
-                return "Karlsenhashv2";
+                case "AIX":
+                    Console.WriteLine($"[INFO] Symbol reconnu : {Symbol} - Algorithme : AstrixHash");
+                    return "AstrixHash";
 
-            case "CSS":
-            case "NTL":
-            case "NXL":
-                Console.WriteLine($"[INFO] Symbol reconnu : {Symbol} - Algorithme : Karlsenhash");
-                return "Karlsenhash";
+                case "KLS":
+                    Console.WriteLine($"[INFO] Symbol reconnu : {Symbol} - Algorithme : Karlsenhashv2");
+                    return "Karlsenhashv2";
 
-            case "CAS":
-            case "PYI":
-                Console.WriteLine($"[INFO] Symbol reconnu : {Symbol} - Algorithme : Pyrinhash");
-                return "Pyrinhash";
+                case "CSS":
+                case "NTL":
+                case "NXL":
+                    Console.WriteLine($"[INFO] Symbol reconnu : {Symbol} - Algorithme : Karlsenhash");
+                    return "Karlsenhash";
 
-            case "SPR":
-                Console.WriteLine($"[INFO] Symbol reconnu : {Symbol} - Algorithme : SpectreX");
-                return "SpectreX";
+                case "CAS":
+                case "PYI":
+                    Console.WriteLine($"[INFO] Symbol reconnu : {Symbol} - Algorithme : Pyrinhash");
+                    return "Pyrinhash";
 
-            default:
-                // Log détaillé pour capturer les cas non reconnus
-                Console.WriteLine($"[WARN] Symbol non reconnu : {Symbol}. Algorithme par défaut : kHeavyHash");
-                return "kHeavyHash";
+                case "SPR":
+                    Console.WriteLine($"[INFO] Symbol reconnu : {Symbol} - Algorithme : SpectreX");
+                    return "SpectreX";
+
+                default:
+                    // Log détaillé pour capturer les cas non reconnus
+                    Console.WriteLine($"[WARN] Symbol non reconnu : {Symbol}. Algorithme par défaut : kHeavyHash");
+                    return "kHeavyHash";
+            }
         }
-    }
 
-    #endregion
-}
+        #endregion
+    }
 
 
     public partial class HoosatCoinTemplate : CoinTemplate
     {
     }
 
-public partial class ProgpowCoinTemplate : BitcoinTemplate
-{
-    #region Overrides of CoinTemplate
-
-    public ProgpowCoinTemplate() : base()
+    public partial class ProgpowCoinTemplate : BitcoinTemplate
     {
-        progpowLightValue = new Lazy<IProgpowLight>(() =>
-            ProgpowFactory.GetProgpow(Symbol, ComponentContext, Progpower));
+        #region Overrides of CoinTemplate
+
+        public ProgpowCoinTemplate() : base()
+        {
+            progpowLightValue = new Lazy<IProgpowLight>(() =>
+                ProgpowFactory.GetProgpow(Symbol, ComponentContext, Progpower));
+        }
+
+        private readonly Lazy<IProgpowLight> progpowLightValue;
+
+        public IProgpowLight ProgpowHasher => progpowLightValue.Value;
+
+        public override string GetAlgorithmName()
+        {
+            return ProgpowHasher.AlgoName;
+        }
+
+        #endregion
     }
-
-    private readonly Lazy<IProgpowLight> progpowLightValue;
-
-    public IProgpowLight ProgpowHasher => progpowLightValue.Value;
-
-    public override string GetAlgorithmName()
-    {
-        return ProgpowHasher.AlgoName;
-    }
-
-    #endregion
-}
 
     public partial class WarthogCoinTemplate : CoinTemplate
     {
@@ -363,41 +363,41 @@ public partial class ProgpowCoinTemplate : BitcoinTemplate
         }
     }
 
-public partial class ConcealCoinTemplate
-{
-    #region Overrides of CoinTemplate
-
-    public override string GetAlgorithmName()
+    public partial class ConcealCoinTemplate
     {
-//        switch(Hash)
-//        {
-//            case CryptonightHashType.RandomX:
-//                return "RandomX";
-//        }
+        #region Overrides of CoinTemplate
 
-        return Hash.ToString();
+        public override string GetAlgorithmName()
+        {
+            //        switch(Hash)
+            //        {
+            //            case CryptonightHashType.RandomX:
+            //                return "RandomX";
+            //        }
+
+            return Hash.ToString();
+        }
+
+        #endregion
     }
 
-    #endregion
-}
-
-public partial class CryptonoteCoinTemplate
-{
-    #region Overrides of CoinTemplate
-
-    public override string GetAlgorithmName()
+    public partial class CryptonoteCoinTemplate
     {
-//        switch(Hash)
-//        {
-//            case CryptonightHashType.RandomX:
-//                return "RandomX";
-//        }
+        #region Overrides of CoinTemplate
 
-        return Hash.ToString();
+        public override string GetAlgorithmName()
+        {
+            //        switch(Hash)
+            //        {
+            //            case CryptonightHashType.RandomX:
+            //                return "RandomX";
+            //        }
+
+            return Hash.ToString();
+        }
+
+        #endregion
     }
-
-    #endregion
-}
 
     public partial class ErgoCoinTemplate : CoinTemplate
     {

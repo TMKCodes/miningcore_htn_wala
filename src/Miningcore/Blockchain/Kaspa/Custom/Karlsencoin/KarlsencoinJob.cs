@@ -18,21 +18,21 @@ public class KarlsencoinJob : KaspaJob
 
     protected override Span<byte> SerializeCoinbase(Span<byte> prePowHash, long timestamp, ulong nonce)
     {
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
             stream.Write(prePowHash);
-            stream.Write(BitConverter.GetBytes((ulong) timestamp));
+            stream.Write(BitConverter.GetBytes((ulong)timestamp));
             stream.Write(new byte[32]); // 32 zero bytes padding
             stream.Write(BitConverter.GetBytes(nonce));
-            if(shareHasher is not FishHashKarlsen)
+            if (shareHasher is not FishHashKarlsen)
             {
                 Span<byte> hashBytes = stackalloc byte[32];
                 coinbaseHasher.Digest(stream.ToArray(), hashBytes);
 
-                return (Span<byte>) hashBytes.ToArray();
+                return (Span<byte>)hashBytes.ToArray();
             }
             else
-                return (Span<byte>) stream.ToArray();
+                return (Span<byte>)stream.ToArray();
         }
     }
     protected override Share ProcessShareInternal(StratumConnection worker, string nonce)
@@ -42,7 +42,7 @@ public class KarlsencoinJob : KaspaJob
         var prePowHashBytes = SerializeHeader(BlockTemplate.Header, true);
         var coinbaseBytes = SerializeCoinbase(prePowHashBytes, BlockTemplate.Header.Timestamp, BlockTemplate.Header.Nonce);
         Span<byte> hashCoinbaseBytes = stackalloc byte[32];
-        if(shareHasher is not FishHashKarlsen)
+        if (shareHasher is not FishHashKarlsen)
             shareHasher.Digest(ComputeCoinbase(prePowHashBytes, coinbaseBytes), hashCoinbaseBytes);
         else
             shareHasher.Digest(coinbaseBytes, hashCoinbaseBytes);
@@ -50,7 +50,7 @@ public class KarlsencoinJob : KaspaJob
         var hashCoinbaseBytesValue = targetHashCoinbaseBytes.ToUInt256();
         //throw new StratumException(StratumError.LowDifficultyShare, $"nonce: {nonce} ||| hashCoinbaseBytes: {hashCoinbaseBytes.ToHexString()} ||| BigInteger: {targetHashCoinbaseBytes.ToBigInteger()} ||| Target: {hashCoinbaseBytesValue} - [stratum: {KaspaUtils.DifficultyToTarget(context.Difficulty)} - blockTemplate: {blockTargetValue}] ||| BigToCompact: {KaspaUtils.BigToCompact(targetHashCoinbaseBytes.ToBigInteger())} - [stratum: {KaspaUtils.BigToCompact(KaspaUtils.DifficultyToTarget(context.Difficulty))} - blockTemplate: {BlockTemplate.Header.Bits}] ||| shareDiff: {(double) new BigRational(KaspaConstants.Diff1b, targetHashCoinbaseBytes.ToBigInteger()) * ShareMultiplier} - [stratum: {context.Difficulty} - blockTemplate: {KaspaUtils.TargetToDifficulty(KaspaUtils.CompactToBig(BlockTemplate.Header.Bits)) * (double) KaspaConstants.MinHash}]");
         // calc share-diff
-        var shareDiff = (double) new BigRational(KaspaConstants.Diff1b, targetHashCoinbaseBytes.ToBigInteger()) * 1;
+        var shareDiff = (double)new BigRational(KaspaConstants.Diff1b, targetHashCoinbaseBytes.ToBigInteger()) * 1;
         //        var shareDiff = (double) new BigRational(KaspaConstants.Diff1b, targetHashCoinbaseBytes.ToBigInteger()) * ShareMultiplier;
 
         // diff check
@@ -60,13 +60,13 @@ public class KarlsencoinJob : KaspaJob
         var isBlockCandidate = hashCoinbaseBytesValue <= blockTargetValue;
         //var isBlockCandidate = true;
         // test if share meets at least workers current difficulty
-        if(!isBlockCandidate && ratio < 0.99)
+        if (!isBlockCandidate && ratio < 0.99)
         {
             // check if share matched the previous difficulty from before a vardiff retarget
-            if(context.VarDiff?.LastUpdate != null && context.PreviousDifficulty.HasValue)
+            if (context.VarDiff?.LastUpdate != null && context.PreviousDifficulty.HasValue)
             {
                 ratio = shareDiff / context.PreviousDifficulty.Value;
-                if(ratio < 0.99)
+                if (ratio < 0.99)
                     throw new StratumException(StratumError.LowDifficultyShare, $"low difficulty share ({shareDiff})");
                 // use previous difficulty
                 stratumDifficulty = context.PreviousDifficulty.Value;
@@ -76,13 +76,13 @@ public class KarlsencoinJob : KaspaJob
         }
         var result = new Share
         {
-            BlockHeight = (long) BlockTemplate.Header.DaaScore,
+            BlockHeight = (long)BlockTemplate.Header.DaaScore,
             NetworkDifficulty = Difficulty,
             Difficulty = context.Difficulty / 1
             //            Difficulty = context.Difficulty / ShareMultiplier
 
         };
-        if(isBlockCandidate)
+        if (isBlockCandidate)
         {
             var hashBytes = SerializeHeader(BlockTemplate.Header, false);
             result.IsBlockCandidate = true;

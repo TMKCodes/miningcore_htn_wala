@@ -5,7 +5,8 @@
 #pragma warning disable 1591, 0612, 3021
 #region Designer generated code
 
-namespace Miningcore.Blockchain.Kaspa.Kaspad {
+namespace Miningcore.Blockchain.Kaspa.Kaspad
+{
 
   using pb = global::Google.Protobuf;
   using pbc = global::Google.Protobuf.Collections;
@@ -13,16 +14,19 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
   using scg = global::System.Collections.Generic;
 
   /// <summary>Holder for reflection information generated from messages.proto</summary>
-  public static partial class MessagesReflection {
+  public static partial class MessagesReflection
+  {
 
     #region Descriptor
     /// <summary>File descriptor for messages.proto</summary>
-    public static pbr::FileDescriptor Descriptor {
+    public static pbr::FileDescriptor Descriptor
+    {
       get { return descriptor; }
     }
     private static pbr::FileDescriptor descriptor;
 
-    static MessagesReflection() {
+    static MessagesReflection()
+    {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Cg5tZXNzYWdlcy5wcm90bxIJcHJvdG93aXJlGglwMnAucHJvdG8aCXJwYy5w",
@@ -276,32 +280,38 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
 
   }
   #region Messages
-  public sealed partial class KaspadMessage : pb::IMessage<KaspadMessage> {
+  public sealed partial class KaspadMessage : pb::IMessage<KaspadMessage>
+  {
     private static readonly pb::MessageParser<KaspadMessage> _parser = new pb::MessageParser<KaspadMessage>(() => new KaspadMessage());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<KaspadMessage> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Kaspa.Kaspad.MessagesReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public KaspadMessage() {
+    public KaspadMessage()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public KaspadMessage(KaspadMessage other) : this() {
-      switch (other.PayloadCase) {
+    public KaspadMessage(KaspadMessage other) : this()
+    {
+      switch (other.PayloadCase)
+      {
         case PayloadOneofCase.Addresses:
           Addresses = other.Addresses.Clone();
           break;
@@ -698,16 +708,19 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public KaspadMessage Clone() {
+    public KaspadMessage Clone()
+    {
       return new KaspadMessage(this);
     }
 
     /// <summary>Field number for the "addresses" field.</summary>
     public const int AddressesFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.AddressesMessage Addresses {
-      get { return payloadCase_ == PayloadOneofCase.Addresses ? (global::Miningcore.Blockchain.Kaspa.Kaspad.AddressesMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.AddressesMessage Addresses
+    {
+      get { return payloadCase_ == PayloadOneofCase.Addresses ? (global::Miningcore.Blockchain.Kaspa.Kaspad.AddressesMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Addresses;
       }
@@ -716,9 +729,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "block" field.</summary>
     public const int BlockFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.BlockMessage Block {
-      get { return payloadCase_ == PayloadOneofCase.Block ? (global::Miningcore.Blockchain.Kaspa.Kaspad.BlockMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.BlockMessage Block
+    {
+      get { return payloadCase_ == PayloadOneofCase.Block ? (global::Miningcore.Blockchain.Kaspa.Kaspad.BlockMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Block;
       }
@@ -727,9 +742,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "transaction" field.</summary>
     public const int TransactionFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.TransactionMessage Transaction {
-      get { return payloadCase_ == PayloadOneofCase.Transaction ? (global::Miningcore.Blockchain.Kaspa.Kaspad.TransactionMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.TransactionMessage Transaction
+    {
+      get { return payloadCase_ == PayloadOneofCase.Transaction ? (global::Miningcore.Blockchain.Kaspa.Kaspad.TransactionMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Transaction;
       }
@@ -738,9 +755,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "blockLocator" field.</summary>
     public const int BlockLocatorFieldNumber = 5;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.BlockLocatorMessage BlockLocator {
-      get { return payloadCase_ == PayloadOneofCase.BlockLocator ? (global::Miningcore.Blockchain.Kaspa.Kaspad.BlockLocatorMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.BlockLocatorMessage BlockLocator
+    {
+      get { return payloadCase_ == PayloadOneofCase.BlockLocator ? (global::Miningcore.Blockchain.Kaspa.Kaspad.BlockLocatorMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.BlockLocator;
       }
@@ -749,9 +768,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "requestAddresses" field.</summary>
     public const int RequestAddressesFieldNumber = 6;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestAddressesMessage RequestAddresses {
-      get { return payloadCase_ == PayloadOneofCase.RequestAddresses ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestAddressesMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestAddressesMessage RequestAddresses
+    {
+      get { return payloadCase_ == PayloadOneofCase.RequestAddresses ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestAddressesMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.RequestAddresses;
       }
@@ -760,9 +781,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "requestRelayBlocks" field.</summary>
     public const int RequestRelayBlocksFieldNumber = 10;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestRelayBlocksMessage RequestRelayBlocks {
-      get { return payloadCase_ == PayloadOneofCase.RequestRelayBlocks ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestRelayBlocksMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestRelayBlocksMessage RequestRelayBlocks
+    {
+      get { return payloadCase_ == PayloadOneofCase.RequestRelayBlocks ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestRelayBlocksMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.RequestRelayBlocks;
       }
@@ -771,9 +794,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "requestTransactions" field.</summary>
     public const int RequestTransactionsFieldNumber = 12;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestTransactionsMessage RequestTransactions {
-      get { return payloadCase_ == PayloadOneofCase.RequestTransactions ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestTransactionsMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestTransactionsMessage RequestTransactions
+    {
+      get { return payloadCase_ == PayloadOneofCase.RequestTransactions ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestTransactionsMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.RequestTransactions;
       }
@@ -782,9 +807,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "ibdBlock" field.</summary>
     public const int IbdBlockFieldNumber = 13;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.BlockMessage IbdBlock {
-      get { return payloadCase_ == PayloadOneofCase.IbdBlock ? (global::Miningcore.Blockchain.Kaspa.Kaspad.BlockMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.BlockMessage IbdBlock
+    {
+      get { return payloadCase_ == PayloadOneofCase.IbdBlock ? (global::Miningcore.Blockchain.Kaspa.Kaspad.BlockMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.IbdBlock;
       }
@@ -793,9 +820,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "invRelayBlock" field.</summary>
     public const int InvRelayBlockFieldNumber = 14;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.InvRelayBlockMessage InvRelayBlock {
-      get { return payloadCase_ == PayloadOneofCase.InvRelayBlock ? (global::Miningcore.Blockchain.Kaspa.Kaspad.InvRelayBlockMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.InvRelayBlockMessage InvRelayBlock
+    {
+      get { return payloadCase_ == PayloadOneofCase.InvRelayBlock ? (global::Miningcore.Blockchain.Kaspa.Kaspad.InvRelayBlockMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.InvRelayBlock;
       }
@@ -804,9 +833,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "invTransactions" field.</summary>
     public const int InvTransactionsFieldNumber = 15;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.InvTransactionsMessage InvTransactions {
-      get { return payloadCase_ == PayloadOneofCase.InvTransactions ? (global::Miningcore.Blockchain.Kaspa.Kaspad.InvTransactionsMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.InvTransactionsMessage InvTransactions
+    {
+      get { return payloadCase_ == PayloadOneofCase.InvTransactions ? (global::Miningcore.Blockchain.Kaspa.Kaspad.InvTransactionsMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.InvTransactions;
       }
@@ -815,9 +846,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "ping" field.</summary>
     public const int PingFieldNumber = 16;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.PingMessage Ping {
-      get { return payloadCase_ == PayloadOneofCase.Ping ? (global::Miningcore.Blockchain.Kaspa.Kaspad.PingMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.PingMessage Ping
+    {
+      get { return payloadCase_ == PayloadOneofCase.Ping ? (global::Miningcore.Blockchain.Kaspa.Kaspad.PingMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Ping;
       }
@@ -826,9 +859,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "pong" field.</summary>
     public const int PongFieldNumber = 17;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.PongMessage Pong {
-      get { return payloadCase_ == PayloadOneofCase.Pong ? (global::Miningcore.Blockchain.Kaspa.Kaspad.PongMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.PongMessage Pong
+    {
+      get { return payloadCase_ == PayloadOneofCase.Pong ? (global::Miningcore.Blockchain.Kaspa.Kaspad.PongMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Pong;
       }
@@ -837,9 +872,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "verack" field.</summary>
     public const int VerackFieldNumber = 19;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.VerackMessage Verack {
-      get { return payloadCase_ == PayloadOneofCase.Verack ? (global::Miningcore.Blockchain.Kaspa.Kaspad.VerackMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.VerackMessage Verack
+    {
+      get { return payloadCase_ == PayloadOneofCase.Verack ? (global::Miningcore.Blockchain.Kaspa.Kaspad.VerackMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Verack;
       }
@@ -848,9 +885,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "version" field.</summary>
     public const int VersionFieldNumber = 20;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.VersionMessage Version {
-      get { return payloadCase_ == PayloadOneofCase.Version ? (global::Miningcore.Blockchain.Kaspa.Kaspad.VersionMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.VersionMessage Version
+    {
+      get { return payloadCase_ == PayloadOneofCase.Version ? (global::Miningcore.Blockchain.Kaspa.Kaspad.VersionMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Version;
       }
@@ -859,9 +898,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "transactionNotFound" field.</summary>
     public const int TransactionNotFoundFieldNumber = 21;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.TransactionNotFoundMessage TransactionNotFound {
-      get { return payloadCase_ == PayloadOneofCase.TransactionNotFound ? (global::Miningcore.Blockchain.Kaspa.Kaspad.TransactionNotFoundMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.TransactionNotFoundMessage TransactionNotFound
+    {
+      get { return payloadCase_ == PayloadOneofCase.TransactionNotFound ? (global::Miningcore.Blockchain.Kaspa.Kaspad.TransactionNotFoundMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.TransactionNotFound;
       }
@@ -870,9 +911,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "reject" field.</summary>
     public const int RejectFieldNumber = 22;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.RejectMessage Reject {
-      get { return payloadCase_ == PayloadOneofCase.Reject ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RejectMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.RejectMessage Reject
+    {
+      get { return payloadCase_ == PayloadOneofCase.Reject ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RejectMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Reject;
       }
@@ -881,9 +924,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "pruningPointUtxoSetChunk" field.</summary>
     public const int PruningPointUtxoSetChunkFieldNumber = 25;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointUtxoSetChunkMessage PruningPointUtxoSetChunk {
-      get { return payloadCase_ == PayloadOneofCase.PruningPointUtxoSetChunk ? (global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointUtxoSetChunkMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointUtxoSetChunkMessage PruningPointUtxoSetChunk
+    {
+      get { return payloadCase_ == PayloadOneofCase.PruningPointUtxoSetChunk ? (global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointUtxoSetChunkMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.PruningPointUtxoSetChunk;
       }
@@ -892,9 +937,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "requestIBDBlocks" field.</summary>
     public const int RequestIBDBlocksFieldNumber = 26;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestIBDBlocksMessage RequestIBDBlocks {
-      get { return payloadCase_ == PayloadOneofCase.RequestIBDBlocks ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestIBDBlocksMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestIBDBlocksMessage RequestIBDBlocks
+    {
+      get { return payloadCase_ == PayloadOneofCase.RequestIBDBlocks ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestIBDBlocksMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.RequestIBDBlocks;
       }
@@ -903,9 +950,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "unexpectedPruningPoint" field.</summary>
     public const int UnexpectedPruningPointFieldNumber = 27;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.UnexpectedPruningPointMessage UnexpectedPruningPoint {
-      get { return payloadCase_ == PayloadOneofCase.UnexpectedPruningPoint ? (global::Miningcore.Blockchain.Kaspa.Kaspad.UnexpectedPruningPointMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.UnexpectedPruningPointMessage UnexpectedPruningPoint
+    {
+      get { return payloadCase_ == PayloadOneofCase.UnexpectedPruningPoint ? (global::Miningcore.Blockchain.Kaspa.Kaspad.UnexpectedPruningPointMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.UnexpectedPruningPoint;
       }
@@ -914,9 +963,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "ibdBlockLocator" field.</summary>
     public const int IbdBlockLocatorFieldNumber = 30;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorMessage IbdBlockLocator {
-      get { return payloadCase_ == PayloadOneofCase.IbdBlockLocator ? (global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorMessage IbdBlockLocator
+    {
+      get { return payloadCase_ == PayloadOneofCase.IbdBlockLocator ? (global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.IbdBlockLocator;
       }
@@ -925,9 +976,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "ibdBlockLocatorHighestHash" field.</summary>
     public const int IbdBlockLocatorHighestHashFieldNumber = 31;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorHighestHashMessage IbdBlockLocatorHighestHash {
-      get { return payloadCase_ == PayloadOneofCase.IbdBlockLocatorHighestHash ? (global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorHighestHashMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorHighestHashMessage IbdBlockLocatorHighestHash
+    {
+      get { return payloadCase_ == PayloadOneofCase.IbdBlockLocatorHighestHash ? (global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorHighestHashMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.IbdBlockLocatorHighestHash;
       }
@@ -936,9 +989,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "requestNextPruningPointUtxoSetChunk" field.</summary>
     public const int RequestNextPruningPointUtxoSetChunkFieldNumber = 33;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextPruningPointUtxoSetChunkMessage RequestNextPruningPointUtxoSetChunk {
-      get { return payloadCase_ == PayloadOneofCase.RequestNextPruningPointUtxoSetChunk ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextPruningPointUtxoSetChunkMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextPruningPointUtxoSetChunkMessage RequestNextPruningPointUtxoSetChunk
+    {
+      get { return payloadCase_ == PayloadOneofCase.RequestNextPruningPointUtxoSetChunk ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextPruningPointUtxoSetChunkMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.RequestNextPruningPointUtxoSetChunk;
       }
@@ -947,9 +1002,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "donePruningPointUtxoSetChunks" field.</summary>
     public const int DonePruningPointUtxoSetChunksFieldNumber = 34;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.DonePruningPointUtxoSetChunksMessage DonePruningPointUtxoSetChunks {
-      get { return payloadCase_ == PayloadOneofCase.DonePruningPointUtxoSetChunks ? (global::Miningcore.Blockchain.Kaspa.Kaspad.DonePruningPointUtxoSetChunksMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.DonePruningPointUtxoSetChunksMessage DonePruningPointUtxoSetChunks
+    {
+      get { return payloadCase_ == PayloadOneofCase.DonePruningPointUtxoSetChunks ? (global::Miningcore.Blockchain.Kaspa.Kaspad.DonePruningPointUtxoSetChunksMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.DonePruningPointUtxoSetChunks;
       }
@@ -958,9 +1015,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "ibdBlockLocatorHighestHashNotFound" field.</summary>
     public const int IbdBlockLocatorHighestHashNotFoundFieldNumber = 35;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorHighestHashNotFoundMessage IbdBlockLocatorHighestHashNotFound {
-      get { return payloadCase_ == PayloadOneofCase.IbdBlockLocatorHighestHashNotFound ? (global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorHighestHashNotFoundMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorHighestHashNotFoundMessage IbdBlockLocatorHighestHashNotFound
+    {
+      get { return payloadCase_ == PayloadOneofCase.IbdBlockLocatorHighestHashNotFound ? (global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorHighestHashNotFoundMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.IbdBlockLocatorHighestHashNotFound;
       }
@@ -969,9 +1028,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "blockWithTrustedData" field.</summary>
     public const int BlockWithTrustedDataFieldNumber = 36;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.BlockWithTrustedDataMessage BlockWithTrustedData {
-      get { return payloadCase_ == PayloadOneofCase.BlockWithTrustedData ? (global::Miningcore.Blockchain.Kaspa.Kaspad.BlockWithTrustedDataMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.BlockWithTrustedDataMessage BlockWithTrustedData
+    {
+      get { return payloadCase_ == PayloadOneofCase.BlockWithTrustedData ? (global::Miningcore.Blockchain.Kaspa.Kaspad.BlockWithTrustedDataMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.BlockWithTrustedData;
       }
@@ -980,9 +1041,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "doneBlocksWithTrustedData" field.</summary>
     public const int DoneBlocksWithTrustedDataFieldNumber = 37;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.DoneBlocksWithTrustedDataMessage DoneBlocksWithTrustedData {
-      get { return payloadCase_ == PayloadOneofCase.DoneBlocksWithTrustedData ? (global::Miningcore.Blockchain.Kaspa.Kaspad.DoneBlocksWithTrustedDataMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.DoneBlocksWithTrustedDataMessage DoneBlocksWithTrustedData
+    {
+      get { return payloadCase_ == PayloadOneofCase.DoneBlocksWithTrustedData ? (global::Miningcore.Blockchain.Kaspa.Kaspad.DoneBlocksWithTrustedDataMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.DoneBlocksWithTrustedData;
       }
@@ -991,9 +1054,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "requestPruningPointAndItsAnticone" field.</summary>
     public const int RequestPruningPointAndItsAnticoneFieldNumber = 40;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointAndItsAnticoneMessage RequestPruningPointAndItsAnticone {
-      get { return payloadCase_ == PayloadOneofCase.RequestPruningPointAndItsAnticone ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointAndItsAnticoneMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointAndItsAnticoneMessage RequestPruningPointAndItsAnticone
+    {
+      get { return payloadCase_ == PayloadOneofCase.RequestPruningPointAndItsAnticone ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointAndItsAnticoneMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.RequestPruningPointAndItsAnticone;
       }
@@ -1002,9 +1067,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "blockHeaders" field.</summary>
     public const int BlockHeadersFieldNumber = 41;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.BlockHeadersMessage BlockHeaders {
-      get { return payloadCase_ == PayloadOneofCase.BlockHeaders ? (global::Miningcore.Blockchain.Kaspa.Kaspad.BlockHeadersMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.BlockHeadersMessage BlockHeaders
+    {
+      get { return payloadCase_ == PayloadOneofCase.BlockHeaders ? (global::Miningcore.Blockchain.Kaspa.Kaspad.BlockHeadersMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.BlockHeaders;
       }
@@ -1013,9 +1080,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "requestNextHeaders" field.</summary>
     public const int RequestNextHeadersFieldNumber = 42;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextHeadersMessage RequestNextHeaders {
-      get { return payloadCase_ == PayloadOneofCase.RequestNextHeaders ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextHeadersMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextHeadersMessage RequestNextHeaders
+    {
+      get { return payloadCase_ == PayloadOneofCase.RequestNextHeaders ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextHeadersMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.RequestNextHeaders;
       }
@@ -1024,9 +1093,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "DoneHeaders" field.</summary>
     public const int DoneHeadersFieldNumber = 43;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.DoneHeadersMessage DoneHeaders {
-      get { return payloadCase_ == PayloadOneofCase.DoneHeaders ? (global::Miningcore.Blockchain.Kaspa.Kaspad.DoneHeadersMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.DoneHeadersMessage DoneHeaders
+    {
+      get { return payloadCase_ == PayloadOneofCase.DoneHeaders ? (global::Miningcore.Blockchain.Kaspa.Kaspad.DoneHeadersMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.DoneHeaders;
       }
@@ -1035,9 +1106,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "requestPruningPointUTXOSet" field.</summary>
     public const int RequestPruningPointUTXOSetFieldNumber = 44;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointUTXOSetMessage RequestPruningPointUTXOSet {
-      get { return payloadCase_ == PayloadOneofCase.RequestPruningPointUTXOSet ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointUTXOSetMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointUTXOSetMessage RequestPruningPointUTXOSet
+    {
+      get { return payloadCase_ == PayloadOneofCase.RequestPruningPointUTXOSet ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointUTXOSetMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.RequestPruningPointUTXOSet;
       }
@@ -1046,9 +1119,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "requestHeaders" field.</summary>
     public const int RequestHeadersFieldNumber = 45;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestHeadersMessage RequestHeaders {
-      get { return payloadCase_ == PayloadOneofCase.RequestHeaders ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestHeadersMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestHeadersMessage RequestHeaders
+    {
+      get { return payloadCase_ == PayloadOneofCase.RequestHeaders ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestHeadersMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.RequestHeaders;
       }
@@ -1057,9 +1132,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "requestBlockLocator" field.</summary>
     public const int RequestBlockLocatorFieldNumber = 46;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestBlockLocatorMessage RequestBlockLocator {
-      get { return payloadCase_ == PayloadOneofCase.RequestBlockLocator ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestBlockLocatorMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestBlockLocatorMessage RequestBlockLocator
+    {
+      get { return payloadCase_ == PayloadOneofCase.RequestBlockLocator ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestBlockLocatorMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.RequestBlockLocator;
       }
@@ -1068,9 +1145,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "pruningPoints" field.</summary>
     public const int PruningPointsFieldNumber = 47;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointsMessage PruningPoints {
-      get { return payloadCase_ == PayloadOneofCase.PruningPoints ? (global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointsMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointsMessage PruningPoints
+    {
+      get { return payloadCase_ == PayloadOneofCase.PruningPoints ? (global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointsMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.PruningPoints;
       }
@@ -1079,9 +1158,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "requestPruningPointProof" field.</summary>
     public const int RequestPruningPointProofFieldNumber = 48;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointProofMessage RequestPruningPointProof {
-      get { return payloadCase_ == PayloadOneofCase.RequestPruningPointProof ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointProofMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointProofMessage RequestPruningPointProof
+    {
+      get { return payloadCase_ == PayloadOneofCase.RequestPruningPointProof ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointProofMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.RequestPruningPointProof;
       }
@@ -1090,9 +1171,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "pruningPointProof" field.</summary>
     public const int PruningPointProofFieldNumber = 49;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointProofMessage PruningPointProof {
-      get { return payloadCase_ == PayloadOneofCase.PruningPointProof ? (global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointProofMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointProofMessage PruningPointProof
+    {
+      get { return payloadCase_ == PayloadOneofCase.PruningPointProof ? (global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointProofMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.PruningPointProof;
       }
@@ -1101,9 +1184,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "ready" field.</summary>
     public const int ReadyFieldNumber = 50;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.ReadyMessage Ready {
-      get { return payloadCase_ == PayloadOneofCase.Ready ? (global::Miningcore.Blockchain.Kaspa.Kaspad.ReadyMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.ReadyMessage Ready
+    {
+      get { return payloadCase_ == PayloadOneofCase.Ready ? (global::Miningcore.Blockchain.Kaspa.Kaspad.ReadyMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Ready;
       }
@@ -1112,9 +1197,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "blockWithTrustedDataV4" field.</summary>
     public const int BlockWithTrustedDataV4FieldNumber = 51;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.BlockWithTrustedDataV4Message BlockWithTrustedDataV4 {
-      get { return payloadCase_ == PayloadOneofCase.BlockWithTrustedDataV4 ? (global::Miningcore.Blockchain.Kaspa.Kaspad.BlockWithTrustedDataV4Message) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.BlockWithTrustedDataV4Message BlockWithTrustedDataV4
+    {
+      get { return payloadCase_ == PayloadOneofCase.BlockWithTrustedDataV4 ? (global::Miningcore.Blockchain.Kaspa.Kaspad.BlockWithTrustedDataV4Message)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.BlockWithTrustedDataV4;
       }
@@ -1123,9 +1210,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "trustedData" field.</summary>
     public const int TrustedDataFieldNumber = 52;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.TrustedDataMessage TrustedData {
-      get { return payloadCase_ == PayloadOneofCase.TrustedData ? (global::Miningcore.Blockchain.Kaspa.Kaspad.TrustedDataMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.TrustedDataMessage TrustedData
+    {
+      get { return payloadCase_ == PayloadOneofCase.TrustedData ? (global::Miningcore.Blockchain.Kaspa.Kaspad.TrustedDataMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.TrustedData;
       }
@@ -1134,9 +1223,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "requestIBDChainBlockLocator" field.</summary>
     public const int RequestIBDChainBlockLocatorFieldNumber = 53;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestIBDChainBlockLocatorMessage RequestIBDChainBlockLocator {
-      get { return payloadCase_ == PayloadOneofCase.RequestIBDChainBlockLocator ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestIBDChainBlockLocatorMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestIBDChainBlockLocatorMessage RequestIBDChainBlockLocator
+    {
+      get { return payloadCase_ == PayloadOneofCase.RequestIBDChainBlockLocator ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestIBDChainBlockLocatorMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.RequestIBDChainBlockLocator;
       }
@@ -1145,9 +1236,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "ibdChainBlockLocator" field.</summary>
     public const int IbdChainBlockLocatorFieldNumber = 54;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.IbdChainBlockLocatorMessage IbdChainBlockLocator {
-      get { return payloadCase_ == PayloadOneofCase.IbdChainBlockLocator ? (global::Miningcore.Blockchain.Kaspa.Kaspad.IbdChainBlockLocatorMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.IbdChainBlockLocatorMessage IbdChainBlockLocator
+    {
+      get { return payloadCase_ == PayloadOneofCase.IbdChainBlockLocator ? (global::Miningcore.Blockchain.Kaspa.Kaspad.IbdChainBlockLocatorMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.IbdChainBlockLocator;
       }
@@ -1156,9 +1249,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "requestAnticone" field.</summary>
     public const int RequestAnticoneFieldNumber = 55;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestAnticoneMessage RequestAnticone {
-      get { return payloadCase_ == PayloadOneofCase.RequestAnticone ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestAnticoneMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestAnticoneMessage RequestAnticone
+    {
+      get { return payloadCase_ == PayloadOneofCase.RequestAnticone ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestAnticoneMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.RequestAnticone;
       }
@@ -1167,9 +1262,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "requestNextPruningPointAndItsAnticoneBlocks" field.</summary>
     public const int RequestNextPruningPointAndItsAnticoneBlocksFieldNumber = 56;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextPruningPointAndItsAnticoneBlocksMessage RequestNextPruningPointAndItsAnticoneBlocks {
-      get { return payloadCase_ == PayloadOneofCase.RequestNextPruningPointAndItsAnticoneBlocks ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextPruningPointAndItsAnticoneBlocksMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextPruningPointAndItsAnticoneBlocksMessage RequestNextPruningPointAndItsAnticoneBlocks
+    {
+      get { return payloadCase_ == PayloadOneofCase.RequestNextPruningPointAndItsAnticoneBlocks ? (global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextPruningPointAndItsAnticoneBlocksMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.RequestNextPruningPointAndItsAnticoneBlocks;
       }
@@ -1178,9 +1275,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getCurrentNetworkRequest" field.</summary>
     public const int GetCurrentNetworkRequestFieldNumber = 1001;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetCurrentNetworkRequestMessage GetCurrentNetworkRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetCurrentNetworkRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetCurrentNetworkRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetCurrentNetworkRequestMessage GetCurrentNetworkRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetCurrentNetworkRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetCurrentNetworkRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetCurrentNetworkRequest;
       }
@@ -1189,9 +1288,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getCurrentNetworkResponse" field.</summary>
     public const int GetCurrentNetworkResponseFieldNumber = 1002;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetCurrentNetworkResponseMessage GetCurrentNetworkResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetCurrentNetworkResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetCurrentNetworkResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetCurrentNetworkResponseMessage GetCurrentNetworkResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetCurrentNetworkResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetCurrentNetworkResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetCurrentNetworkResponse;
       }
@@ -1200,9 +1301,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "submitBlockRequest" field.</summary>
     public const int SubmitBlockRequestFieldNumber = 1003;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitBlockRequestMessage SubmitBlockRequest {
-      get { return payloadCase_ == PayloadOneofCase.SubmitBlockRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitBlockRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitBlockRequestMessage SubmitBlockRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.SubmitBlockRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitBlockRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.SubmitBlockRequest;
       }
@@ -1211,9 +1314,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "submitBlockResponse" field.</summary>
     public const int SubmitBlockResponseFieldNumber = 1004;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitBlockResponseMessage SubmitBlockResponse {
-      get { return payloadCase_ == PayloadOneofCase.SubmitBlockResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitBlockResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitBlockResponseMessage SubmitBlockResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.SubmitBlockResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitBlockResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.SubmitBlockResponse;
       }
@@ -1222,9 +1327,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getBlockTemplateRequest" field.</summary>
     public const int GetBlockTemplateRequestFieldNumber = 1005;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockTemplateRequestMessage GetBlockTemplateRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetBlockTemplateRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockTemplateRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockTemplateRequestMessage GetBlockTemplateRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetBlockTemplateRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockTemplateRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetBlockTemplateRequest;
       }
@@ -1233,9 +1340,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getBlockTemplateResponse" field.</summary>
     public const int GetBlockTemplateResponseFieldNumber = 1006;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockTemplateResponseMessage GetBlockTemplateResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetBlockTemplateResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockTemplateResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockTemplateResponseMessage GetBlockTemplateResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetBlockTemplateResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockTemplateResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetBlockTemplateResponse;
       }
@@ -1244,9 +1353,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "notifyBlockAddedRequest" field.</summary>
     public const int NotifyBlockAddedRequestFieldNumber = 1007;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyBlockAddedRequestMessage NotifyBlockAddedRequest {
-      get { return payloadCase_ == PayloadOneofCase.NotifyBlockAddedRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyBlockAddedRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyBlockAddedRequestMessage NotifyBlockAddedRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.NotifyBlockAddedRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyBlockAddedRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.NotifyBlockAddedRequest;
       }
@@ -1255,9 +1366,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "notifyBlockAddedResponse" field.</summary>
     public const int NotifyBlockAddedResponseFieldNumber = 1008;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyBlockAddedResponseMessage NotifyBlockAddedResponse {
-      get { return payloadCase_ == PayloadOneofCase.NotifyBlockAddedResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyBlockAddedResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyBlockAddedResponseMessage NotifyBlockAddedResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.NotifyBlockAddedResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyBlockAddedResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.NotifyBlockAddedResponse;
       }
@@ -1266,9 +1379,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "blockAddedNotification" field.</summary>
     public const int BlockAddedNotificationFieldNumber = 1009;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.BlockAddedNotificationMessage BlockAddedNotification {
-      get { return payloadCase_ == PayloadOneofCase.BlockAddedNotification ? (global::Miningcore.Blockchain.Kaspa.Kaspad.BlockAddedNotificationMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.BlockAddedNotificationMessage BlockAddedNotification
+    {
+      get { return payloadCase_ == PayloadOneofCase.BlockAddedNotification ? (global::Miningcore.Blockchain.Kaspa.Kaspad.BlockAddedNotificationMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.BlockAddedNotification;
       }
@@ -1277,9 +1392,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getPeerAddressesRequest" field.</summary>
     public const int GetPeerAddressesRequestFieldNumber = 1010;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetPeerAddressesRequestMessage GetPeerAddressesRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetPeerAddressesRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetPeerAddressesRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetPeerAddressesRequestMessage GetPeerAddressesRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetPeerAddressesRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetPeerAddressesRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetPeerAddressesRequest;
       }
@@ -1288,9 +1405,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getPeerAddressesResponse" field.</summary>
     public const int GetPeerAddressesResponseFieldNumber = 1011;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetPeerAddressesResponseMessage GetPeerAddressesResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetPeerAddressesResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetPeerAddressesResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetPeerAddressesResponseMessage GetPeerAddressesResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetPeerAddressesResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetPeerAddressesResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetPeerAddressesResponse;
       }
@@ -1299,9 +1418,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getSelectedTipHashRequest" field.</summary>
     public const int GetSelectedTipHashRequestFieldNumber = 1012;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetSelectedTipHashRequestMessage GetSelectedTipHashRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetSelectedTipHashRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetSelectedTipHashRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetSelectedTipHashRequestMessage GetSelectedTipHashRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetSelectedTipHashRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetSelectedTipHashRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetSelectedTipHashRequest;
       }
@@ -1310,9 +1431,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getSelectedTipHashResponse" field.</summary>
     public const int GetSelectedTipHashResponseFieldNumber = 1013;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetSelectedTipHashResponseMessage GetSelectedTipHashResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetSelectedTipHashResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetSelectedTipHashResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetSelectedTipHashResponseMessage GetSelectedTipHashResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetSelectedTipHashResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetSelectedTipHashResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetSelectedTipHashResponse;
       }
@@ -1321,9 +1444,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getMempoolEntryRequest" field.</summary>
     public const int GetMempoolEntryRequestFieldNumber = 1014;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntryRequestMessage GetMempoolEntryRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetMempoolEntryRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntryRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntryRequestMessage GetMempoolEntryRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetMempoolEntryRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntryRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetMempoolEntryRequest;
       }
@@ -1332,9 +1457,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getMempoolEntryResponse" field.</summary>
     public const int GetMempoolEntryResponseFieldNumber = 1015;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntryResponseMessage GetMempoolEntryResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetMempoolEntryResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntryResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntryResponseMessage GetMempoolEntryResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetMempoolEntryResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntryResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetMempoolEntryResponse;
       }
@@ -1343,9 +1470,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getConnectedPeerInfoRequest" field.</summary>
     public const int GetConnectedPeerInfoRequestFieldNumber = 1016;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetConnectedPeerInfoRequestMessage GetConnectedPeerInfoRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetConnectedPeerInfoRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetConnectedPeerInfoRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetConnectedPeerInfoRequestMessage GetConnectedPeerInfoRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetConnectedPeerInfoRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetConnectedPeerInfoRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetConnectedPeerInfoRequest;
       }
@@ -1354,9 +1483,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getConnectedPeerInfoResponse" field.</summary>
     public const int GetConnectedPeerInfoResponseFieldNumber = 1017;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetConnectedPeerInfoResponseMessage GetConnectedPeerInfoResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetConnectedPeerInfoResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetConnectedPeerInfoResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetConnectedPeerInfoResponseMessage GetConnectedPeerInfoResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetConnectedPeerInfoResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetConnectedPeerInfoResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetConnectedPeerInfoResponse;
       }
@@ -1365,9 +1496,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "addPeerRequest" field.</summary>
     public const int AddPeerRequestFieldNumber = 1018;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.AddPeerRequestMessage AddPeerRequest {
-      get { return payloadCase_ == PayloadOneofCase.AddPeerRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.AddPeerRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.AddPeerRequestMessage AddPeerRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.AddPeerRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.AddPeerRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.AddPeerRequest;
       }
@@ -1376,9 +1509,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "addPeerResponse" field.</summary>
     public const int AddPeerResponseFieldNumber = 1019;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.AddPeerResponseMessage AddPeerResponse {
-      get { return payloadCase_ == PayloadOneofCase.AddPeerResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.AddPeerResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.AddPeerResponseMessage AddPeerResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.AddPeerResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.AddPeerResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.AddPeerResponse;
       }
@@ -1387,9 +1522,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "submitTransactionRequest" field.</summary>
     public const int SubmitTransactionRequestFieldNumber = 1020;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitTransactionRequestMessage SubmitTransactionRequest {
-      get { return payloadCase_ == PayloadOneofCase.SubmitTransactionRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitTransactionRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitTransactionRequestMessage SubmitTransactionRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.SubmitTransactionRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitTransactionRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.SubmitTransactionRequest;
       }
@@ -1398,9 +1535,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "submitTransactionResponse" field.</summary>
     public const int SubmitTransactionResponseFieldNumber = 1021;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitTransactionResponseMessage SubmitTransactionResponse {
-      get { return payloadCase_ == PayloadOneofCase.SubmitTransactionResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitTransactionResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitTransactionResponseMessage SubmitTransactionResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.SubmitTransactionResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitTransactionResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.SubmitTransactionResponse;
       }
@@ -1409,9 +1548,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "notifyVirtualSelectedParentChainChangedRequest" field.</summary>
     public const int NotifyVirtualSelectedParentChainChangedRequestFieldNumber = 1022;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentChainChangedRequestMessage NotifyVirtualSelectedParentChainChangedRequest {
-      get { return payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentChainChangedRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentChainChangedRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentChainChangedRequestMessage NotifyVirtualSelectedParentChainChangedRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentChainChangedRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentChainChangedRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.NotifyVirtualSelectedParentChainChangedRequest;
       }
@@ -1420,9 +1561,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "notifyVirtualSelectedParentChainChangedResponse" field.</summary>
     public const int NotifyVirtualSelectedParentChainChangedResponseFieldNumber = 1023;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentChainChangedResponseMessage NotifyVirtualSelectedParentChainChangedResponse {
-      get { return payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentChainChangedResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentChainChangedResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentChainChangedResponseMessage NotifyVirtualSelectedParentChainChangedResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentChainChangedResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentChainChangedResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.NotifyVirtualSelectedParentChainChangedResponse;
       }
@@ -1431,9 +1574,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "virtualSelectedParentChainChangedNotification" field.</summary>
     public const int VirtualSelectedParentChainChangedNotificationFieldNumber = 1024;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualSelectedParentChainChangedNotificationMessage VirtualSelectedParentChainChangedNotification {
-      get { return payloadCase_ == PayloadOneofCase.VirtualSelectedParentChainChangedNotification ? (global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualSelectedParentChainChangedNotificationMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualSelectedParentChainChangedNotificationMessage VirtualSelectedParentChainChangedNotification
+    {
+      get { return payloadCase_ == PayloadOneofCase.VirtualSelectedParentChainChangedNotification ? (global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualSelectedParentChainChangedNotificationMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.VirtualSelectedParentChainChangedNotification;
       }
@@ -1442,9 +1587,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getBlockRequest" field.</summary>
     public const int GetBlockRequestFieldNumber = 1025;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockRequestMessage GetBlockRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetBlockRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockRequestMessage GetBlockRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetBlockRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetBlockRequest;
       }
@@ -1453,9 +1600,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getBlockResponse" field.</summary>
     public const int GetBlockResponseFieldNumber = 1026;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockResponseMessage GetBlockResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetBlockResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockResponseMessage GetBlockResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetBlockResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetBlockResponse;
       }
@@ -1464,9 +1613,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getSubnetworkRequest" field.</summary>
     public const int GetSubnetworkRequestFieldNumber = 1027;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetSubnetworkRequestMessage GetSubnetworkRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetSubnetworkRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetSubnetworkRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetSubnetworkRequestMessage GetSubnetworkRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetSubnetworkRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetSubnetworkRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetSubnetworkRequest;
       }
@@ -1475,9 +1626,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getSubnetworkResponse" field.</summary>
     public const int GetSubnetworkResponseFieldNumber = 1028;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetSubnetworkResponseMessage GetSubnetworkResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetSubnetworkResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetSubnetworkResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetSubnetworkResponseMessage GetSubnetworkResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetSubnetworkResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetSubnetworkResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetSubnetworkResponse;
       }
@@ -1486,9 +1639,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getVirtualSelectedParentChainFromBlockRequest" field.</summary>
     public const int GetVirtualSelectedParentChainFromBlockRequestFieldNumber = 1029;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentChainFromBlockRequestMessage GetVirtualSelectedParentChainFromBlockRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentChainFromBlockRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentChainFromBlockRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentChainFromBlockRequestMessage GetVirtualSelectedParentChainFromBlockRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentChainFromBlockRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentChainFromBlockRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetVirtualSelectedParentChainFromBlockRequest;
       }
@@ -1497,9 +1652,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getVirtualSelectedParentChainFromBlockResponse" field.</summary>
     public const int GetVirtualSelectedParentChainFromBlockResponseFieldNumber = 1030;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentChainFromBlockResponseMessage GetVirtualSelectedParentChainFromBlockResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentChainFromBlockResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentChainFromBlockResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentChainFromBlockResponseMessage GetVirtualSelectedParentChainFromBlockResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentChainFromBlockResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentChainFromBlockResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetVirtualSelectedParentChainFromBlockResponse;
       }
@@ -1508,9 +1665,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getBlocksRequest" field.</summary>
     public const int GetBlocksRequestFieldNumber = 1031;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlocksRequestMessage GetBlocksRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetBlocksRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlocksRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlocksRequestMessage GetBlocksRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetBlocksRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlocksRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetBlocksRequest;
       }
@@ -1519,9 +1678,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getBlocksResponse" field.</summary>
     public const int GetBlocksResponseFieldNumber = 1032;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlocksResponseMessage GetBlocksResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetBlocksResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlocksResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlocksResponseMessage GetBlocksResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetBlocksResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlocksResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetBlocksResponse;
       }
@@ -1530,9 +1691,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getBlockCountRequest" field.</summary>
     public const int GetBlockCountRequestFieldNumber = 1033;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockCountRequestMessage GetBlockCountRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetBlockCountRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockCountRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockCountRequestMessage GetBlockCountRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetBlockCountRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockCountRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetBlockCountRequest;
       }
@@ -1541,9 +1704,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getBlockCountResponse" field.</summary>
     public const int GetBlockCountResponseFieldNumber = 1034;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockCountResponseMessage GetBlockCountResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetBlockCountResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockCountResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockCountResponseMessage GetBlockCountResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetBlockCountResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockCountResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetBlockCountResponse;
       }
@@ -1552,9 +1717,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getBlockDagInfoRequest" field.</summary>
     public const int GetBlockDagInfoRequestFieldNumber = 1035;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockDagInfoRequestMessage GetBlockDagInfoRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetBlockDagInfoRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockDagInfoRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockDagInfoRequestMessage GetBlockDagInfoRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetBlockDagInfoRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockDagInfoRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetBlockDagInfoRequest;
       }
@@ -1563,9 +1730,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getBlockDagInfoResponse" field.</summary>
     public const int GetBlockDagInfoResponseFieldNumber = 1036;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockDagInfoResponseMessage GetBlockDagInfoResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetBlockDagInfoResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockDagInfoResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockDagInfoResponseMessage GetBlockDagInfoResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetBlockDagInfoResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockDagInfoResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetBlockDagInfoResponse;
       }
@@ -1574,9 +1743,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "resolveFinalityConflictRequest" field.</summary>
     public const int ResolveFinalityConflictRequestFieldNumber = 1037;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.ResolveFinalityConflictRequestMessage ResolveFinalityConflictRequest {
-      get { return payloadCase_ == PayloadOneofCase.ResolveFinalityConflictRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.ResolveFinalityConflictRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.ResolveFinalityConflictRequestMessage ResolveFinalityConflictRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.ResolveFinalityConflictRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.ResolveFinalityConflictRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.ResolveFinalityConflictRequest;
       }
@@ -1585,9 +1756,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "resolveFinalityConflictResponse" field.</summary>
     public const int ResolveFinalityConflictResponseFieldNumber = 1038;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.ResolveFinalityConflictResponseMessage ResolveFinalityConflictResponse {
-      get { return payloadCase_ == PayloadOneofCase.ResolveFinalityConflictResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.ResolveFinalityConflictResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.ResolveFinalityConflictResponseMessage ResolveFinalityConflictResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.ResolveFinalityConflictResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.ResolveFinalityConflictResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.ResolveFinalityConflictResponse;
       }
@@ -1596,9 +1769,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "notifyFinalityConflictsRequest" field.</summary>
     public const int NotifyFinalityConflictsRequestFieldNumber = 1039;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyFinalityConflictsRequestMessage NotifyFinalityConflictsRequest {
-      get { return payloadCase_ == PayloadOneofCase.NotifyFinalityConflictsRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyFinalityConflictsRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyFinalityConflictsRequestMessage NotifyFinalityConflictsRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.NotifyFinalityConflictsRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyFinalityConflictsRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.NotifyFinalityConflictsRequest;
       }
@@ -1607,9 +1782,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "notifyFinalityConflictsResponse" field.</summary>
     public const int NotifyFinalityConflictsResponseFieldNumber = 1040;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyFinalityConflictsResponseMessage NotifyFinalityConflictsResponse {
-      get { return payloadCase_ == PayloadOneofCase.NotifyFinalityConflictsResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyFinalityConflictsResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyFinalityConflictsResponseMessage NotifyFinalityConflictsResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.NotifyFinalityConflictsResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyFinalityConflictsResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.NotifyFinalityConflictsResponse;
       }
@@ -1618,9 +1795,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "finalityConflictNotification" field.</summary>
     public const int FinalityConflictNotificationFieldNumber = 1041;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.FinalityConflictNotificationMessage FinalityConflictNotification {
-      get { return payloadCase_ == PayloadOneofCase.FinalityConflictNotification ? (global::Miningcore.Blockchain.Kaspa.Kaspad.FinalityConflictNotificationMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.FinalityConflictNotificationMessage FinalityConflictNotification
+    {
+      get { return payloadCase_ == PayloadOneofCase.FinalityConflictNotification ? (global::Miningcore.Blockchain.Kaspa.Kaspad.FinalityConflictNotificationMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.FinalityConflictNotification;
       }
@@ -1629,9 +1808,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "finalityConflictResolvedNotification" field.</summary>
     public const int FinalityConflictResolvedNotificationFieldNumber = 1042;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.FinalityConflictResolvedNotificationMessage FinalityConflictResolvedNotification {
-      get { return payloadCase_ == PayloadOneofCase.FinalityConflictResolvedNotification ? (global::Miningcore.Blockchain.Kaspa.Kaspad.FinalityConflictResolvedNotificationMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.FinalityConflictResolvedNotificationMessage FinalityConflictResolvedNotification
+    {
+      get { return payloadCase_ == PayloadOneofCase.FinalityConflictResolvedNotification ? (global::Miningcore.Blockchain.Kaspa.Kaspad.FinalityConflictResolvedNotificationMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.FinalityConflictResolvedNotification;
       }
@@ -1640,9 +1821,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getMempoolEntriesRequest" field.</summary>
     public const int GetMempoolEntriesRequestFieldNumber = 1043;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesRequestMessage GetMempoolEntriesRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetMempoolEntriesRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesRequestMessage GetMempoolEntriesRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetMempoolEntriesRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetMempoolEntriesRequest;
       }
@@ -1651,9 +1834,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getMempoolEntriesResponse" field.</summary>
     public const int GetMempoolEntriesResponseFieldNumber = 1044;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesResponseMessage GetMempoolEntriesResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetMempoolEntriesResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesResponseMessage GetMempoolEntriesResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetMempoolEntriesResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetMempoolEntriesResponse;
       }
@@ -1662,9 +1847,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "shutDownRequest" field.</summary>
     public const int ShutDownRequestFieldNumber = 1045;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.ShutDownRequestMessage ShutDownRequest {
-      get { return payloadCase_ == PayloadOneofCase.ShutDownRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.ShutDownRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.ShutDownRequestMessage ShutDownRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.ShutDownRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.ShutDownRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.ShutDownRequest;
       }
@@ -1673,9 +1860,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "shutDownResponse" field.</summary>
     public const int ShutDownResponseFieldNumber = 1046;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.ShutDownResponseMessage ShutDownResponse {
-      get { return payloadCase_ == PayloadOneofCase.ShutDownResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.ShutDownResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.ShutDownResponseMessage ShutDownResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.ShutDownResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.ShutDownResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.ShutDownResponse;
       }
@@ -1684,9 +1873,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getHeadersRequest" field.</summary>
     public const int GetHeadersRequestFieldNumber = 1047;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetHeadersRequestMessage GetHeadersRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetHeadersRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetHeadersRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetHeadersRequestMessage GetHeadersRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetHeadersRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetHeadersRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetHeadersRequest;
       }
@@ -1695,9 +1886,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getHeadersResponse" field.</summary>
     public const int GetHeadersResponseFieldNumber = 1048;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetHeadersResponseMessage GetHeadersResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetHeadersResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetHeadersResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetHeadersResponseMessage GetHeadersResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetHeadersResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetHeadersResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetHeadersResponse;
       }
@@ -1706,9 +1899,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "notifyUtxosChangedRequest" field.</summary>
     public const int NotifyUtxosChangedRequestFieldNumber = 1049;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyUtxosChangedRequestMessage NotifyUtxosChangedRequest {
-      get { return payloadCase_ == PayloadOneofCase.NotifyUtxosChangedRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyUtxosChangedRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyUtxosChangedRequestMessage NotifyUtxosChangedRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.NotifyUtxosChangedRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyUtxosChangedRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.NotifyUtxosChangedRequest;
       }
@@ -1717,9 +1912,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "notifyUtxosChangedResponse" field.</summary>
     public const int NotifyUtxosChangedResponseFieldNumber = 1050;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyUtxosChangedResponseMessage NotifyUtxosChangedResponse {
-      get { return payloadCase_ == PayloadOneofCase.NotifyUtxosChangedResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyUtxosChangedResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyUtxosChangedResponseMessage NotifyUtxosChangedResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.NotifyUtxosChangedResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyUtxosChangedResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.NotifyUtxosChangedResponse;
       }
@@ -1728,9 +1925,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "utxosChangedNotification" field.</summary>
     public const int UtxosChangedNotificationFieldNumber = 1051;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.UtxosChangedNotificationMessage UtxosChangedNotification {
-      get { return payloadCase_ == PayloadOneofCase.UtxosChangedNotification ? (global::Miningcore.Blockchain.Kaspa.Kaspad.UtxosChangedNotificationMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.UtxosChangedNotificationMessage UtxosChangedNotification
+    {
+      get { return payloadCase_ == PayloadOneofCase.UtxosChangedNotification ? (global::Miningcore.Blockchain.Kaspa.Kaspad.UtxosChangedNotificationMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.UtxosChangedNotification;
       }
@@ -1739,9 +1938,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getUtxosByAddressesRequest" field.</summary>
     public const int GetUtxosByAddressesRequestFieldNumber = 1052;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetUtxosByAddressesRequestMessage GetUtxosByAddressesRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetUtxosByAddressesRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetUtxosByAddressesRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetUtxosByAddressesRequestMessage GetUtxosByAddressesRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetUtxosByAddressesRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetUtxosByAddressesRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetUtxosByAddressesRequest;
       }
@@ -1750,9 +1951,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getUtxosByAddressesResponse" field.</summary>
     public const int GetUtxosByAddressesResponseFieldNumber = 1053;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetUtxosByAddressesResponseMessage GetUtxosByAddressesResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetUtxosByAddressesResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetUtxosByAddressesResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetUtxosByAddressesResponseMessage GetUtxosByAddressesResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetUtxosByAddressesResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetUtxosByAddressesResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetUtxosByAddressesResponse;
       }
@@ -1761,9 +1964,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getVirtualSelectedParentBlueScoreRequest" field.</summary>
     public const int GetVirtualSelectedParentBlueScoreRequestFieldNumber = 1054;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentBlueScoreRequestMessage GetVirtualSelectedParentBlueScoreRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentBlueScoreRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentBlueScoreRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentBlueScoreRequestMessage GetVirtualSelectedParentBlueScoreRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentBlueScoreRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentBlueScoreRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetVirtualSelectedParentBlueScoreRequest;
       }
@@ -1772,9 +1977,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getVirtualSelectedParentBlueScoreResponse" field.</summary>
     public const int GetVirtualSelectedParentBlueScoreResponseFieldNumber = 1055;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentBlueScoreResponseMessage GetVirtualSelectedParentBlueScoreResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentBlueScoreResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentBlueScoreResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentBlueScoreResponseMessage GetVirtualSelectedParentBlueScoreResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentBlueScoreResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentBlueScoreResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetVirtualSelectedParentBlueScoreResponse;
       }
@@ -1783,9 +1990,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "notifyVirtualSelectedParentBlueScoreChangedRequest" field.</summary>
     public const int NotifyVirtualSelectedParentBlueScoreChangedRequestFieldNumber = 1056;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentBlueScoreChangedRequestMessage NotifyVirtualSelectedParentBlueScoreChangedRequest {
-      get { return payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentBlueScoreChangedRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentBlueScoreChangedRequestMessage NotifyVirtualSelectedParentBlueScoreChangedRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentBlueScoreChangedRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedRequest;
       }
@@ -1794,9 +2003,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "notifyVirtualSelectedParentBlueScoreChangedResponse" field.</summary>
     public const int NotifyVirtualSelectedParentBlueScoreChangedResponseFieldNumber = 1057;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentBlueScoreChangedResponseMessage NotifyVirtualSelectedParentBlueScoreChangedResponse {
-      get { return payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentBlueScoreChangedResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentBlueScoreChangedResponseMessage NotifyVirtualSelectedParentBlueScoreChangedResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentBlueScoreChangedResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedResponse;
       }
@@ -1805,9 +2016,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "virtualSelectedParentBlueScoreChangedNotification" field.</summary>
     public const int VirtualSelectedParentBlueScoreChangedNotificationFieldNumber = 1058;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualSelectedParentBlueScoreChangedNotificationMessage VirtualSelectedParentBlueScoreChangedNotification {
-      get { return payloadCase_ == PayloadOneofCase.VirtualSelectedParentBlueScoreChangedNotification ? (global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualSelectedParentBlueScoreChangedNotificationMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualSelectedParentBlueScoreChangedNotificationMessage VirtualSelectedParentBlueScoreChangedNotification
+    {
+      get { return payloadCase_ == PayloadOneofCase.VirtualSelectedParentBlueScoreChangedNotification ? (global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualSelectedParentBlueScoreChangedNotificationMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.VirtualSelectedParentBlueScoreChangedNotification;
       }
@@ -1816,9 +2029,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "banRequest" field.</summary>
     public const int BanRequestFieldNumber = 1059;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.BanRequestMessage BanRequest {
-      get { return payloadCase_ == PayloadOneofCase.BanRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.BanRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.BanRequestMessage BanRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.BanRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.BanRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.BanRequest;
       }
@@ -1827,9 +2042,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "banResponse" field.</summary>
     public const int BanResponseFieldNumber = 1060;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.BanResponseMessage BanResponse {
-      get { return payloadCase_ == PayloadOneofCase.BanResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.BanResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.BanResponseMessage BanResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.BanResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.BanResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.BanResponse;
       }
@@ -1838,9 +2055,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "unbanRequest" field.</summary>
     public const int UnbanRequestFieldNumber = 1061;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.UnbanRequestMessage UnbanRequest {
-      get { return payloadCase_ == PayloadOneofCase.UnbanRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.UnbanRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.UnbanRequestMessage UnbanRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.UnbanRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.UnbanRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.UnbanRequest;
       }
@@ -1849,9 +2068,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "unbanResponse" field.</summary>
     public const int UnbanResponseFieldNumber = 1062;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.UnbanResponseMessage UnbanResponse {
-      get { return payloadCase_ == PayloadOneofCase.UnbanResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.UnbanResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.UnbanResponseMessage UnbanResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.UnbanResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.UnbanResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.UnbanResponse;
       }
@@ -1860,9 +2081,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getInfoRequest" field.</summary>
     public const int GetInfoRequestFieldNumber = 1063;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetInfoRequestMessage GetInfoRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetInfoRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetInfoRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetInfoRequestMessage GetInfoRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetInfoRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetInfoRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetInfoRequest;
       }
@@ -1871,9 +2094,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getInfoResponse" field.</summary>
     public const int GetInfoResponseFieldNumber = 1064;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetInfoResponseMessage GetInfoResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetInfoResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetInfoResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetInfoResponseMessage GetInfoResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetInfoResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetInfoResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetInfoResponse;
       }
@@ -1882,9 +2107,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "stopNotifyingUtxosChangedRequest" field.</summary>
     public const int StopNotifyingUtxosChangedRequestFieldNumber = 1065;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingUtxosChangedRequestMessage StopNotifyingUtxosChangedRequest {
-      get { return payloadCase_ == PayloadOneofCase.StopNotifyingUtxosChangedRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingUtxosChangedRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingUtxosChangedRequestMessage StopNotifyingUtxosChangedRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.StopNotifyingUtxosChangedRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingUtxosChangedRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.StopNotifyingUtxosChangedRequest;
       }
@@ -1893,9 +2120,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "stopNotifyingUtxosChangedResponse" field.</summary>
     public const int StopNotifyingUtxosChangedResponseFieldNumber = 1066;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingUtxosChangedResponseMessage StopNotifyingUtxosChangedResponse {
-      get { return payloadCase_ == PayloadOneofCase.StopNotifyingUtxosChangedResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingUtxosChangedResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingUtxosChangedResponseMessage StopNotifyingUtxosChangedResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.StopNotifyingUtxosChangedResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingUtxosChangedResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.StopNotifyingUtxosChangedResponse;
       }
@@ -1904,9 +2133,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "notifyPruningPointUTXOSetOverrideRequest" field.</summary>
     public const int NotifyPruningPointUTXOSetOverrideRequestFieldNumber = 1067;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyPruningPointUTXOSetOverrideRequestMessage NotifyPruningPointUTXOSetOverrideRequest {
-      get { return payloadCase_ == PayloadOneofCase.NotifyPruningPointUTXOSetOverrideRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyPruningPointUTXOSetOverrideRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyPruningPointUTXOSetOverrideRequestMessage NotifyPruningPointUTXOSetOverrideRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.NotifyPruningPointUTXOSetOverrideRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyPruningPointUTXOSetOverrideRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.NotifyPruningPointUTXOSetOverrideRequest;
       }
@@ -1915,9 +2146,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "notifyPruningPointUTXOSetOverrideResponse" field.</summary>
     public const int NotifyPruningPointUTXOSetOverrideResponseFieldNumber = 1068;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyPruningPointUTXOSetOverrideResponseMessage NotifyPruningPointUTXOSetOverrideResponse {
-      get { return payloadCase_ == PayloadOneofCase.NotifyPruningPointUTXOSetOverrideResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyPruningPointUTXOSetOverrideResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyPruningPointUTXOSetOverrideResponseMessage NotifyPruningPointUTXOSetOverrideResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.NotifyPruningPointUTXOSetOverrideResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyPruningPointUTXOSetOverrideResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.NotifyPruningPointUTXOSetOverrideResponse;
       }
@@ -1926,9 +2159,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "pruningPointUTXOSetOverrideNotification" field.</summary>
     public const int PruningPointUTXOSetOverrideNotificationFieldNumber = 1069;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointUTXOSetOverrideNotificationMessage PruningPointUTXOSetOverrideNotification {
-      get { return payloadCase_ == PayloadOneofCase.PruningPointUTXOSetOverrideNotification ? (global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointUTXOSetOverrideNotificationMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointUTXOSetOverrideNotificationMessage PruningPointUTXOSetOverrideNotification
+    {
+      get { return payloadCase_ == PayloadOneofCase.PruningPointUTXOSetOverrideNotification ? (global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointUTXOSetOverrideNotificationMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.PruningPointUTXOSetOverrideNotification;
       }
@@ -1937,9 +2172,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "stopNotifyingPruningPointUTXOSetOverrideRequest" field.</summary>
     public const int StopNotifyingPruningPointUTXOSetOverrideRequestFieldNumber = 1070;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingPruningPointUTXOSetOverrideRequestMessage StopNotifyingPruningPointUTXOSetOverrideRequest {
-      get { return payloadCase_ == PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingPruningPointUTXOSetOverrideRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingPruningPointUTXOSetOverrideRequestMessage StopNotifyingPruningPointUTXOSetOverrideRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingPruningPointUTXOSetOverrideRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideRequest;
       }
@@ -1948,9 +2185,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "stopNotifyingPruningPointUTXOSetOverrideResponse" field.</summary>
     public const int StopNotifyingPruningPointUTXOSetOverrideResponseFieldNumber = 1071;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingPruningPointUTXOSetOverrideResponseMessage StopNotifyingPruningPointUTXOSetOverrideResponse {
-      get { return payloadCase_ == PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingPruningPointUTXOSetOverrideResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingPruningPointUTXOSetOverrideResponseMessage StopNotifyingPruningPointUTXOSetOverrideResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingPruningPointUTXOSetOverrideResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideResponse;
       }
@@ -1959,9 +2198,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "estimateNetworkHashesPerSecondRequest" field.</summary>
     public const int EstimateNetworkHashesPerSecondRequestFieldNumber = 1072;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.EstimateNetworkHashesPerSecondRequestMessage EstimateNetworkHashesPerSecondRequest {
-      get { return payloadCase_ == PayloadOneofCase.EstimateNetworkHashesPerSecondRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.EstimateNetworkHashesPerSecondRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.EstimateNetworkHashesPerSecondRequestMessage EstimateNetworkHashesPerSecondRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.EstimateNetworkHashesPerSecondRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.EstimateNetworkHashesPerSecondRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.EstimateNetworkHashesPerSecondRequest;
       }
@@ -1970,9 +2211,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "estimateNetworkHashesPerSecondResponse" field.</summary>
     public const int EstimateNetworkHashesPerSecondResponseFieldNumber = 1073;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.EstimateNetworkHashesPerSecondResponseMessage EstimateNetworkHashesPerSecondResponse {
-      get { return payloadCase_ == PayloadOneofCase.EstimateNetworkHashesPerSecondResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.EstimateNetworkHashesPerSecondResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.EstimateNetworkHashesPerSecondResponseMessage EstimateNetworkHashesPerSecondResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.EstimateNetworkHashesPerSecondResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.EstimateNetworkHashesPerSecondResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.EstimateNetworkHashesPerSecondResponse;
       }
@@ -1981,9 +2224,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "notifyVirtualDaaScoreChangedRequest" field.</summary>
     public const int NotifyVirtualDaaScoreChangedRequestFieldNumber = 1074;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualDaaScoreChangedRequestMessage NotifyVirtualDaaScoreChangedRequest {
-      get { return payloadCase_ == PayloadOneofCase.NotifyVirtualDaaScoreChangedRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualDaaScoreChangedRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualDaaScoreChangedRequestMessage NotifyVirtualDaaScoreChangedRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.NotifyVirtualDaaScoreChangedRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualDaaScoreChangedRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.NotifyVirtualDaaScoreChangedRequest;
       }
@@ -1992,9 +2237,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "notifyVirtualDaaScoreChangedResponse" field.</summary>
     public const int NotifyVirtualDaaScoreChangedResponseFieldNumber = 1075;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualDaaScoreChangedResponseMessage NotifyVirtualDaaScoreChangedResponse {
-      get { return payloadCase_ == PayloadOneofCase.NotifyVirtualDaaScoreChangedResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualDaaScoreChangedResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualDaaScoreChangedResponseMessage NotifyVirtualDaaScoreChangedResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.NotifyVirtualDaaScoreChangedResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualDaaScoreChangedResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.NotifyVirtualDaaScoreChangedResponse;
       }
@@ -2003,9 +2250,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "virtualDaaScoreChangedNotification" field.</summary>
     public const int VirtualDaaScoreChangedNotificationFieldNumber = 1076;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualDaaScoreChangedNotificationMessage VirtualDaaScoreChangedNotification {
-      get { return payloadCase_ == PayloadOneofCase.VirtualDaaScoreChangedNotification ? (global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualDaaScoreChangedNotificationMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualDaaScoreChangedNotificationMessage VirtualDaaScoreChangedNotification
+    {
+      get { return payloadCase_ == PayloadOneofCase.VirtualDaaScoreChangedNotification ? (global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualDaaScoreChangedNotificationMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.VirtualDaaScoreChangedNotification;
       }
@@ -2014,9 +2263,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getBalanceByAddressRequest" field.</summary>
     public const int GetBalanceByAddressRequestFieldNumber = 1077;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalanceByAddressRequestMessage GetBalanceByAddressRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetBalanceByAddressRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalanceByAddressRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalanceByAddressRequestMessage GetBalanceByAddressRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetBalanceByAddressRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalanceByAddressRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetBalanceByAddressRequest;
       }
@@ -2025,9 +2276,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getBalanceByAddressResponse" field.</summary>
     public const int GetBalanceByAddressResponseFieldNumber = 1078;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalanceByAddressResponseMessage GetBalanceByAddressResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetBalanceByAddressResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalanceByAddressResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalanceByAddressResponseMessage GetBalanceByAddressResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetBalanceByAddressResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalanceByAddressResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetBalanceByAddressResponse;
       }
@@ -2036,9 +2289,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getBalancesByAddressesRequest" field.</summary>
     public const int GetBalancesByAddressesRequestFieldNumber = 1079;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalancesByAddressesRequestMessage GetBalancesByAddressesRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetBalancesByAddressesRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalancesByAddressesRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalancesByAddressesRequestMessage GetBalancesByAddressesRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetBalancesByAddressesRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalancesByAddressesRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetBalancesByAddressesRequest;
       }
@@ -2047,9 +2302,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getBalancesByAddressesResponse" field.</summary>
     public const int GetBalancesByAddressesResponseFieldNumber = 1080;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalancesByAddressesResponseMessage GetBalancesByAddressesResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetBalancesByAddressesResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalancesByAddressesResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalancesByAddressesResponseMessage GetBalancesByAddressesResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetBalancesByAddressesResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalancesByAddressesResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetBalancesByAddressesResponse;
       }
@@ -2058,9 +2315,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "notifyNewBlockTemplateRequest" field.</summary>
     public const int NotifyNewBlockTemplateRequestFieldNumber = 1081;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyNewBlockTemplateRequestMessage NotifyNewBlockTemplateRequest {
-      get { return payloadCase_ == PayloadOneofCase.NotifyNewBlockTemplateRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyNewBlockTemplateRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyNewBlockTemplateRequestMessage NotifyNewBlockTemplateRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.NotifyNewBlockTemplateRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyNewBlockTemplateRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.NotifyNewBlockTemplateRequest;
       }
@@ -2069,9 +2328,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "notifyNewBlockTemplateResponse" field.</summary>
     public const int NotifyNewBlockTemplateResponseFieldNumber = 1082;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyNewBlockTemplateResponseMessage NotifyNewBlockTemplateResponse {
-      get { return payloadCase_ == PayloadOneofCase.NotifyNewBlockTemplateResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyNewBlockTemplateResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyNewBlockTemplateResponseMessage NotifyNewBlockTemplateResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.NotifyNewBlockTemplateResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyNewBlockTemplateResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.NotifyNewBlockTemplateResponse;
       }
@@ -2080,9 +2341,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "newBlockTemplateNotification" field.</summary>
     public const int NewBlockTemplateNotificationFieldNumber = 1083;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.NewBlockTemplateNotificationMessage NewBlockTemplateNotification {
-      get { return payloadCase_ == PayloadOneofCase.NewBlockTemplateNotification ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NewBlockTemplateNotificationMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.NewBlockTemplateNotificationMessage NewBlockTemplateNotification
+    {
+      get { return payloadCase_ == PayloadOneofCase.NewBlockTemplateNotification ? (global::Miningcore.Blockchain.Kaspa.Kaspad.NewBlockTemplateNotificationMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.NewBlockTemplateNotification;
       }
@@ -2091,9 +2354,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getMempoolEntriesByAddressesRequest" field.</summary>
     public const int GetMempoolEntriesByAddressesRequestFieldNumber = 1084;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesByAddressesRequestMessage GetMempoolEntriesByAddressesRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetMempoolEntriesByAddressesRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesByAddressesRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesByAddressesRequestMessage GetMempoolEntriesByAddressesRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetMempoolEntriesByAddressesRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesByAddressesRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetMempoolEntriesByAddressesRequest;
       }
@@ -2102,9 +2367,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getMempoolEntriesByAddressesResponse" field.</summary>
     public const int GetMempoolEntriesByAddressesResponseFieldNumber = 1085;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesByAddressesResponseMessage GetMempoolEntriesByAddressesResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetMempoolEntriesByAddressesResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesByAddressesResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesByAddressesResponseMessage GetMempoolEntriesByAddressesResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetMempoolEntriesByAddressesResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesByAddressesResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetMempoolEntriesByAddressesResponse;
       }
@@ -2113,9 +2380,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getCoinSupplyRequest" field.</summary>
     public const int GetCoinSupplyRequestFieldNumber = 1086;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetCoinSupplyRequestMessage GetCoinSupplyRequest {
-      get { return payloadCase_ == PayloadOneofCase.GetCoinSupplyRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetCoinSupplyRequestMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetCoinSupplyRequestMessage GetCoinSupplyRequest
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetCoinSupplyRequest ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetCoinSupplyRequestMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetCoinSupplyRequest;
       }
@@ -2124,9 +2393,11 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     /// <summary>Field number for the "getCoinSupplyResponse" field.</summary>
     public const int GetCoinSupplyResponseFieldNumber = 1087;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetCoinSupplyResponseMessage GetCoinSupplyResponse {
-      get { return payloadCase_ == PayloadOneofCase.GetCoinSupplyResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetCoinSupplyResponseMessage) payload_ : null; }
-      set {
+    public global::Miningcore.Blockchain.Kaspa.Kaspad.GetCoinSupplyResponseMessage GetCoinSupplyResponse
+    {
+      get { return payloadCase_ == PayloadOneofCase.GetCoinSupplyResponse ? (global::Miningcore.Blockchain.Kaspa.Kaspad.GetCoinSupplyResponseMessage)payload_ : null; }
+      set
+      {
         payload_ = value;
         payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.GetCoinSupplyResponse;
       }
@@ -2134,7 +2405,8 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
 
     private object payload_;
     /// <summary>Enum of possible cases for the "payload" oneof.</summary>
-    public enum PayloadOneofCase {
+    public enum PayloadOneofCase
+    {
       None = 0,
       Addresses = 1,
       Block = 2,
@@ -2269,27 +2541,33 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     }
     private PayloadOneofCase payloadCase_ = PayloadOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public PayloadOneofCase PayloadCase {
+    public PayloadOneofCase PayloadCase
+    {
       get { return payloadCase_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearPayload() {
+    public void ClearPayload()
+    {
       payloadCase_ = PayloadOneofCase.None;
       payload_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as KaspadMessage);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(KaspadMessage other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(KaspadMessage other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
       if (!object.Equals(Addresses, other.Addresses)) return false;
@@ -2427,7 +2705,8 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       if (payloadCase_ == PayloadOneofCase.Addresses) hash ^= Addresses.GetHashCode();
       if (payloadCase_ == PayloadOneofCase.Block) hash ^= Block.GetHashCode();
@@ -2559,1726 +2838,2125 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
       if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesByAddressesResponse) hash ^= GetMempoolEntriesByAddressesResponse.GetHashCode();
       if (payloadCase_ == PayloadOneofCase.GetCoinSupplyRequest) hash ^= GetCoinSupplyRequest.GetHashCode();
       if (payloadCase_ == PayloadOneofCase.GetCoinSupplyResponse) hash ^= GetCoinSupplyResponse.GetHashCode();
-      hash ^= (int) payloadCase_;
-      if (_unknownFields != null) {
+      hash ^= (int)payloadCase_;
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (payloadCase_ == PayloadOneofCase.Addresses) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
+      if (payloadCase_ == PayloadOneofCase.Addresses)
+      {
         output.WriteRawTag(10);
         output.WriteMessage(Addresses);
       }
-      if (payloadCase_ == PayloadOneofCase.Block) {
+      if (payloadCase_ == PayloadOneofCase.Block)
+      {
         output.WriteRawTag(18);
         output.WriteMessage(Block);
       }
-      if (payloadCase_ == PayloadOneofCase.Transaction) {
+      if (payloadCase_ == PayloadOneofCase.Transaction)
+      {
         output.WriteRawTag(26);
         output.WriteMessage(Transaction);
       }
-      if (payloadCase_ == PayloadOneofCase.BlockLocator) {
+      if (payloadCase_ == PayloadOneofCase.BlockLocator)
+      {
         output.WriteRawTag(42);
         output.WriteMessage(BlockLocator);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestAddresses) {
+      if (payloadCase_ == PayloadOneofCase.RequestAddresses)
+      {
         output.WriteRawTag(50);
         output.WriteMessage(RequestAddresses);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestRelayBlocks) {
+      if (payloadCase_ == PayloadOneofCase.RequestRelayBlocks)
+      {
         output.WriteRawTag(82);
         output.WriteMessage(RequestRelayBlocks);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestTransactions) {
+      if (payloadCase_ == PayloadOneofCase.RequestTransactions)
+      {
         output.WriteRawTag(98);
         output.WriteMessage(RequestTransactions);
       }
-      if (payloadCase_ == PayloadOneofCase.IbdBlock) {
+      if (payloadCase_ == PayloadOneofCase.IbdBlock)
+      {
         output.WriteRawTag(106);
         output.WriteMessage(IbdBlock);
       }
-      if (payloadCase_ == PayloadOneofCase.InvRelayBlock) {
+      if (payloadCase_ == PayloadOneofCase.InvRelayBlock)
+      {
         output.WriteRawTag(114);
         output.WriteMessage(InvRelayBlock);
       }
-      if (payloadCase_ == PayloadOneofCase.InvTransactions) {
+      if (payloadCase_ == PayloadOneofCase.InvTransactions)
+      {
         output.WriteRawTag(122);
         output.WriteMessage(InvTransactions);
       }
-      if (payloadCase_ == PayloadOneofCase.Ping) {
+      if (payloadCase_ == PayloadOneofCase.Ping)
+      {
         output.WriteRawTag(130, 1);
         output.WriteMessage(Ping);
       }
-      if (payloadCase_ == PayloadOneofCase.Pong) {
+      if (payloadCase_ == PayloadOneofCase.Pong)
+      {
         output.WriteRawTag(138, 1);
         output.WriteMessage(Pong);
       }
-      if (payloadCase_ == PayloadOneofCase.Verack) {
+      if (payloadCase_ == PayloadOneofCase.Verack)
+      {
         output.WriteRawTag(154, 1);
         output.WriteMessage(Verack);
       }
-      if (payloadCase_ == PayloadOneofCase.Version) {
+      if (payloadCase_ == PayloadOneofCase.Version)
+      {
         output.WriteRawTag(162, 1);
         output.WriteMessage(Version);
       }
-      if (payloadCase_ == PayloadOneofCase.TransactionNotFound) {
+      if (payloadCase_ == PayloadOneofCase.TransactionNotFound)
+      {
         output.WriteRawTag(170, 1);
         output.WriteMessage(TransactionNotFound);
       }
-      if (payloadCase_ == PayloadOneofCase.Reject) {
+      if (payloadCase_ == PayloadOneofCase.Reject)
+      {
         output.WriteRawTag(178, 1);
         output.WriteMessage(Reject);
       }
-      if (payloadCase_ == PayloadOneofCase.PruningPointUtxoSetChunk) {
+      if (payloadCase_ == PayloadOneofCase.PruningPointUtxoSetChunk)
+      {
         output.WriteRawTag(202, 1);
         output.WriteMessage(PruningPointUtxoSetChunk);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestIBDBlocks) {
+      if (payloadCase_ == PayloadOneofCase.RequestIBDBlocks)
+      {
         output.WriteRawTag(210, 1);
         output.WriteMessage(RequestIBDBlocks);
       }
-      if (payloadCase_ == PayloadOneofCase.UnexpectedPruningPoint) {
+      if (payloadCase_ == PayloadOneofCase.UnexpectedPruningPoint)
+      {
         output.WriteRawTag(218, 1);
         output.WriteMessage(UnexpectedPruningPoint);
       }
-      if (payloadCase_ == PayloadOneofCase.IbdBlockLocator) {
+      if (payloadCase_ == PayloadOneofCase.IbdBlockLocator)
+      {
         output.WriteRawTag(242, 1);
         output.WriteMessage(IbdBlockLocator);
       }
-      if (payloadCase_ == PayloadOneofCase.IbdBlockLocatorHighestHash) {
+      if (payloadCase_ == PayloadOneofCase.IbdBlockLocatorHighestHash)
+      {
         output.WriteRawTag(250, 1);
         output.WriteMessage(IbdBlockLocatorHighestHash);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestNextPruningPointUtxoSetChunk) {
+      if (payloadCase_ == PayloadOneofCase.RequestNextPruningPointUtxoSetChunk)
+      {
         output.WriteRawTag(138, 2);
         output.WriteMessage(RequestNextPruningPointUtxoSetChunk);
       }
-      if (payloadCase_ == PayloadOneofCase.DonePruningPointUtxoSetChunks) {
+      if (payloadCase_ == PayloadOneofCase.DonePruningPointUtxoSetChunks)
+      {
         output.WriteRawTag(146, 2);
         output.WriteMessage(DonePruningPointUtxoSetChunks);
       }
-      if (payloadCase_ == PayloadOneofCase.IbdBlockLocatorHighestHashNotFound) {
+      if (payloadCase_ == PayloadOneofCase.IbdBlockLocatorHighestHashNotFound)
+      {
         output.WriteRawTag(154, 2);
         output.WriteMessage(IbdBlockLocatorHighestHashNotFound);
       }
-      if (payloadCase_ == PayloadOneofCase.BlockWithTrustedData) {
+      if (payloadCase_ == PayloadOneofCase.BlockWithTrustedData)
+      {
         output.WriteRawTag(162, 2);
         output.WriteMessage(BlockWithTrustedData);
       }
-      if (payloadCase_ == PayloadOneofCase.DoneBlocksWithTrustedData) {
+      if (payloadCase_ == PayloadOneofCase.DoneBlocksWithTrustedData)
+      {
         output.WriteRawTag(170, 2);
         output.WriteMessage(DoneBlocksWithTrustedData);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestPruningPointAndItsAnticone) {
+      if (payloadCase_ == PayloadOneofCase.RequestPruningPointAndItsAnticone)
+      {
         output.WriteRawTag(194, 2);
         output.WriteMessage(RequestPruningPointAndItsAnticone);
       }
-      if (payloadCase_ == PayloadOneofCase.BlockHeaders) {
+      if (payloadCase_ == PayloadOneofCase.BlockHeaders)
+      {
         output.WriteRawTag(202, 2);
         output.WriteMessage(BlockHeaders);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestNextHeaders) {
+      if (payloadCase_ == PayloadOneofCase.RequestNextHeaders)
+      {
         output.WriteRawTag(210, 2);
         output.WriteMessage(RequestNextHeaders);
       }
-      if (payloadCase_ == PayloadOneofCase.DoneHeaders) {
+      if (payloadCase_ == PayloadOneofCase.DoneHeaders)
+      {
         output.WriteRawTag(218, 2);
         output.WriteMessage(DoneHeaders);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestPruningPointUTXOSet) {
+      if (payloadCase_ == PayloadOneofCase.RequestPruningPointUTXOSet)
+      {
         output.WriteRawTag(226, 2);
         output.WriteMessage(RequestPruningPointUTXOSet);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestHeaders) {
+      if (payloadCase_ == PayloadOneofCase.RequestHeaders)
+      {
         output.WriteRawTag(234, 2);
         output.WriteMessage(RequestHeaders);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestBlockLocator) {
+      if (payloadCase_ == PayloadOneofCase.RequestBlockLocator)
+      {
         output.WriteRawTag(242, 2);
         output.WriteMessage(RequestBlockLocator);
       }
-      if (payloadCase_ == PayloadOneofCase.PruningPoints) {
+      if (payloadCase_ == PayloadOneofCase.PruningPoints)
+      {
         output.WriteRawTag(250, 2);
         output.WriteMessage(PruningPoints);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestPruningPointProof) {
+      if (payloadCase_ == PayloadOneofCase.RequestPruningPointProof)
+      {
         output.WriteRawTag(130, 3);
         output.WriteMessage(RequestPruningPointProof);
       }
-      if (payloadCase_ == PayloadOneofCase.PruningPointProof) {
+      if (payloadCase_ == PayloadOneofCase.PruningPointProof)
+      {
         output.WriteRawTag(138, 3);
         output.WriteMessage(PruningPointProof);
       }
-      if (payloadCase_ == PayloadOneofCase.Ready) {
+      if (payloadCase_ == PayloadOneofCase.Ready)
+      {
         output.WriteRawTag(146, 3);
         output.WriteMessage(Ready);
       }
-      if (payloadCase_ == PayloadOneofCase.BlockWithTrustedDataV4) {
+      if (payloadCase_ == PayloadOneofCase.BlockWithTrustedDataV4)
+      {
         output.WriteRawTag(154, 3);
         output.WriteMessage(BlockWithTrustedDataV4);
       }
-      if (payloadCase_ == PayloadOneofCase.TrustedData) {
+      if (payloadCase_ == PayloadOneofCase.TrustedData)
+      {
         output.WriteRawTag(162, 3);
         output.WriteMessage(TrustedData);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestIBDChainBlockLocator) {
+      if (payloadCase_ == PayloadOneofCase.RequestIBDChainBlockLocator)
+      {
         output.WriteRawTag(170, 3);
         output.WriteMessage(RequestIBDChainBlockLocator);
       }
-      if (payloadCase_ == PayloadOneofCase.IbdChainBlockLocator) {
+      if (payloadCase_ == PayloadOneofCase.IbdChainBlockLocator)
+      {
         output.WriteRawTag(178, 3);
         output.WriteMessage(IbdChainBlockLocator);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestAnticone) {
+      if (payloadCase_ == PayloadOneofCase.RequestAnticone)
+      {
         output.WriteRawTag(186, 3);
         output.WriteMessage(RequestAnticone);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestNextPruningPointAndItsAnticoneBlocks) {
+      if (payloadCase_ == PayloadOneofCase.RequestNextPruningPointAndItsAnticoneBlocks)
+      {
         output.WriteRawTag(194, 3);
         output.WriteMessage(RequestNextPruningPointAndItsAnticoneBlocks);
       }
-      if (payloadCase_ == PayloadOneofCase.GetCurrentNetworkRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetCurrentNetworkRequest)
+      {
         output.WriteRawTag(202, 62);
         output.WriteMessage(GetCurrentNetworkRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetCurrentNetworkResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetCurrentNetworkResponse)
+      {
         output.WriteRawTag(210, 62);
         output.WriteMessage(GetCurrentNetworkResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.SubmitBlockRequest) {
+      if (payloadCase_ == PayloadOneofCase.SubmitBlockRequest)
+      {
         output.WriteRawTag(218, 62);
         output.WriteMessage(SubmitBlockRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.SubmitBlockResponse) {
+      if (payloadCase_ == PayloadOneofCase.SubmitBlockResponse)
+      {
         output.WriteRawTag(226, 62);
         output.WriteMessage(SubmitBlockResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlockTemplateRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetBlockTemplateRequest)
+      {
         output.WriteRawTag(234, 62);
         output.WriteMessage(GetBlockTemplateRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlockTemplateResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetBlockTemplateResponse)
+      {
         output.WriteRawTag(242, 62);
         output.WriteMessage(GetBlockTemplateResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyBlockAddedRequest) {
+      if (payloadCase_ == PayloadOneofCase.NotifyBlockAddedRequest)
+      {
         output.WriteRawTag(250, 62);
         output.WriteMessage(NotifyBlockAddedRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyBlockAddedResponse) {
+      if (payloadCase_ == PayloadOneofCase.NotifyBlockAddedResponse)
+      {
         output.WriteRawTag(130, 63);
         output.WriteMessage(NotifyBlockAddedResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.BlockAddedNotification) {
+      if (payloadCase_ == PayloadOneofCase.BlockAddedNotification)
+      {
         output.WriteRawTag(138, 63);
         output.WriteMessage(BlockAddedNotification);
       }
-      if (payloadCase_ == PayloadOneofCase.GetPeerAddressesRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetPeerAddressesRequest)
+      {
         output.WriteRawTag(146, 63);
         output.WriteMessage(GetPeerAddressesRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetPeerAddressesResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetPeerAddressesResponse)
+      {
         output.WriteRawTag(154, 63);
         output.WriteMessage(GetPeerAddressesResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetSelectedTipHashRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetSelectedTipHashRequest)
+      {
         output.WriteRawTag(162, 63);
         output.WriteMessage(GetSelectedTipHashRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetSelectedTipHashResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetSelectedTipHashResponse)
+      {
         output.WriteRawTag(170, 63);
         output.WriteMessage(GetSelectedTipHashResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetMempoolEntryRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetMempoolEntryRequest)
+      {
         output.WriteRawTag(178, 63);
         output.WriteMessage(GetMempoolEntryRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetMempoolEntryResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetMempoolEntryResponse)
+      {
         output.WriteRawTag(186, 63);
         output.WriteMessage(GetMempoolEntryResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetConnectedPeerInfoRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetConnectedPeerInfoRequest)
+      {
         output.WriteRawTag(194, 63);
         output.WriteMessage(GetConnectedPeerInfoRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetConnectedPeerInfoResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetConnectedPeerInfoResponse)
+      {
         output.WriteRawTag(202, 63);
         output.WriteMessage(GetConnectedPeerInfoResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.AddPeerRequest) {
+      if (payloadCase_ == PayloadOneofCase.AddPeerRequest)
+      {
         output.WriteRawTag(210, 63);
         output.WriteMessage(AddPeerRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.AddPeerResponse) {
+      if (payloadCase_ == PayloadOneofCase.AddPeerResponse)
+      {
         output.WriteRawTag(218, 63);
         output.WriteMessage(AddPeerResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.SubmitTransactionRequest) {
+      if (payloadCase_ == PayloadOneofCase.SubmitTransactionRequest)
+      {
         output.WriteRawTag(226, 63);
         output.WriteMessage(SubmitTransactionRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.SubmitTransactionResponse) {
+      if (payloadCase_ == PayloadOneofCase.SubmitTransactionResponse)
+      {
         output.WriteRawTag(234, 63);
         output.WriteMessage(SubmitTransactionResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentChainChangedRequest) {
+      if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentChainChangedRequest)
+      {
         output.WriteRawTag(242, 63);
         output.WriteMessage(NotifyVirtualSelectedParentChainChangedRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentChainChangedResponse) {
+      if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentChainChangedResponse)
+      {
         output.WriteRawTag(250, 63);
         output.WriteMessage(NotifyVirtualSelectedParentChainChangedResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.VirtualSelectedParentChainChangedNotification) {
+      if (payloadCase_ == PayloadOneofCase.VirtualSelectedParentChainChangedNotification)
+      {
         output.WriteRawTag(130, 64);
         output.WriteMessage(VirtualSelectedParentChainChangedNotification);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlockRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetBlockRequest)
+      {
         output.WriteRawTag(138, 64);
         output.WriteMessage(GetBlockRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlockResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetBlockResponse)
+      {
         output.WriteRawTag(146, 64);
         output.WriteMessage(GetBlockResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetSubnetworkRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetSubnetworkRequest)
+      {
         output.WriteRawTag(154, 64);
         output.WriteMessage(GetSubnetworkRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetSubnetworkResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetSubnetworkResponse)
+      {
         output.WriteRawTag(162, 64);
         output.WriteMessage(GetSubnetworkResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentChainFromBlockRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentChainFromBlockRequest)
+      {
         output.WriteRawTag(170, 64);
         output.WriteMessage(GetVirtualSelectedParentChainFromBlockRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentChainFromBlockResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentChainFromBlockResponse)
+      {
         output.WriteRawTag(178, 64);
         output.WriteMessage(GetVirtualSelectedParentChainFromBlockResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlocksRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetBlocksRequest)
+      {
         output.WriteRawTag(186, 64);
         output.WriteMessage(GetBlocksRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlocksResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetBlocksResponse)
+      {
         output.WriteRawTag(194, 64);
         output.WriteMessage(GetBlocksResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlockCountRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetBlockCountRequest)
+      {
         output.WriteRawTag(202, 64);
         output.WriteMessage(GetBlockCountRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlockCountResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetBlockCountResponse)
+      {
         output.WriteRawTag(210, 64);
         output.WriteMessage(GetBlockCountResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlockDagInfoRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetBlockDagInfoRequest)
+      {
         output.WriteRawTag(218, 64);
         output.WriteMessage(GetBlockDagInfoRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlockDagInfoResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetBlockDagInfoResponse)
+      {
         output.WriteRawTag(226, 64);
         output.WriteMessage(GetBlockDagInfoResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.ResolveFinalityConflictRequest) {
+      if (payloadCase_ == PayloadOneofCase.ResolveFinalityConflictRequest)
+      {
         output.WriteRawTag(234, 64);
         output.WriteMessage(ResolveFinalityConflictRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.ResolveFinalityConflictResponse) {
+      if (payloadCase_ == PayloadOneofCase.ResolveFinalityConflictResponse)
+      {
         output.WriteRawTag(242, 64);
         output.WriteMessage(ResolveFinalityConflictResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyFinalityConflictsRequest) {
+      if (payloadCase_ == PayloadOneofCase.NotifyFinalityConflictsRequest)
+      {
         output.WriteRawTag(250, 64);
         output.WriteMessage(NotifyFinalityConflictsRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyFinalityConflictsResponse) {
+      if (payloadCase_ == PayloadOneofCase.NotifyFinalityConflictsResponse)
+      {
         output.WriteRawTag(130, 65);
         output.WriteMessage(NotifyFinalityConflictsResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.FinalityConflictNotification) {
+      if (payloadCase_ == PayloadOneofCase.FinalityConflictNotification)
+      {
         output.WriteRawTag(138, 65);
         output.WriteMessage(FinalityConflictNotification);
       }
-      if (payloadCase_ == PayloadOneofCase.FinalityConflictResolvedNotification) {
+      if (payloadCase_ == PayloadOneofCase.FinalityConflictResolvedNotification)
+      {
         output.WriteRawTag(146, 65);
         output.WriteMessage(FinalityConflictResolvedNotification);
       }
-      if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesRequest)
+      {
         output.WriteRawTag(154, 65);
         output.WriteMessage(GetMempoolEntriesRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesResponse)
+      {
         output.WriteRawTag(162, 65);
         output.WriteMessage(GetMempoolEntriesResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.ShutDownRequest) {
+      if (payloadCase_ == PayloadOneofCase.ShutDownRequest)
+      {
         output.WriteRawTag(170, 65);
         output.WriteMessage(ShutDownRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.ShutDownResponse) {
+      if (payloadCase_ == PayloadOneofCase.ShutDownResponse)
+      {
         output.WriteRawTag(178, 65);
         output.WriteMessage(ShutDownResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetHeadersRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetHeadersRequest)
+      {
         output.WriteRawTag(186, 65);
         output.WriteMessage(GetHeadersRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetHeadersResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetHeadersResponse)
+      {
         output.WriteRawTag(194, 65);
         output.WriteMessage(GetHeadersResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyUtxosChangedRequest) {
+      if (payloadCase_ == PayloadOneofCase.NotifyUtxosChangedRequest)
+      {
         output.WriteRawTag(202, 65);
         output.WriteMessage(NotifyUtxosChangedRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyUtxosChangedResponse) {
+      if (payloadCase_ == PayloadOneofCase.NotifyUtxosChangedResponse)
+      {
         output.WriteRawTag(210, 65);
         output.WriteMessage(NotifyUtxosChangedResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.UtxosChangedNotification) {
+      if (payloadCase_ == PayloadOneofCase.UtxosChangedNotification)
+      {
         output.WriteRawTag(218, 65);
         output.WriteMessage(UtxosChangedNotification);
       }
-      if (payloadCase_ == PayloadOneofCase.GetUtxosByAddressesRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetUtxosByAddressesRequest)
+      {
         output.WriteRawTag(226, 65);
         output.WriteMessage(GetUtxosByAddressesRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetUtxosByAddressesResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetUtxosByAddressesResponse)
+      {
         output.WriteRawTag(234, 65);
         output.WriteMessage(GetUtxosByAddressesResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentBlueScoreRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentBlueScoreRequest)
+      {
         output.WriteRawTag(242, 65);
         output.WriteMessage(GetVirtualSelectedParentBlueScoreRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentBlueScoreResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentBlueScoreResponse)
+      {
         output.WriteRawTag(250, 65);
         output.WriteMessage(GetVirtualSelectedParentBlueScoreResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedRequest) {
+      if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedRequest)
+      {
         output.WriteRawTag(130, 66);
         output.WriteMessage(NotifyVirtualSelectedParentBlueScoreChangedRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedResponse) {
+      if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedResponse)
+      {
         output.WriteRawTag(138, 66);
         output.WriteMessage(NotifyVirtualSelectedParentBlueScoreChangedResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.VirtualSelectedParentBlueScoreChangedNotification) {
+      if (payloadCase_ == PayloadOneofCase.VirtualSelectedParentBlueScoreChangedNotification)
+      {
         output.WriteRawTag(146, 66);
         output.WriteMessage(VirtualSelectedParentBlueScoreChangedNotification);
       }
-      if (payloadCase_ == PayloadOneofCase.BanRequest) {
+      if (payloadCase_ == PayloadOneofCase.BanRequest)
+      {
         output.WriteRawTag(154, 66);
         output.WriteMessage(BanRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.BanResponse) {
+      if (payloadCase_ == PayloadOneofCase.BanResponse)
+      {
         output.WriteRawTag(162, 66);
         output.WriteMessage(BanResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.UnbanRequest) {
+      if (payloadCase_ == PayloadOneofCase.UnbanRequest)
+      {
         output.WriteRawTag(170, 66);
         output.WriteMessage(UnbanRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.UnbanResponse) {
+      if (payloadCase_ == PayloadOneofCase.UnbanResponse)
+      {
         output.WriteRawTag(178, 66);
         output.WriteMessage(UnbanResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetInfoRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetInfoRequest)
+      {
         output.WriteRawTag(186, 66);
         output.WriteMessage(GetInfoRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetInfoResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetInfoResponse)
+      {
         output.WriteRawTag(194, 66);
         output.WriteMessage(GetInfoResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.StopNotifyingUtxosChangedRequest) {
+      if (payloadCase_ == PayloadOneofCase.StopNotifyingUtxosChangedRequest)
+      {
         output.WriteRawTag(202, 66);
         output.WriteMessage(StopNotifyingUtxosChangedRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.StopNotifyingUtxosChangedResponse) {
+      if (payloadCase_ == PayloadOneofCase.StopNotifyingUtxosChangedResponse)
+      {
         output.WriteRawTag(210, 66);
         output.WriteMessage(StopNotifyingUtxosChangedResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyPruningPointUTXOSetOverrideRequest) {
+      if (payloadCase_ == PayloadOneofCase.NotifyPruningPointUTXOSetOverrideRequest)
+      {
         output.WriteRawTag(218, 66);
         output.WriteMessage(NotifyPruningPointUTXOSetOverrideRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyPruningPointUTXOSetOverrideResponse) {
+      if (payloadCase_ == PayloadOneofCase.NotifyPruningPointUTXOSetOverrideResponse)
+      {
         output.WriteRawTag(226, 66);
         output.WriteMessage(NotifyPruningPointUTXOSetOverrideResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.PruningPointUTXOSetOverrideNotification) {
+      if (payloadCase_ == PayloadOneofCase.PruningPointUTXOSetOverrideNotification)
+      {
         output.WriteRawTag(234, 66);
         output.WriteMessage(PruningPointUTXOSetOverrideNotification);
       }
-      if (payloadCase_ == PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideRequest) {
+      if (payloadCase_ == PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideRequest)
+      {
         output.WriteRawTag(242, 66);
         output.WriteMessage(StopNotifyingPruningPointUTXOSetOverrideRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideResponse) {
+      if (payloadCase_ == PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideResponse)
+      {
         output.WriteRawTag(250, 66);
         output.WriteMessage(StopNotifyingPruningPointUTXOSetOverrideResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.EstimateNetworkHashesPerSecondRequest) {
+      if (payloadCase_ == PayloadOneofCase.EstimateNetworkHashesPerSecondRequest)
+      {
         output.WriteRawTag(130, 67);
         output.WriteMessage(EstimateNetworkHashesPerSecondRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.EstimateNetworkHashesPerSecondResponse) {
+      if (payloadCase_ == PayloadOneofCase.EstimateNetworkHashesPerSecondResponse)
+      {
         output.WriteRawTag(138, 67);
         output.WriteMessage(EstimateNetworkHashesPerSecondResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyVirtualDaaScoreChangedRequest) {
+      if (payloadCase_ == PayloadOneofCase.NotifyVirtualDaaScoreChangedRequest)
+      {
         output.WriteRawTag(146, 67);
         output.WriteMessage(NotifyVirtualDaaScoreChangedRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyVirtualDaaScoreChangedResponse) {
+      if (payloadCase_ == PayloadOneofCase.NotifyVirtualDaaScoreChangedResponse)
+      {
         output.WriteRawTag(154, 67);
         output.WriteMessage(NotifyVirtualDaaScoreChangedResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.VirtualDaaScoreChangedNotification) {
+      if (payloadCase_ == PayloadOneofCase.VirtualDaaScoreChangedNotification)
+      {
         output.WriteRawTag(162, 67);
         output.WriteMessage(VirtualDaaScoreChangedNotification);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBalanceByAddressRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetBalanceByAddressRequest)
+      {
         output.WriteRawTag(170, 67);
         output.WriteMessage(GetBalanceByAddressRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBalanceByAddressResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetBalanceByAddressResponse)
+      {
         output.WriteRawTag(178, 67);
         output.WriteMessage(GetBalanceByAddressResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBalancesByAddressesRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetBalancesByAddressesRequest)
+      {
         output.WriteRawTag(186, 67);
         output.WriteMessage(GetBalancesByAddressesRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBalancesByAddressesResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetBalancesByAddressesResponse)
+      {
         output.WriteRawTag(194, 67);
         output.WriteMessage(GetBalancesByAddressesResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyNewBlockTemplateRequest) {
+      if (payloadCase_ == PayloadOneofCase.NotifyNewBlockTemplateRequest)
+      {
         output.WriteRawTag(202, 67);
         output.WriteMessage(NotifyNewBlockTemplateRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyNewBlockTemplateResponse) {
+      if (payloadCase_ == PayloadOneofCase.NotifyNewBlockTemplateResponse)
+      {
         output.WriteRawTag(210, 67);
         output.WriteMessage(NotifyNewBlockTemplateResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.NewBlockTemplateNotification) {
+      if (payloadCase_ == PayloadOneofCase.NewBlockTemplateNotification)
+      {
         output.WriteRawTag(218, 67);
         output.WriteMessage(NewBlockTemplateNotification);
       }
-      if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesByAddressesRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesByAddressesRequest)
+      {
         output.WriteRawTag(226, 67);
         output.WriteMessage(GetMempoolEntriesByAddressesRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesByAddressesResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesByAddressesResponse)
+      {
         output.WriteRawTag(234, 67);
         output.WriteMessage(GetMempoolEntriesByAddressesResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetCoinSupplyRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetCoinSupplyRequest)
+      {
         output.WriteRawTag(242, 67);
         output.WriteMessage(GetCoinSupplyRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetCoinSupplyResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetCoinSupplyResponse)
+      {
         output.WriteRawTag(250, 67);
         output.WriteMessage(GetCoinSupplyResponse);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
-      if (payloadCase_ == PayloadOneofCase.Addresses) {
+      if (payloadCase_ == PayloadOneofCase.Addresses)
+      {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Addresses);
       }
-      if (payloadCase_ == PayloadOneofCase.Block) {
+      if (payloadCase_ == PayloadOneofCase.Block)
+      {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Block);
       }
-      if (payloadCase_ == PayloadOneofCase.Transaction) {
+      if (payloadCase_ == PayloadOneofCase.Transaction)
+      {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Transaction);
       }
-      if (payloadCase_ == PayloadOneofCase.BlockLocator) {
+      if (payloadCase_ == PayloadOneofCase.BlockLocator)
+      {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(BlockLocator);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestAddresses) {
+      if (payloadCase_ == PayloadOneofCase.RequestAddresses)
+      {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(RequestAddresses);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestRelayBlocks) {
+      if (payloadCase_ == PayloadOneofCase.RequestRelayBlocks)
+      {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(RequestRelayBlocks);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestTransactions) {
+      if (payloadCase_ == PayloadOneofCase.RequestTransactions)
+      {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(RequestTransactions);
       }
-      if (payloadCase_ == PayloadOneofCase.IbdBlock) {
+      if (payloadCase_ == PayloadOneofCase.IbdBlock)
+      {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(IbdBlock);
       }
-      if (payloadCase_ == PayloadOneofCase.InvRelayBlock) {
+      if (payloadCase_ == PayloadOneofCase.InvRelayBlock)
+      {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(InvRelayBlock);
       }
-      if (payloadCase_ == PayloadOneofCase.InvTransactions) {
+      if (payloadCase_ == PayloadOneofCase.InvTransactions)
+      {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(InvTransactions);
       }
-      if (payloadCase_ == PayloadOneofCase.Ping) {
+      if (payloadCase_ == PayloadOneofCase.Ping)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(Ping);
       }
-      if (payloadCase_ == PayloadOneofCase.Pong) {
+      if (payloadCase_ == PayloadOneofCase.Pong)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(Pong);
       }
-      if (payloadCase_ == PayloadOneofCase.Verack) {
+      if (payloadCase_ == PayloadOneofCase.Verack)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(Verack);
       }
-      if (payloadCase_ == PayloadOneofCase.Version) {
+      if (payloadCase_ == PayloadOneofCase.Version)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(Version);
       }
-      if (payloadCase_ == PayloadOneofCase.TransactionNotFound) {
+      if (payloadCase_ == PayloadOneofCase.TransactionNotFound)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(TransactionNotFound);
       }
-      if (payloadCase_ == PayloadOneofCase.Reject) {
+      if (payloadCase_ == PayloadOneofCase.Reject)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(Reject);
       }
-      if (payloadCase_ == PayloadOneofCase.PruningPointUtxoSetChunk) {
+      if (payloadCase_ == PayloadOneofCase.PruningPointUtxoSetChunk)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(PruningPointUtxoSetChunk);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestIBDBlocks) {
+      if (payloadCase_ == PayloadOneofCase.RequestIBDBlocks)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(RequestIBDBlocks);
       }
-      if (payloadCase_ == PayloadOneofCase.UnexpectedPruningPoint) {
+      if (payloadCase_ == PayloadOneofCase.UnexpectedPruningPoint)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(UnexpectedPruningPoint);
       }
-      if (payloadCase_ == PayloadOneofCase.IbdBlockLocator) {
+      if (payloadCase_ == PayloadOneofCase.IbdBlockLocator)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(IbdBlockLocator);
       }
-      if (payloadCase_ == PayloadOneofCase.IbdBlockLocatorHighestHash) {
+      if (payloadCase_ == PayloadOneofCase.IbdBlockLocatorHighestHash)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(IbdBlockLocatorHighestHash);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestNextPruningPointUtxoSetChunk) {
+      if (payloadCase_ == PayloadOneofCase.RequestNextPruningPointUtxoSetChunk)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(RequestNextPruningPointUtxoSetChunk);
       }
-      if (payloadCase_ == PayloadOneofCase.DonePruningPointUtxoSetChunks) {
+      if (payloadCase_ == PayloadOneofCase.DonePruningPointUtxoSetChunks)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(DonePruningPointUtxoSetChunks);
       }
-      if (payloadCase_ == PayloadOneofCase.IbdBlockLocatorHighestHashNotFound) {
+      if (payloadCase_ == PayloadOneofCase.IbdBlockLocatorHighestHashNotFound)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(IbdBlockLocatorHighestHashNotFound);
       }
-      if (payloadCase_ == PayloadOneofCase.BlockWithTrustedData) {
+      if (payloadCase_ == PayloadOneofCase.BlockWithTrustedData)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(BlockWithTrustedData);
       }
-      if (payloadCase_ == PayloadOneofCase.DoneBlocksWithTrustedData) {
+      if (payloadCase_ == PayloadOneofCase.DoneBlocksWithTrustedData)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(DoneBlocksWithTrustedData);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestPruningPointAndItsAnticone) {
+      if (payloadCase_ == PayloadOneofCase.RequestPruningPointAndItsAnticone)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(RequestPruningPointAndItsAnticone);
       }
-      if (payloadCase_ == PayloadOneofCase.BlockHeaders) {
+      if (payloadCase_ == PayloadOneofCase.BlockHeaders)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(BlockHeaders);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestNextHeaders) {
+      if (payloadCase_ == PayloadOneofCase.RequestNextHeaders)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(RequestNextHeaders);
       }
-      if (payloadCase_ == PayloadOneofCase.DoneHeaders) {
+      if (payloadCase_ == PayloadOneofCase.DoneHeaders)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(DoneHeaders);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestPruningPointUTXOSet) {
+      if (payloadCase_ == PayloadOneofCase.RequestPruningPointUTXOSet)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(RequestPruningPointUTXOSet);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestHeaders) {
+      if (payloadCase_ == PayloadOneofCase.RequestHeaders)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(RequestHeaders);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestBlockLocator) {
+      if (payloadCase_ == PayloadOneofCase.RequestBlockLocator)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(RequestBlockLocator);
       }
-      if (payloadCase_ == PayloadOneofCase.PruningPoints) {
+      if (payloadCase_ == PayloadOneofCase.PruningPoints)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(PruningPoints);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestPruningPointProof) {
+      if (payloadCase_ == PayloadOneofCase.RequestPruningPointProof)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(RequestPruningPointProof);
       }
-      if (payloadCase_ == PayloadOneofCase.PruningPointProof) {
+      if (payloadCase_ == PayloadOneofCase.PruningPointProof)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(PruningPointProof);
       }
-      if (payloadCase_ == PayloadOneofCase.Ready) {
+      if (payloadCase_ == PayloadOneofCase.Ready)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(Ready);
       }
-      if (payloadCase_ == PayloadOneofCase.BlockWithTrustedDataV4) {
+      if (payloadCase_ == PayloadOneofCase.BlockWithTrustedDataV4)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(BlockWithTrustedDataV4);
       }
-      if (payloadCase_ == PayloadOneofCase.TrustedData) {
+      if (payloadCase_ == PayloadOneofCase.TrustedData)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(TrustedData);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestIBDChainBlockLocator) {
+      if (payloadCase_ == PayloadOneofCase.RequestIBDChainBlockLocator)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(RequestIBDChainBlockLocator);
       }
-      if (payloadCase_ == PayloadOneofCase.IbdChainBlockLocator) {
+      if (payloadCase_ == PayloadOneofCase.IbdChainBlockLocator)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(IbdChainBlockLocator);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestAnticone) {
+      if (payloadCase_ == PayloadOneofCase.RequestAnticone)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(RequestAnticone);
       }
-      if (payloadCase_ == PayloadOneofCase.RequestNextPruningPointAndItsAnticoneBlocks) {
+      if (payloadCase_ == PayloadOneofCase.RequestNextPruningPointAndItsAnticoneBlocks)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(RequestNextPruningPointAndItsAnticoneBlocks);
       }
-      if (payloadCase_ == PayloadOneofCase.GetCurrentNetworkRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetCurrentNetworkRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetCurrentNetworkRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetCurrentNetworkResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetCurrentNetworkResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetCurrentNetworkResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.SubmitBlockRequest) {
+      if (payloadCase_ == PayloadOneofCase.SubmitBlockRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(SubmitBlockRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.SubmitBlockResponse) {
+      if (payloadCase_ == PayloadOneofCase.SubmitBlockResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(SubmitBlockResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlockTemplateRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetBlockTemplateRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetBlockTemplateRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlockTemplateResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetBlockTemplateResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetBlockTemplateResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyBlockAddedRequest) {
+      if (payloadCase_ == PayloadOneofCase.NotifyBlockAddedRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(NotifyBlockAddedRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyBlockAddedResponse) {
+      if (payloadCase_ == PayloadOneofCase.NotifyBlockAddedResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(NotifyBlockAddedResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.BlockAddedNotification) {
+      if (payloadCase_ == PayloadOneofCase.BlockAddedNotification)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(BlockAddedNotification);
       }
-      if (payloadCase_ == PayloadOneofCase.GetPeerAddressesRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetPeerAddressesRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetPeerAddressesRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetPeerAddressesResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetPeerAddressesResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetPeerAddressesResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetSelectedTipHashRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetSelectedTipHashRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetSelectedTipHashRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetSelectedTipHashResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetSelectedTipHashResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetSelectedTipHashResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetMempoolEntryRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetMempoolEntryRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetMempoolEntryRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetMempoolEntryResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetMempoolEntryResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetMempoolEntryResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetConnectedPeerInfoRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetConnectedPeerInfoRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetConnectedPeerInfoRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetConnectedPeerInfoResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetConnectedPeerInfoResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetConnectedPeerInfoResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.AddPeerRequest) {
+      if (payloadCase_ == PayloadOneofCase.AddPeerRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(AddPeerRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.AddPeerResponse) {
+      if (payloadCase_ == PayloadOneofCase.AddPeerResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(AddPeerResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.SubmitTransactionRequest) {
+      if (payloadCase_ == PayloadOneofCase.SubmitTransactionRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(SubmitTransactionRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.SubmitTransactionResponse) {
+      if (payloadCase_ == PayloadOneofCase.SubmitTransactionResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(SubmitTransactionResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentChainChangedRequest) {
+      if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentChainChangedRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(NotifyVirtualSelectedParentChainChangedRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentChainChangedResponse) {
+      if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentChainChangedResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(NotifyVirtualSelectedParentChainChangedResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.VirtualSelectedParentChainChangedNotification) {
+      if (payloadCase_ == PayloadOneofCase.VirtualSelectedParentChainChangedNotification)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(VirtualSelectedParentChainChangedNotification);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlockRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetBlockRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetBlockRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlockResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetBlockResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetBlockResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetSubnetworkRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetSubnetworkRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetSubnetworkRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetSubnetworkResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetSubnetworkResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetSubnetworkResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentChainFromBlockRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentChainFromBlockRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetVirtualSelectedParentChainFromBlockRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentChainFromBlockResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentChainFromBlockResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetVirtualSelectedParentChainFromBlockResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlocksRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetBlocksRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetBlocksRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlocksResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetBlocksResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetBlocksResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlockCountRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetBlockCountRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetBlockCountRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlockCountResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetBlockCountResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetBlockCountResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlockDagInfoRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetBlockDagInfoRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetBlockDagInfoRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBlockDagInfoResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetBlockDagInfoResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetBlockDagInfoResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.ResolveFinalityConflictRequest) {
+      if (payloadCase_ == PayloadOneofCase.ResolveFinalityConflictRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(ResolveFinalityConflictRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.ResolveFinalityConflictResponse) {
+      if (payloadCase_ == PayloadOneofCase.ResolveFinalityConflictResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(ResolveFinalityConflictResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyFinalityConflictsRequest) {
+      if (payloadCase_ == PayloadOneofCase.NotifyFinalityConflictsRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(NotifyFinalityConflictsRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyFinalityConflictsResponse) {
+      if (payloadCase_ == PayloadOneofCase.NotifyFinalityConflictsResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(NotifyFinalityConflictsResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.FinalityConflictNotification) {
+      if (payloadCase_ == PayloadOneofCase.FinalityConflictNotification)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(FinalityConflictNotification);
       }
-      if (payloadCase_ == PayloadOneofCase.FinalityConflictResolvedNotification) {
+      if (payloadCase_ == PayloadOneofCase.FinalityConflictResolvedNotification)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(FinalityConflictResolvedNotification);
       }
-      if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetMempoolEntriesRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetMempoolEntriesResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.ShutDownRequest) {
+      if (payloadCase_ == PayloadOneofCase.ShutDownRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(ShutDownRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.ShutDownResponse) {
+      if (payloadCase_ == PayloadOneofCase.ShutDownResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(ShutDownResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetHeadersRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetHeadersRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetHeadersRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetHeadersResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetHeadersResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetHeadersResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyUtxosChangedRequest) {
+      if (payloadCase_ == PayloadOneofCase.NotifyUtxosChangedRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(NotifyUtxosChangedRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyUtxosChangedResponse) {
+      if (payloadCase_ == PayloadOneofCase.NotifyUtxosChangedResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(NotifyUtxosChangedResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.UtxosChangedNotification) {
+      if (payloadCase_ == PayloadOneofCase.UtxosChangedNotification)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(UtxosChangedNotification);
       }
-      if (payloadCase_ == PayloadOneofCase.GetUtxosByAddressesRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetUtxosByAddressesRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetUtxosByAddressesRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetUtxosByAddressesResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetUtxosByAddressesResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetUtxosByAddressesResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentBlueScoreRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentBlueScoreRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetVirtualSelectedParentBlueScoreRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentBlueScoreResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentBlueScoreResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetVirtualSelectedParentBlueScoreResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedRequest) {
+      if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(NotifyVirtualSelectedParentBlueScoreChangedRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedResponse) {
+      if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(NotifyVirtualSelectedParentBlueScoreChangedResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.VirtualSelectedParentBlueScoreChangedNotification) {
+      if (payloadCase_ == PayloadOneofCase.VirtualSelectedParentBlueScoreChangedNotification)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(VirtualSelectedParentBlueScoreChangedNotification);
       }
-      if (payloadCase_ == PayloadOneofCase.BanRequest) {
+      if (payloadCase_ == PayloadOneofCase.BanRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(BanRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.BanResponse) {
+      if (payloadCase_ == PayloadOneofCase.BanResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(BanResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.UnbanRequest) {
+      if (payloadCase_ == PayloadOneofCase.UnbanRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(UnbanRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.UnbanResponse) {
+      if (payloadCase_ == PayloadOneofCase.UnbanResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(UnbanResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetInfoRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetInfoRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetInfoRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetInfoResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetInfoResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetInfoResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.StopNotifyingUtxosChangedRequest) {
+      if (payloadCase_ == PayloadOneofCase.StopNotifyingUtxosChangedRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(StopNotifyingUtxosChangedRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.StopNotifyingUtxosChangedResponse) {
+      if (payloadCase_ == PayloadOneofCase.StopNotifyingUtxosChangedResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(StopNotifyingUtxosChangedResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyPruningPointUTXOSetOverrideRequest) {
+      if (payloadCase_ == PayloadOneofCase.NotifyPruningPointUTXOSetOverrideRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(NotifyPruningPointUTXOSetOverrideRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyPruningPointUTXOSetOverrideResponse) {
+      if (payloadCase_ == PayloadOneofCase.NotifyPruningPointUTXOSetOverrideResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(NotifyPruningPointUTXOSetOverrideResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.PruningPointUTXOSetOverrideNotification) {
+      if (payloadCase_ == PayloadOneofCase.PruningPointUTXOSetOverrideNotification)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(PruningPointUTXOSetOverrideNotification);
       }
-      if (payloadCase_ == PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideRequest) {
+      if (payloadCase_ == PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(StopNotifyingPruningPointUTXOSetOverrideRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideResponse) {
+      if (payloadCase_ == PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(StopNotifyingPruningPointUTXOSetOverrideResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.EstimateNetworkHashesPerSecondRequest) {
+      if (payloadCase_ == PayloadOneofCase.EstimateNetworkHashesPerSecondRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(EstimateNetworkHashesPerSecondRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.EstimateNetworkHashesPerSecondResponse) {
+      if (payloadCase_ == PayloadOneofCase.EstimateNetworkHashesPerSecondResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(EstimateNetworkHashesPerSecondResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyVirtualDaaScoreChangedRequest) {
+      if (payloadCase_ == PayloadOneofCase.NotifyVirtualDaaScoreChangedRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(NotifyVirtualDaaScoreChangedRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyVirtualDaaScoreChangedResponse) {
+      if (payloadCase_ == PayloadOneofCase.NotifyVirtualDaaScoreChangedResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(NotifyVirtualDaaScoreChangedResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.VirtualDaaScoreChangedNotification) {
+      if (payloadCase_ == PayloadOneofCase.VirtualDaaScoreChangedNotification)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(VirtualDaaScoreChangedNotification);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBalanceByAddressRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetBalanceByAddressRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetBalanceByAddressRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBalanceByAddressResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetBalanceByAddressResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetBalanceByAddressResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBalancesByAddressesRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetBalancesByAddressesRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetBalancesByAddressesRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetBalancesByAddressesResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetBalancesByAddressesResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetBalancesByAddressesResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyNewBlockTemplateRequest) {
+      if (payloadCase_ == PayloadOneofCase.NotifyNewBlockTemplateRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(NotifyNewBlockTemplateRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.NotifyNewBlockTemplateResponse) {
+      if (payloadCase_ == PayloadOneofCase.NotifyNewBlockTemplateResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(NotifyNewBlockTemplateResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.NewBlockTemplateNotification) {
+      if (payloadCase_ == PayloadOneofCase.NewBlockTemplateNotification)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(NewBlockTemplateNotification);
       }
-      if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesByAddressesRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesByAddressesRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetMempoolEntriesByAddressesRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesByAddressesResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesByAddressesResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetMempoolEntriesByAddressesResponse);
       }
-      if (payloadCase_ == PayloadOneofCase.GetCoinSupplyRequest) {
+      if (payloadCase_ == PayloadOneofCase.GetCoinSupplyRequest)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetCoinSupplyRequest);
       }
-      if (payloadCase_ == PayloadOneofCase.GetCoinSupplyResponse) {
+      if (payloadCase_ == PayloadOneofCase.GetCoinSupplyResponse)
+      {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(GetCoinSupplyResponse);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(KaspadMessage other) {
-      if (other == null) {
+    public void MergeFrom(KaspadMessage other)
+    {
+      if (other == null)
+      {
         return;
       }
-      switch (other.PayloadCase) {
+      switch (other.PayloadCase)
+      {
         case PayloadOneofCase.Addresses:
-          if (Addresses == null) {
+          if (Addresses == null)
+          {
             Addresses = new global::Miningcore.Blockchain.Kaspa.Kaspad.AddressesMessage();
           }
           Addresses.MergeFrom(other.Addresses);
           break;
         case PayloadOneofCase.Block:
-          if (Block == null) {
+          if (Block == null)
+          {
             Block = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockMessage();
           }
           Block.MergeFrom(other.Block);
           break;
         case PayloadOneofCase.Transaction:
-          if (Transaction == null) {
+          if (Transaction == null)
+          {
             Transaction = new global::Miningcore.Blockchain.Kaspa.Kaspad.TransactionMessage();
           }
           Transaction.MergeFrom(other.Transaction);
           break;
         case PayloadOneofCase.BlockLocator:
-          if (BlockLocator == null) {
+          if (BlockLocator == null)
+          {
             BlockLocator = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockLocatorMessage();
           }
           BlockLocator.MergeFrom(other.BlockLocator);
           break;
         case PayloadOneofCase.RequestAddresses:
-          if (RequestAddresses == null) {
+          if (RequestAddresses == null)
+          {
             RequestAddresses = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestAddressesMessage();
           }
           RequestAddresses.MergeFrom(other.RequestAddresses);
           break;
         case PayloadOneofCase.RequestRelayBlocks:
-          if (RequestRelayBlocks == null) {
+          if (RequestRelayBlocks == null)
+          {
             RequestRelayBlocks = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestRelayBlocksMessage();
           }
           RequestRelayBlocks.MergeFrom(other.RequestRelayBlocks);
           break;
         case PayloadOneofCase.RequestTransactions:
-          if (RequestTransactions == null) {
+          if (RequestTransactions == null)
+          {
             RequestTransactions = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestTransactionsMessage();
           }
           RequestTransactions.MergeFrom(other.RequestTransactions);
           break;
         case PayloadOneofCase.IbdBlock:
-          if (IbdBlock == null) {
+          if (IbdBlock == null)
+          {
             IbdBlock = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockMessage();
           }
           IbdBlock.MergeFrom(other.IbdBlock);
           break;
         case PayloadOneofCase.InvRelayBlock:
-          if (InvRelayBlock == null) {
+          if (InvRelayBlock == null)
+          {
             InvRelayBlock = new global::Miningcore.Blockchain.Kaspa.Kaspad.InvRelayBlockMessage();
           }
           InvRelayBlock.MergeFrom(other.InvRelayBlock);
           break;
         case PayloadOneofCase.InvTransactions:
-          if (InvTransactions == null) {
+          if (InvTransactions == null)
+          {
             InvTransactions = new global::Miningcore.Blockchain.Kaspa.Kaspad.InvTransactionsMessage();
           }
           InvTransactions.MergeFrom(other.InvTransactions);
           break;
         case PayloadOneofCase.Ping:
-          if (Ping == null) {
+          if (Ping == null)
+          {
             Ping = new global::Miningcore.Blockchain.Kaspa.Kaspad.PingMessage();
           }
           Ping.MergeFrom(other.Ping);
           break;
         case PayloadOneofCase.Pong:
-          if (Pong == null) {
+          if (Pong == null)
+          {
             Pong = new global::Miningcore.Blockchain.Kaspa.Kaspad.PongMessage();
           }
           Pong.MergeFrom(other.Pong);
           break;
         case PayloadOneofCase.Verack:
-          if (Verack == null) {
+          if (Verack == null)
+          {
             Verack = new global::Miningcore.Blockchain.Kaspa.Kaspad.VerackMessage();
           }
           Verack.MergeFrom(other.Verack);
           break;
         case PayloadOneofCase.Version:
-          if (Version == null) {
+          if (Version == null)
+          {
             Version = new global::Miningcore.Blockchain.Kaspa.Kaspad.VersionMessage();
           }
           Version.MergeFrom(other.Version);
           break;
         case PayloadOneofCase.TransactionNotFound:
-          if (TransactionNotFound == null) {
+          if (TransactionNotFound == null)
+          {
             TransactionNotFound = new global::Miningcore.Blockchain.Kaspa.Kaspad.TransactionNotFoundMessage();
           }
           TransactionNotFound.MergeFrom(other.TransactionNotFound);
           break;
         case PayloadOneofCase.Reject:
-          if (Reject == null) {
+          if (Reject == null)
+          {
             Reject = new global::Miningcore.Blockchain.Kaspa.Kaspad.RejectMessage();
           }
           Reject.MergeFrom(other.Reject);
           break;
         case PayloadOneofCase.PruningPointUtxoSetChunk:
-          if (PruningPointUtxoSetChunk == null) {
+          if (PruningPointUtxoSetChunk == null)
+          {
             PruningPointUtxoSetChunk = new global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointUtxoSetChunkMessage();
           }
           PruningPointUtxoSetChunk.MergeFrom(other.PruningPointUtxoSetChunk);
           break;
         case PayloadOneofCase.RequestIBDBlocks:
-          if (RequestIBDBlocks == null) {
+          if (RequestIBDBlocks == null)
+          {
             RequestIBDBlocks = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestIBDBlocksMessage();
           }
           RequestIBDBlocks.MergeFrom(other.RequestIBDBlocks);
           break;
         case PayloadOneofCase.UnexpectedPruningPoint:
-          if (UnexpectedPruningPoint == null) {
+          if (UnexpectedPruningPoint == null)
+          {
             UnexpectedPruningPoint = new global::Miningcore.Blockchain.Kaspa.Kaspad.UnexpectedPruningPointMessage();
           }
           UnexpectedPruningPoint.MergeFrom(other.UnexpectedPruningPoint);
           break;
         case PayloadOneofCase.IbdBlockLocator:
-          if (IbdBlockLocator == null) {
+          if (IbdBlockLocator == null)
+          {
             IbdBlockLocator = new global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorMessage();
           }
           IbdBlockLocator.MergeFrom(other.IbdBlockLocator);
           break;
         case PayloadOneofCase.IbdBlockLocatorHighestHash:
-          if (IbdBlockLocatorHighestHash == null) {
+          if (IbdBlockLocatorHighestHash == null)
+          {
             IbdBlockLocatorHighestHash = new global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorHighestHashMessage();
           }
           IbdBlockLocatorHighestHash.MergeFrom(other.IbdBlockLocatorHighestHash);
           break;
         case PayloadOneofCase.RequestNextPruningPointUtxoSetChunk:
-          if (RequestNextPruningPointUtxoSetChunk == null) {
+          if (RequestNextPruningPointUtxoSetChunk == null)
+          {
             RequestNextPruningPointUtxoSetChunk = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextPruningPointUtxoSetChunkMessage();
           }
           RequestNextPruningPointUtxoSetChunk.MergeFrom(other.RequestNextPruningPointUtxoSetChunk);
           break;
         case PayloadOneofCase.DonePruningPointUtxoSetChunks:
-          if (DonePruningPointUtxoSetChunks == null) {
+          if (DonePruningPointUtxoSetChunks == null)
+          {
             DonePruningPointUtxoSetChunks = new global::Miningcore.Blockchain.Kaspa.Kaspad.DonePruningPointUtxoSetChunksMessage();
           }
           DonePruningPointUtxoSetChunks.MergeFrom(other.DonePruningPointUtxoSetChunks);
           break;
         case PayloadOneofCase.IbdBlockLocatorHighestHashNotFound:
-          if (IbdBlockLocatorHighestHashNotFound == null) {
+          if (IbdBlockLocatorHighestHashNotFound == null)
+          {
             IbdBlockLocatorHighestHashNotFound = new global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorHighestHashNotFoundMessage();
           }
           IbdBlockLocatorHighestHashNotFound.MergeFrom(other.IbdBlockLocatorHighestHashNotFound);
           break;
         case PayloadOneofCase.BlockWithTrustedData:
-          if (BlockWithTrustedData == null) {
+          if (BlockWithTrustedData == null)
+          {
             BlockWithTrustedData = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockWithTrustedDataMessage();
           }
           BlockWithTrustedData.MergeFrom(other.BlockWithTrustedData);
           break;
         case PayloadOneofCase.DoneBlocksWithTrustedData:
-          if (DoneBlocksWithTrustedData == null) {
+          if (DoneBlocksWithTrustedData == null)
+          {
             DoneBlocksWithTrustedData = new global::Miningcore.Blockchain.Kaspa.Kaspad.DoneBlocksWithTrustedDataMessage();
           }
           DoneBlocksWithTrustedData.MergeFrom(other.DoneBlocksWithTrustedData);
           break;
         case PayloadOneofCase.RequestPruningPointAndItsAnticone:
-          if (RequestPruningPointAndItsAnticone == null) {
+          if (RequestPruningPointAndItsAnticone == null)
+          {
             RequestPruningPointAndItsAnticone = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointAndItsAnticoneMessage();
           }
           RequestPruningPointAndItsAnticone.MergeFrom(other.RequestPruningPointAndItsAnticone);
           break;
         case PayloadOneofCase.BlockHeaders:
-          if (BlockHeaders == null) {
+          if (BlockHeaders == null)
+          {
             BlockHeaders = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockHeadersMessage();
           }
           BlockHeaders.MergeFrom(other.BlockHeaders);
           break;
         case PayloadOneofCase.RequestNextHeaders:
-          if (RequestNextHeaders == null) {
+          if (RequestNextHeaders == null)
+          {
             RequestNextHeaders = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextHeadersMessage();
           }
           RequestNextHeaders.MergeFrom(other.RequestNextHeaders);
           break;
         case PayloadOneofCase.DoneHeaders:
-          if (DoneHeaders == null) {
+          if (DoneHeaders == null)
+          {
             DoneHeaders = new global::Miningcore.Blockchain.Kaspa.Kaspad.DoneHeadersMessage();
           }
           DoneHeaders.MergeFrom(other.DoneHeaders);
           break;
         case PayloadOneofCase.RequestPruningPointUTXOSet:
-          if (RequestPruningPointUTXOSet == null) {
+          if (RequestPruningPointUTXOSet == null)
+          {
             RequestPruningPointUTXOSet = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointUTXOSetMessage();
           }
           RequestPruningPointUTXOSet.MergeFrom(other.RequestPruningPointUTXOSet);
           break;
         case PayloadOneofCase.RequestHeaders:
-          if (RequestHeaders == null) {
+          if (RequestHeaders == null)
+          {
             RequestHeaders = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestHeadersMessage();
           }
           RequestHeaders.MergeFrom(other.RequestHeaders);
           break;
         case PayloadOneofCase.RequestBlockLocator:
-          if (RequestBlockLocator == null) {
+          if (RequestBlockLocator == null)
+          {
             RequestBlockLocator = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestBlockLocatorMessage();
           }
           RequestBlockLocator.MergeFrom(other.RequestBlockLocator);
           break;
         case PayloadOneofCase.PruningPoints:
-          if (PruningPoints == null) {
+          if (PruningPoints == null)
+          {
             PruningPoints = new global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointsMessage();
           }
           PruningPoints.MergeFrom(other.PruningPoints);
           break;
         case PayloadOneofCase.RequestPruningPointProof:
-          if (RequestPruningPointProof == null) {
+          if (RequestPruningPointProof == null)
+          {
             RequestPruningPointProof = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointProofMessage();
           }
           RequestPruningPointProof.MergeFrom(other.RequestPruningPointProof);
           break;
         case PayloadOneofCase.PruningPointProof:
-          if (PruningPointProof == null) {
+          if (PruningPointProof == null)
+          {
             PruningPointProof = new global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointProofMessage();
           }
           PruningPointProof.MergeFrom(other.PruningPointProof);
           break;
         case PayloadOneofCase.Ready:
-          if (Ready == null) {
+          if (Ready == null)
+          {
             Ready = new global::Miningcore.Blockchain.Kaspa.Kaspad.ReadyMessage();
           }
           Ready.MergeFrom(other.Ready);
           break;
         case PayloadOneofCase.BlockWithTrustedDataV4:
-          if (BlockWithTrustedDataV4 == null) {
+          if (BlockWithTrustedDataV4 == null)
+          {
             BlockWithTrustedDataV4 = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockWithTrustedDataV4Message();
           }
           BlockWithTrustedDataV4.MergeFrom(other.BlockWithTrustedDataV4);
           break;
         case PayloadOneofCase.TrustedData:
-          if (TrustedData == null) {
+          if (TrustedData == null)
+          {
             TrustedData = new global::Miningcore.Blockchain.Kaspa.Kaspad.TrustedDataMessage();
           }
           TrustedData.MergeFrom(other.TrustedData);
           break;
         case PayloadOneofCase.RequestIBDChainBlockLocator:
-          if (RequestIBDChainBlockLocator == null) {
+          if (RequestIBDChainBlockLocator == null)
+          {
             RequestIBDChainBlockLocator = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestIBDChainBlockLocatorMessage();
           }
           RequestIBDChainBlockLocator.MergeFrom(other.RequestIBDChainBlockLocator);
           break;
         case PayloadOneofCase.IbdChainBlockLocator:
-          if (IbdChainBlockLocator == null) {
+          if (IbdChainBlockLocator == null)
+          {
             IbdChainBlockLocator = new global::Miningcore.Blockchain.Kaspa.Kaspad.IbdChainBlockLocatorMessage();
           }
           IbdChainBlockLocator.MergeFrom(other.IbdChainBlockLocator);
           break;
         case PayloadOneofCase.RequestAnticone:
-          if (RequestAnticone == null) {
+          if (RequestAnticone == null)
+          {
             RequestAnticone = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestAnticoneMessage();
           }
           RequestAnticone.MergeFrom(other.RequestAnticone);
           break;
         case PayloadOneofCase.RequestNextPruningPointAndItsAnticoneBlocks:
-          if (RequestNextPruningPointAndItsAnticoneBlocks == null) {
+          if (RequestNextPruningPointAndItsAnticoneBlocks == null)
+          {
             RequestNextPruningPointAndItsAnticoneBlocks = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextPruningPointAndItsAnticoneBlocksMessage();
           }
           RequestNextPruningPointAndItsAnticoneBlocks.MergeFrom(other.RequestNextPruningPointAndItsAnticoneBlocks);
           break;
         case PayloadOneofCase.GetCurrentNetworkRequest:
-          if (GetCurrentNetworkRequest == null) {
+          if (GetCurrentNetworkRequest == null)
+          {
             GetCurrentNetworkRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetCurrentNetworkRequestMessage();
           }
           GetCurrentNetworkRequest.MergeFrom(other.GetCurrentNetworkRequest);
           break;
         case PayloadOneofCase.GetCurrentNetworkResponse:
-          if (GetCurrentNetworkResponse == null) {
+          if (GetCurrentNetworkResponse == null)
+          {
             GetCurrentNetworkResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetCurrentNetworkResponseMessage();
           }
           GetCurrentNetworkResponse.MergeFrom(other.GetCurrentNetworkResponse);
           break;
         case PayloadOneofCase.SubmitBlockRequest:
-          if (SubmitBlockRequest == null) {
+          if (SubmitBlockRequest == null)
+          {
             SubmitBlockRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitBlockRequestMessage();
           }
           SubmitBlockRequest.MergeFrom(other.SubmitBlockRequest);
           break;
         case PayloadOneofCase.SubmitBlockResponse:
-          if (SubmitBlockResponse == null) {
+          if (SubmitBlockResponse == null)
+          {
             SubmitBlockResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitBlockResponseMessage();
           }
           SubmitBlockResponse.MergeFrom(other.SubmitBlockResponse);
           break;
         case PayloadOneofCase.GetBlockTemplateRequest:
-          if (GetBlockTemplateRequest == null) {
+          if (GetBlockTemplateRequest == null)
+          {
             GetBlockTemplateRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockTemplateRequestMessage();
           }
           GetBlockTemplateRequest.MergeFrom(other.GetBlockTemplateRequest);
           break;
         case PayloadOneofCase.GetBlockTemplateResponse:
-          if (GetBlockTemplateResponse == null) {
+          if (GetBlockTemplateResponse == null)
+          {
             GetBlockTemplateResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockTemplateResponseMessage();
           }
           GetBlockTemplateResponse.MergeFrom(other.GetBlockTemplateResponse);
           break;
         case PayloadOneofCase.NotifyBlockAddedRequest:
-          if (NotifyBlockAddedRequest == null) {
+          if (NotifyBlockAddedRequest == null)
+          {
             NotifyBlockAddedRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyBlockAddedRequestMessage();
           }
           NotifyBlockAddedRequest.MergeFrom(other.NotifyBlockAddedRequest);
           break;
         case PayloadOneofCase.NotifyBlockAddedResponse:
-          if (NotifyBlockAddedResponse == null) {
+          if (NotifyBlockAddedResponse == null)
+          {
             NotifyBlockAddedResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyBlockAddedResponseMessage();
           }
           NotifyBlockAddedResponse.MergeFrom(other.NotifyBlockAddedResponse);
           break;
         case PayloadOneofCase.BlockAddedNotification:
-          if (BlockAddedNotification == null) {
+          if (BlockAddedNotification == null)
+          {
             BlockAddedNotification = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockAddedNotificationMessage();
           }
           BlockAddedNotification.MergeFrom(other.BlockAddedNotification);
           break;
         case PayloadOneofCase.GetPeerAddressesRequest:
-          if (GetPeerAddressesRequest == null) {
+          if (GetPeerAddressesRequest == null)
+          {
             GetPeerAddressesRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetPeerAddressesRequestMessage();
           }
           GetPeerAddressesRequest.MergeFrom(other.GetPeerAddressesRequest);
           break;
         case PayloadOneofCase.GetPeerAddressesResponse:
-          if (GetPeerAddressesResponse == null) {
+          if (GetPeerAddressesResponse == null)
+          {
             GetPeerAddressesResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetPeerAddressesResponseMessage();
           }
           GetPeerAddressesResponse.MergeFrom(other.GetPeerAddressesResponse);
           break;
         case PayloadOneofCase.GetSelectedTipHashRequest:
-          if (GetSelectedTipHashRequest == null) {
+          if (GetSelectedTipHashRequest == null)
+          {
             GetSelectedTipHashRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetSelectedTipHashRequestMessage();
           }
           GetSelectedTipHashRequest.MergeFrom(other.GetSelectedTipHashRequest);
           break;
         case PayloadOneofCase.GetSelectedTipHashResponse:
-          if (GetSelectedTipHashResponse == null) {
+          if (GetSelectedTipHashResponse == null)
+          {
             GetSelectedTipHashResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetSelectedTipHashResponseMessage();
           }
           GetSelectedTipHashResponse.MergeFrom(other.GetSelectedTipHashResponse);
           break;
         case PayloadOneofCase.GetMempoolEntryRequest:
-          if (GetMempoolEntryRequest == null) {
+          if (GetMempoolEntryRequest == null)
+          {
             GetMempoolEntryRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntryRequestMessage();
           }
           GetMempoolEntryRequest.MergeFrom(other.GetMempoolEntryRequest);
           break;
         case PayloadOneofCase.GetMempoolEntryResponse:
-          if (GetMempoolEntryResponse == null) {
+          if (GetMempoolEntryResponse == null)
+          {
             GetMempoolEntryResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntryResponseMessage();
           }
           GetMempoolEntryResponse.MergeFrom(other.GetMempoolEntryResponse);
           break;
         case PayloadOneofCase.GetConnectedPeerInfoRequest:
-          if (GetConnectedPeerInfoRequest == null) {
+          if (GetConnectedPeerInfoRequest == null)
+          {
             GetConnectedPeerInfoRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetConnectedPeerInfoRequestMessage();
           }
           GetConnectedPeerInfoRequest.MergeFrom(other.GetConnectedPeerInfoRequest);
           break;
         case PayloadOneofCase.GetConnectedPeerInfoResponse:
-          if (GetConnectedPeerInfoResponse == null) {
+          if (GetConnectedPeerInfoResponse == null)
+          {
             GetConnectedPeerInfoResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetConnectedPeerInfoResponseMessage();
           }
           GetConnectedPeerInfoResponse.MergeFrom(other.GetConnectedPeerInfoResponse);
           break;
         case PayloadOneofCase.AddPeerRequest:
-          if (AddPeerRequest == null) {
+          if (AddPeerRequest == null)
+          {
             AddPeerRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.AddPeerRequestMessage();
           }
           AddPeerRequest.MergeFrom(other.AddPeerRequest);
           break;
         case PayloadOneofCase.AddPeerResponse:
-          if (AddPeerResponse == null) {
+          if (AddPeerResponse == null)
+          {
             AddPeerResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.AddPeerResponseMessage();
           }
           AddPeerResponse.MergeFrom(other.AddPeerResponse);
           break;
         case PayloadOneofCase.SubmitTransactionRequest:
-          if (SubmitTransactionRequest == null) {
+          if (SubmitTransactionRequest == null)
+          {
             SubmitTransactionRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitTransactionRequestMessage();
           }
           SubmitTransactionRequest.MergeFrom(other.SubmitTransactionRequest);
           break;
         case PayloadOneofCase.SubmitTransactionResponse:
-          if (SubmitTransactionResponse == null) {
+          if (SubmitTransactionResponse == null)
+          {
             SubmitTransactionResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitTransactionResponseMessage();
           }
           SubmitTransactionResponse.MergeFrom(other.SubmitTransactionResponse);
           break;
         case PayloadOneofCase.NotifyVirtualSelectedParentChainChangedRequest:
-          if (NotifyVirtualSelectedParentChainChangedRequest == null) {
+          if (NotifyVirtualSelectedParentChainChangedRequest == null)
+          {
             NotifyVirtualSelectedParentChainChangedRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentChainChangedRequestMessage();
           }
           NotifyVirtualSelectedParentChainChangedRequest.MergeFrom(other.NotifyVirtualSelectedParentChainChangedRequest);
           break;
         case PayloadOneofCase.NotifyVirtualSelectedParentChainChangedResponse:
-          if (NotifyVirtualSelectedParentChainChangedResponse == null) {
+          if (NotifyVirtualSelectedParentChainChangedResponse == null)
+          {
             NotifyVirtualSelectedParentChainChangedResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentChainChangedResponseMessage();
           }
           NotifyVirtualSelectedParentChainChangedResponse.MergeFrom(other.NotifyVirtualSelectedParentChainChangedResponse);
           break;
         case PayloadOneofCase.VirtualSelectedParentChainChangedNotification:
-          if (VirtualSelectedParentChainChangedNotification == null) {
+          if (VirtualSelectedParentChainChangedNotification == null)
+          {
             VirtualSelectedParentChainChangedNotification = new global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualSelectedParentChainChangedNotificationMessage();
           }
           VirtualSelectedParentChainChangedNotification.MergeFrom(other.VirtualSelectedParentChainChangedNotification);
           break;
         case PayloadOneofCase.GetBlockRequest:
-          if (GetBlockRequest == null) {
+          if (GetBlockRequest == null)
+          {
             GetBlockRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockRequestMessage();
           }
           GetBlockRequest.MergeFrom(other.GetBlockRequest);
           break;
         case PayloadOneofCase.GetBlockResponse:
-          if (GetBlockResponse == null) {
+          if (GetBlockResponse == null)
+          {
             GetBlockResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockResponseMessage();
           }
           GetBlockResponse.MergeFrom(other.GetBlockResponse);
           break;
         case PayloadOneofCase.GetSubnetworkRequest:
-          if (GetSubnetworkRequest == null) {
+          if (GetSubnetworkRequest == null)
+          {
             GetSubnetworkRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetSubnetworkRequestMessage();
           }
           GetSubnetworkRequest.MergeFrom(other.GetSubnetworkRequest);
           break;
         case PayloadOneofCase.GetSubnetworkResponse:
-          if (GetSubnetworkResponse == null) {
+          if (GetSubnetworkResponse == null)
+          {
             GetSubnetworkResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetSubnetworkResponseMessage();
           }
           GetSubnetworkResponse.MergeFrom(other.GetSubnetworkResponse);
           break;
         case PayloadOneofCase.GetVirtualSelectedParentChainFromBlockRequest:
-          if (GetVirtualSelectedParentChainFromBlockRequest == null) {
+          if (GetVirtualSelectedParentChainFromBlockRequest == null)
+          {
             GetVirtualSelectedParentChainFromBlockRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentChainFromBlockRequestMessage();
           }
           GetVirtualSelectedParentChainFromBlockRequest.MergeFrom(other.GetVirtualSelectedParentChainFromBlockRequest);
           break;
         case PayloadOneofCase.GetVirtualSelectedParentChainFromBlockResponse:
-          if (GetVirtualSelectedParentChainFromBlockResponse == null) {
+          if (GetVirtualSelectedParentChainFromBlockResponse == null)
+          {
             GetVirtualSelectedParentChainFromBlockResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentChainFromBlockResponseMessage();
           }
           GetVirtualSelectedParentChainFromBlockResponse.MergeFrom(other.GetVirtualSelectedParentChainFromBlockResponse);
           break;
         case PayloadOneofCase.GetBlocksRequest:
-          if (GetBlocksRequest == null) {
+          if (GetBlocksRequest == null)
+          {
             GetBlocksRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlocksRequestMessage();
           }
           GetBlocksRequest.MergeFrom(other.GetBlocksRequest);
           break;
         case PayloadOneofCase.GetBlocksResponse:
-          if (GetBlocksResponse == null) {
+          if (GetBlocksResponse == null)
+          {
             GetBlocksResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlocksResponseMessage();
           }
           GetBlocksResponse.MergeFrom(other.GetBlocksResponse);
           break;
         case PayloadOneofCase.GetBlockCountRequest:
-          if (GetBlockCountRequest == null) {
+          if (GetBlockCountRequest == null)
+          {
             GetBlockCountRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockCountRequestMessage();
           }
           GetBlockCountRequest.MergeFrom(other.GetBlockCountRequest);
           break;
         case PayloadOneofCase.GetBlockCountResponse:
-          if (GetBlockCountResponse == null) {
+          if (GetBlockCountResponse == null)
+          {
             GetBlockCountResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockCountResponseMessage();
           }
           GetBlockCountResponse.MergeFrom(other.GetBlockCountResponse);
           break;
         case PayloadOneofCase.GetBlockDagInfoRequest:
-          if (GetBlockDagInfoRequest == null) {
+          if (GetBlockDagInfoRequest == null)
+          {
             GetBlockDagInfoRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockDagInfoRequestMessage();
           }
           GetBlockDagInfoRequest.MergeFrom(other.GetBlockDagInfoRequest);
           break;
         case PayloadOneofCase.GetBlockDagInfoResponse:
-          if (GetBlockDagInfoResponse == null) {
+          if (GetBlockDagInfoResponse == null)
+          {
             GetBlockDagInfoResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockDagInfoResponseMessage();
           }
           GetBlockDagInfoResponse.MergeFrom(other.GetBlockDagInfoResponse);
           break;
         case PayloadOneofCase.ResolveFinalityConflictRequest:
-          if (ResolveFinalityConflictRequest == null) {
+          if (ResolveFinalityConflictRequest == null)
+          {
             ResolveFinalityConflictRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.ResolveFinalityConflictRequestMessage();
           }
           ResolveFinalityConflictRequest.MergeFrom(other.ResolveFinalityConflictRequest);
           break;
         case PayloadOneofCase.ResolveFinalityConflictResponse:
-          if (ResolveFinalityConflictResponse == null) {
+          if (ResolveFinalityConflictResponse == null)
+          {
             ResolveFinalityConflictResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.ResolveFinalityConflictResponseMessage();
           }
           ResolveFinalityConflictResponse.MergeFrom(other.ResolveFinalityConflictResponse);
           break;
         case PayloadOneofCase.NotifyFinalityConflictsRequest:
-          if (NotifyFinalityConflictsRequest == null) {
+          if (NotifyFinalityConflictsRequest == null)
+          {
             NotifyFinalityConflictsRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyFinalityConflictsRequestMessage();
           }
           NotifyFinalityConflictsRequest.MergeFrom(other.NotifyFinalityConflictsRequest);
           break;
         case PayloadOneofCase.NotifyFinalityConflictsResponse:
-          if (NotifyFinalityConflictsResponse == null) {
+          if (NotifyFinalityConflictsResponse == null)
+          {
             NotifyFinalityConflictsResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyFinalityConflictsResponseMessage();
           }
           NotifyFinalityConflictsResponse.MergeFrom(other.NotifyFinalityConflictsResponse);
           break;
         case PayloadOneofCase.FinalityConflictNotification:
-          if (FinalityConflictNotification == null) {
+          if (FinalityConflictNotification == null)
+          {
             FinalityConflictNotification = new global::Miningcore.Blockchain.Kaspa.Kaspad.FinalityConflictNotificationMessage();
           }
           FinalityConflictNotification.MergeFrom(other.FinalityConflictNotification);
           break;
         case PayloadOneofCase.FinalityConflictResolvedNotification:
-          if (FinalityConflictResolvedNotification == null) {
+          if (FinalityConflictResolvedNotification == null)
+          {
             FinalityConflictResolvedNotification = new global::Miningcore.Blockchain.Kaspa.Kaspad.FinalityConflictResolvedNotificationMessage();
           }
           FinalityConflictResolvedNotification.MergeFrom(other.FinalityConflictResolvedNotification);
           break;
         case PayloadOneofCase.GetMempoolEntriesRequest:
-          if (GetMempoolEntriesRequest == null) {
+          if (GetMempoolEntriesRequest == null)
+          {
             GetMempoolEntriesRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesRequestMessage();
           }
           GetMempoolEntriesRequest.MergeFrom(other.GetMempoolEntriesRequest);
           break;
         case PayloadOneofCase.GetMempoolEntriesResponse:
-          if (GetMempoolEntriesResponse == null) {
+          if (GetMempoolEntriesResponse == null)
+          {
             GetMempoolEntriesResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesResponseMessage();
           }
           GetMempoolEntriesResponse.MergeFrom(other.GetMempoolEntriesResponse);
           break;
         case PayloadOneofCase.ShutDownRequest:
-          if (ShutDownRequest == null) {
+          if (ShutDownRequest == null)
+          {
             ShutDownRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.ShutDownRequestMessage();
           }
           ShutDownRequest.MergeFrom(other.ShutDownRequest);
           break;
         case PayloadOneofCase.ShutDownResponse:
-          if (ShutDownResponse == null) {
+          if (ShutDownResponse == null)
+          {
             ShutDownResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.ShutDownResponseMessage();
           }
           ShutDownResponse.MergeFrom(other.ShutDownResponse);
           break;
         case PayloadOneofCase.GetHeadersRequest:
-          if (GetHeadersRequest == null) {
+          if (GetHeadersRequest == null)
+          {
             GetHeadersRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetHeadersRequestMessage();
           }
           GetHeadersRequest.MergeFrom(other.GetHeadersRequest);
           break;
         case PayloadOneofCase.GetHeadersResponse:
-          if (GetHeadersResponse == null) {
+          if (GetHeadersResponse == null)
+          {
             GetHeadersResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetHeadersResponseMessage();
           }
           GetHeadersResponse.MergeFrom(other.GetHeadersResponse);
           break;
         case PayloadOneofCase.NotifyUtxosChangedRequest:
-          if (NotifyUtxosChangedRequest == null) {
+          if (NotifyUtxosChangedRequest == null)
+          {
             NotifyUtxosChangedRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyUtxosChangedRequestMessage();
           }
           NotifyUtxosChangedRequest.MergeFrom(other.NotifyUtxosChangedRequest);
           break;
         case PayloadOneofCase.NotifyUtxosChangedResponse:
-          if (NotifyUtxosChangedResponse == null) {
+          if (NotifyUtxosChangedResponse == null)
+          {
             NotifyUtxosChangedResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyUtxosChangedResponseMessage();
           }
           NotifyUtxosChangedResponse.MergeFrom(other.NotifyUtxosChangedResponse);
           break;
         case PayloadOneofCase.UtxosChangedNotification:
-          if (UtxosChangedNotification == null) {
+          if (UtxosChangedNotification == null)
+          {
             UtxosChangedNotification = new global::Miningcore.Blockchain.Kaspa.Kaspad.UtxosChangedNotificationMessage();
           }
           UtxosChangedNotification.MergeFrom(other.UtxosChangedNotification);
           break;
         case PayloadOneofCase.GetUtxosByAddressesRequest:
-          if (GetUtxosByAddressesRequest == null) {
+          if (GetUtxosByAddressesRequest == null)
+          {
             GetUtxosByAddressesRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetUtxosByAddressesRequestMessage();
           }
           GetUtxosByAddressesRequest.MergeFrom(other.GetUtxosByAddressesRequest);
           break;
         case PayloadOneofCase.GetUtxosByAddressesResponse:
-          if (GetUtxosByAddressesResponse == null) {
+          if (GetUtxosByAddressesResponse == null)
+          {
             GetUtxosByAddressesResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetUtxosByAddressesResponseMessage();
           }
           GetUtxosByAddressesResponse.MergeFrom(other.GetUtxosByAddressesResponse);
           break;
         case PayloadOneofCase.GetVirtualSelectedParentBlueScoreRequest:
-          if (GetVirtualSelectedParentBlueScoreRequest == null) {
+          if (GetVirtualSelectedParentBlueScoreRequest == null)
+          {
             GetVirtualSelectedParentBlueScoreRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentBlueScoreRequestMessage();
           }
           GetVirtualSelectedParentBlueScoreRequest.MergeFrom(other.GetVirtualSelectedParentBlueScoreRequest);
           break;
         case PayloadOneofCase.GetVirtualSelectedParentBlueScoreResponse:
-          if (GetVirtualSelectedParentBlueScoreResponse == null) {
+          if (GetVirtualSelectedParentBlueScoreResponse == null)
+          {
             GetVirtualSelectedParentBlueScoreResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentBlueScoreResponseMessage();
           }
           GetVirtualSelectedParentBlueScoreResponse.MergeFrom(other.GetVirtualSelectedParentBlueScoreResponse);
           break;
         case PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedRequest:
-          if (NotifyVirtualSelectedParentBlueScoreChangedRequest == null) {
+          if (NotifyVirtualSelectedParentBlueScoreChangedRequest == null)
+          {
             NotifyVirtualSelectedParentBlueScoreChangedRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentBlueScoreChangedRequestMessage();
           }
           NotifyVirtualSelectedParentBlueScoreChangedRequest.MergeFrom(other.NotifyVirtualSelectedParentBlueScoreChangedRequest);
           break;
         case PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedResponse:
-          if (NotifyVirtualSelectedParentBlueScoreChangedResponse == null) {
+          if (NotifyVirtualSelectedParentBlueScoreChangedResponse == null)
+          {
             NotifyVirtualSelectedParentBlueScoreChangedResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentBlueScoreChangedResponseMessage();
           }
           NotifyVirtualSelectedParentBlueScoreChangedResponse.MergeFrom(other.NotifyVirtualSelectedParentBlueScoreChangedResponse);
           break;
         case PayloadOneofCase.VirtualSelectedParentBlueScoreChangedNotification:
-          if (VirtualSelectedParentBlueScoreChangedNotification == null) {
+          if (VirtualSelectedParentBlueScoreChangedNotification == null)
+          {
             VirtualSelectedParentBlueScoreChangedNotification = new global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualSelectedParentBlueScoreChangedNotificationMessage();
           }
           VirtualSelectedParentBlueScoreChangedNotification.MergeFrom(other.VirtualSelectedParentBlueScoreChangedNotification);
           break;
         case PayloadOneofCase.BanRequest:
-          if (BanRequest == null) {
+          if (BanRequest == null)
+          {
             BanRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.BanRequestMessage();
           }
           BanRequest.MergeFrom(other.BanRequest);
           break;
         case PayloadOneofCase.BanResponse:
-          if (BanResponse == null) {
+          if (BanResponse == null)
+          {
             BanResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.BanResponseMessage();
           }
           BanResponse.MergeFrom(other.BanResponse);
           break;
         case PayloadOneofCase.UnbanRequest:
-          if (UnbanRequest == null) {
+          if (UnbanRequest == null)
+          {
             UnbanRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.UnbanRequestMessage();
           }
           UnbanRequest.MergeFrom(other.UnbanRequest);
           break;
         case PayloadOneofCase.UnbanResponse:
-          if (UnbanResponse == null) {
+          if (UnbanResponse == null)
+          {
             UnbanResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.UnbanResponseMessage();
           }
           UnbanResponse.MergeFrom(other.UnbanResponse);
           break;
         case PayloadOneofCase.GetInfoRequest:
-          if (GetInfoRequest == null) {
+          if (GetInfoRequest == null)
+          {
             GetInfoRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetInfoRequestMessage();
           }
           GetInfoRequest.MergeFrom(other.GetInfoRequest);
           break;
         case PayloadOneofCase.GetInfoResponse:
-          if (GetInfoResponse == null) {
+          if (GetInfoResponse == null)
+          {
             GetInfoResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetInfoResponseMessage();
           }
           GetInfoResponse.MergeFrom(other.GetInfoResponse);
           break;
         case PayloadOneofCase.StopNotifyingUtxosChangedRequest:
-          if (StopNotifyingUtxosChangedRequest == null) {
+          if (StopNotifyingUtxosChangedRequest == null)
+          {
             StopNotifyingUtxosChangedRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingUtxosChangedRequestMessage();
           }
           StopNotifyingUtxosChangedRequest.MergeFrom(other.StopNotifyingUtxosChangedRequest);
           break;
         case PayloadOneofCase.StopNotifyingUtxosChangedResponse:
-          if (StopNotifyingUtxosChangedResponse == null) {
+          if (StopNotifyingUtxosChangedResponse == null)
+          {
             StopNotifyingUtxosChangedResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingUtxosChangedResponseMessage();
           }
           StopNotifyingUtxosChangedResponse.MergeFrom(other.StopNotifyingUtxosChangedResponse);
           break;
         case PayloadOneofCase.NotifyPruningPointUTXOSetOverrideRequest:
-          if (NotifyPruningPointUTXOSetOverrideRequest == null) {
+          if (NotifyPruningPointUTXOSetOverrideRequest == null)
+          {
             NotifyPruningPointUTXOSetOverrideRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyPruningPointUTXOSetOverrideRequestMessage();
           }
           NotifyPruningPointUTXOSetOverrideRequest.MergeFrom(other.NotifyPruningPointUTXOSetOverrideRequest);
           break;
         case PayloadOneofCase.NotifyPruningPointUTXOSetOverrideResponse:
-          if (NotifyPruningPointUTXOSetOverrideResponse == null) {
+          if (NotifyPruningPointUTXOSetOverrideResponse == null)
+          {
             NotifyPruningPointUTXOSetOverrideResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyPruningPointUTXOSetOverrideResponseMessage();
           }
           NotifyPruningPointUTXOSetOverrideResponse.MergeFrom(other.NotifyPruningPointUTXOSetOverrideResponse);
           break;
         case PayloadOneofCase.PruningPointUTXOSetOverrideNotification:
-          if (PruningPointUTXOSetOverrideNotification == null) {
+          if (PruningPointUTXOSetOverrideNotification == null)
+          {
             PruningPointUTXOSetOverrideNotification = new global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointUTXOSetOverrideNotificationMessage();
           }
           PruningPointUTXOSetOverrideNotification.MergeFrom(other.PruningPointUTXOSetOverrideNotification);
           break;
         case PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideRequest:
-          if (StopNotifyingPruningPointUTXOSetOverrideRequest == null) {
+          if (StopNotifyingPruningPointUTXOSetOverrideRequest == null)
+          {
             StopNotifyingPruningPointUTXOSetOverrideRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingPruningPointUTXOSetOverrideRequestMessage();
           }
           StopNotifyingPruningPointUTXOSetOverrideRequest.MergeFrom(other.StopNotifyingPruningPointUTXOSetOverrideRequest);
           break;
         case PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideResponse:
-          if (StopNotifyingPruningPointUTXOSetOverrideResponse == null) {
+          if (StopNotifyingPruningPointUTXOSetOverrideResponse == null)
+          {
             StopNotifyingPruningPointUTXOSetOverrideResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingPruningPointUTXOSetOverrideResponseMessage();
           }
           StopNotifyingPruningPointUTXOSetOverrideResponse.MergeFrom(other.StopNotifyingPruningPointUTXOSetOverrideResponse);
           break;
         case PayloadOneofCase.EstimateNetworkHashesPerSecondRequest:
-          if (EstimateNetworkHashesPerSecondRequest == null) {
+          if (EstimateNetworkHashesPerSecondRequest == null)
+          {
             EstimateNetworkHashesPerSecondRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.EstimateNetworkHashesPerSecondRequestMessage();
           }
           EstimateNetworkHashesPerSecondRequest.MergeFrom(other.EstimateNetworkHashesPerSecondRequest);
           break;
         case PayloadOneofCase.EstimateNetworkHashesPerSecondResponse:
-          if (EstimateNetworkHashesPerSecondResponse == null) {
+          if (EstimateNetworkHashesPerSecondResponse == null)
+          {
             EstimateNetworkHashesPerSecondResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.EstimateNetworkHashesPerSecondResponseMessage();
           }
           EstimateNetworkHashesPerSecondResponse.MergeFrom(other.EstimateNetworkHashesPerSecondResponse);
           break;
         case PayloadOneofCase.NotifyVirtualDaaScoreChangedRequest:
-          if (NotifyVirtualDaaScoreChangedRequest == null) {
+          if (NotifyVirtualDaaScoreChangedRequest == null)
+          {
             NotifyVirtualDaaScoreChangedRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualDaaScoreChangedRequestMessage();
           }
           NotifyVirtualDaaScoreChangedRequest.MergeFrom(other.NotifyVirtualDaaScoreChangedRequest);
           break;
         case PayloadOneofCase.NotifyVirtualDaaScoreChangedResponse:
-          if (NotifyVirtualDaaScoreChangedResponse == null) {
+          if (NotifyVirtualDaaScoreChangedResponse == null)
+          {
             NotifyVirtualDaaScoreChangedResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualDaaScoreChangedResponseMessage();
           }
           NotifyVirtualDaaScoreChangedResponse.MergeFrom(other.NotifyVirtualDaaScoreChangedResponse);
           break;
         case PayloadOneofCase.VirtualDaaScoreChangedNotification:
-          if (VirtualDaaScoreChangedNotification == null) {
+          if (VirtualDaaScoreChangedNotification == null)
+          {
             VirtualDaaScoreChangedNotification = new global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualDaaScoreChangedNotificationMessage();
           }
           VirtualDaaScoreChangedNotification.MergeFrom(other.VirtualDaaScoreChangedNotification);
           break;
         case PayloadOneofCase.GetBalanceByAddressRequest:
-          if (GetBalanceByAddressRequest == null) {
+          if (GetBalanceByAddressRequest == null)
+          {
             GetBalanceByAddressRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalanceByAddressRequestMessage();
           }
           GetBalanceByAddressRequest.MergeFrom(other.GetBalanceByAddressRequest);
           break;
         case PayloadOneofCase.GetBalanceByAddressResponse:
-          if (GetBalanceByAddressResponse == null) {
+          if (GetBalanceByAddressResponse == null)
+          {
             GetBalanceByAddressResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalanceByAddressResponseMessage();
           }
           GetBalanceByAddressResponse.MergeFrom(other.GetBalanceByAddressResponse);
           break;
         case PayloadOneofCase.GetBalancesByAddressesRequest:
-          if (GetBalancesByAddressesRequest == null) {
+          if (GetBalancesByAddressesRequest == null)
+          {
             GetBalancesByAddressesRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalancesByAddressesRequestMessage();
           }
           GetBalancesByAddressesRequest.MergeFrom(other.GetBalancesByAddressesRequest);
           break;
         case PayloadOneofCase.GetBalancesByAddressesResponse:
-          if (GetBalancesByAddressesResponse == null) {
+          if (GetBalancesByAddressesResponse == null)
+          {
             GetBalancesByAddressesResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalancesByAddressesResponseMessage();
           }
           GetBalancesByAddressesResponse.MergeFrom(other.GetBalancesByAddressesResponse);
           break;
         case PayloadOneofCase.NotifyNewBlockTemplateRequest:
-          if (NotifyNewBlockTemplateRequest == null) {
+          if (NotifyNewBlockTemplateRequest == null)
+          {
             NotifyNewBlockTemplateRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyNewBlockTemplateRequestMessage();
           }
           NotifyNewBlockTemplateRequest.MergeFrom(other.NotifyNewBlockTemplateRequest);
           break;
         case PayloadOneofCase.NotifyNewBlockTemplateResponse:
-          if (NotifyNewBlockTemplateResponse == null) {
+          if (NotifyNewBlockTemplateResponse == null)
+          {
             NotifyNewBlockTemplateResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyNewBlockTemplateResponseMessage();
           }
           NotifyNewBlockTemplateResponse.MergeFrom(other.NotifyNewBlockTemplateResponse);
           break;
         case PayloadOneofCase.NewBlockTemplateNotification:
-          if (NewBlockTemplateNotification == null) {
+          if (NewBlockTemplateNotification == null)
+          {
             NewBlockTemplateNotification = new global::Miningcore.Blockchain.Kaspa.Kaspad.NewBlockTemplateNotificationMessage();
           }
           NewBlockTemplateNotification.MergeFrom(other.NewBlockTemplateNotification);
           break;
         case PayloadOneofCase.GetMempoolEntriesByAddressesRequest:
-          if (GetMempoolEntriesByAddressesRequest == null) {
+          if (GetMempoolEntriesByAddressesRequest == null)
+          {
             GetMempoolEntriesByAddressesRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesByAddressesRequestMessage();
           }
           GetMempoolEntriesByAddressesRequest.MergeFrom(other.GetMempoolEntriesByAddressesRequest);
           break;
         case PayloadOneofCase.GetMempoolEntriesByAddressesResponse:
-          if (GetMempoolEntriesByAddressesResponse == null) {
+          if (GetMempoolEntriesByAddressesResponse == null)
+          {
             GetMempoolEntriesByAddressesResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesByAddressesResponseMessage();
           }
           GetMempoolEntriesByAddressesResponse.MergeFrom(other.GetMempoolEntriesByAddressesResponse);
           break;
         case PayloadOneofCase.GetCoinSupplyRequest:
-          if (GetCoinSupplyRequest == null) {
+          if (GetCoinSupplyRequest == null)
+          {
             GetCoinSupplyRequest = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetCoinSupplyRequestMessage();
           }
           GetCoinSupplyRequest.MergeFrom(other.GetCoinSupplyRequest);
           break;
         case PayloadOneofCase.GetCoinSupplyResponse:
-          if (GetCoinSupplyResponse == null) {
+          if (GetCoinSupplyResponse == null)
+          {
             GetCoinSupplyResponse = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetCoinSupplyResponseMessage();
           }
           GetCoinSupplyResponse.MergeFrom(other.GetCoinSupplyResponse);
@@ -4289,1183 +4967,1446 @@ namespace Miningcore.Blockchain.Kaspa.Kaspad {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.AddressesMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.AddressesMessage();
-            if (payloadCase_ == PayloadOneofCase.Addresses) {
-              subBuilder.MergeFrom(Addresses);
-            }
-            input.ReadMessage(subBuilder);
-            Addresses = subBuilder;
-            break;
-          }
-          case 18: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.BlockMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockMessage();
-            if (payloadCase_ == PayloadOneofCase.Block) {
-              subBuilder.MergeFrom(Block);
-            }
-            input.ReadMessage(subBuilder);
-            Block = subBuilder;
-            break;
-          }
-          case 26: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.TransactionMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.TransactionMessage();
-            if (payloadCase_ == PayloadOneofCase.Transaction) {
-              subBuilder.MergeFrom(Transaction);
-            }
-            input.ReadMessage(subBuilder);
-            Transaction = subBuilder;
-            break;
-          }
-          case 42: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.BlockLocatorMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockLocatorMessage();
-            if (payloadCase_ == PayloadOneofCase.BlockLocator) {
-              subBuilder.MergeFrom(BlockLocator);
-            }
-            input.ReadMessage(subBuilder);
-            BlockLocator = subBuilder;
-            break;
-          }
-          case 50: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.RequestAddressesMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestAddressesMessage();
-            if (payloadCase_ == PayloadOneofCase.RequestAddresses) {
-              subBuilder.MergeFrom(RequestAddresses);
-            }
-            input.ReadMessage(subBuilder);
-            RequestAddresses = subBuilder;
-            break;
-          }
-          case 82: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.RequestRelayBlocksMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestRelayBlocksMessage();
-            if (payloadCase_ == PayloadOneofCase.RequestRelayBlocks) {
-              subBuilder.MergeFrom(RequestRelayBlocks);
-            }
-            input.ReadMessage(subBuilder);
-            RequestRelayBlocks = subBuilder;
-            break;
-          }
-          case 98: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.RequestTransactionsMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestTransactionsMessage();
-            if (payloadCase_ == PayloadOneofCase.RequestTransactions) {
-              subBuilder.MergeFrom(RequestTransactions);
-            }
-            input.ReadMessage(subBuilder);
-            RequestTransactions = subBuilder;
-            break;
-          }
-          case 106: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.BlockMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockMessage();
-            if (payloadCase_ == PayloadOneofCase.IbdBlock) {
-              subBuilder.MergeFrom(IbdBlock);
-            }
-            input.ReadMessage(subBuilder);
-            IbdBlock = subBuilder;
-            break;
-          }
-          case 114: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.InvRelayBlockMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.InvRelayBlockMessage();
-            if (payloadCase_ == PayloadOneofCase.InvRelayBlock) {
-              subBuilder.MergeFrom(InvRelayBlock);
-            }
-            input.ReadMessage(subBuilder);
-            InvRelayBlock = subBuilder;
-            break;
-          }
-          case 122: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.InvTransactionsMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.InvTransactionsMessage();
-            if (payloadCase_ == PayloadOneofCase.InvTransactions) {
-              subBuilder.MergeFrom(InvTransactions);
-            }
-            input.ReadMessage(subBuilder);
-            InvTransactions = subBuilder;
-            break;
-          }
-          case 130: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.PingMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.PingMessage();
-            if (payloadCase_ == PayloadOneofCase.Ping) {
-              subBuilder.MergeFrom(Ping);
-            }
-            input.ReadMessage(subBuilder);
-            Ping = subBuilder;
-            break;
-          }
-          case 138: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.PongMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.PongMessage();
-            if (payloadCase_ == PayloadOneofCase.Pong) {
-              subBuilder.MergeFrom(Pong);
-            }
-            input.ReadMessage(subBuilder);
-            Pong = subBuilder;
-            break;
-          }
-          case 154: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.VerackMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.VerackMessage();
-            if (payloadCase_ == PayloadOneofCase.Verack) {
-              subBuilder.MergeFrom(Verack);
-            }
-            input.ReadMessage(subBuilder);
-            Verack = subBuilder;
-            break;
-          }
-          case 162: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.VersionMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.VersionMessage();
-            if (payloadCase_ == PayloadOneofCase.Version) {
-              subBuilder.MergeFrom(Version);
-            }
-            input.ReadMessage(subBuilder);
-            Version = subBuilder;
-            break;
-          }
-          case 170: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.TransactionNotFoundMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.TransactionNotFoundMessage();
-            if (payloadCase_ == PayloadOneofCase.TransactionNotFound) {
-              subBuilder.MergeFrom(TransactionNotFound);
-            }
-            input.ReadMessage(subBuilder);
-            TransactionNotFound = subBuilder;
-            break;
-          }
-          case 178: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.RejectMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RejectMessage();
-            if (payloadCase_ == PayloadOneofCase.Reject) {
-              subBuilder.MergeFrom(Reject);
-            }
-            input.ReadMessage(subBuilder);
-            Reject = subBuilder;
-            break;
-          }
-          case 202: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointUtxoSetChunkMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointUtxoSetChunkMessage();
-            if (payloadCase_ == PayloadOneofCase.PruningPointUtxoSetChunk) {
-              subBuilder.MergeFrom(PruningPointUtxoSetChunk);
-            }
-            input.ReadMessage(subBuilder);
-            PruningPointUtxoSetChunk = subBuilder;
-            break;
-          }
-          case 210: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.RequestIBDBlocksMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestIBDBlocksMessage();
-            if (payloadCase_ == PayloadOneofCase.RequestIBDBlocks) {
-              subBuilder.MergeFrom(RequestIBDBlocks);
-            }
-            input.ReadMessage(subBuilder);
-            RequestIBDBlocks = subBuilder;
-            break;
-          }
-          case 218: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.UnexpectedPruningPointMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.UnexpectedPruningPointMessage();
-            if (payloadCase_ == PayloadOneofCase.UnexpectedPruningPoint) {
-              subBuilder.MergeFrom(UnexpectedPruningPoint);
-            }
-            input.ReadMessage(subBuilder);
-            UnexpectedPruningPoint = subBuilder;
-            break;
-          }
-          case 242: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorMessage();
-            if (payloadCase_ == PayloadOneofCase.IbdBlockLocator) {
-              subBuilder.MergeFrom(IbdBlockLocator);
-            }
-            input.ReadMessage(subBuilder);
-            IbdBlockLocator = subBuilder;
-            break;
-          }
-          case 250: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorHighestHashMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorHighestHashMessage();
-            if (payloadCase_ == PayloadOneofCase.IbdBlockLocatorHighestHash) {
-              subBuilder.MergeFrom(IbdBlockLocatorHighestHash);
-            }
-            input.ReadMessage(subBuilder);
-            IbdBlockLocatorHighestHash = subBuilder;
-            break;
-          }
-          case 266: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextPruningPointUtxoSetChunkMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextPruningPointUtxoSetChunkMessage();
-            if (payloadCase_ == PayloadOneofCase.RequestNextPruningPointUtxoSetChunk) {
-              subBuilder.MergeFrom(RequestNextPruningPointUtxoSetChunk);
-            }
-            input.ReadMessage(subBuilder);
-            RequestNextPruningPointUtxoSetChunk = subBuilder;
-            break;
-          }
-          case 274: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.DonePruningPointUtxoSetChunksMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.DonePruningPointUtxoSetChunksMessage();
-            if (payloadCase_ == PayloadOneofCase.DonePruningPointUtxoSetChunks) {
-              subBuilder.MergeFrom(DonePruningPointUtxoSetChunks);
-            }
-            input.ReadMessage(subBuilder);
-            DonePruningPointUtxoSetChunks = subBuilder;
-            break;
-          }
-          case 282: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorHighestHashNotFoundMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorHighestHashNotFoundMessage();
-            if (payloadCase_ == PayloadOneofCase.IbdBlockLocatorHighestHashNotFound) {
-              subBuilder.MergeFrom(IbdBlockLocatorHighestHashNotFound);
-            }
-            input.ReadMessage(subBuilder);
-            IbdBlockLocatorHighestHashNotFound = subBuilder;
-            break;
-          }
-          case 290: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.BlockWithTrustedDataMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockWithTrustedDataMessage();
-            if (payloadCase_ == PayloadOneofCase.BlockWithTrustedData) {
-              subBuilder.MergeFrom(BlockWithTrustedData);
-            }
-            input.ReadMessage(subBuilder);
-            BlockWithTrustedData = subBuilder;
-            break;
-          }
-          case 298: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.DoneBlocksWithTrustedDataMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.DoneBlocksWithTrustedDataMessage();
-            if (payloadCase_ == PayloadOneofCase.DoneBlocksWithTrustedData) {
-              subBuilder.MergeFrom(DoneBlocksWithTrustedData);
-            }
-            input.ReadMessage(subBuilder);
-            DoneBlocksWithTrustedData = subBuilder;
-            break;
-          }
-          case 322: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointAndItsAnticoneMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointAndItsAnticoneMessage();
-            if (payloadCase_ == PayloadOneofCase.RequestPruningPointAndItsAnticone) {
-              subBuilder.MergeFrom(RequestPruningPointAndItsAnticone);
-            }
-            input.ReadMessage(subBuilder);
-            RequestPruningPointAndItsAnticone = subBuilder;
-            break;
-          }
-          case 330: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.BlockHeadersMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockHeadersMessage();
-            if (payloadCase_ == PayloadOneofCase.BlockHeaders) {
-              subBuilder.MergeFrom(BlockHeaders);
-            }
-            input.ReadMessage(subBuilder);
-            BlockHeaders = subBuilder;
-            break;
-          }
-          case 338: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextHeadersMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextHeadersMessage();
-            if (payloadCase_ == PayloadOneofCase.RequestNextHeaders) {
-              subBuilder.MergeFrom(RequestNextHeaders);
-            }
-            input.ReadMessage(subBuilder);
-            RequestNextHeaders = subBuilder;
-            break;
-          }
-          case 346: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.DoneHeadersMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.DoneHeadersMessage();
-            if (payloadCase_ == PayloadOneofCase.DoneHeaders) {
-              subBuilder.MergeFrom(DoneHeaders);
-            }
-            input.ReadMessage(subBuilder);
-            DoneHeaders = subBuilder;
-            break;
-          }
-          case 354: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointUTXOSetMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointUTXOSetMessage();
-            if (payloadCase_ == PayloadOneofCase.RequestPruningPointUTXOSet) {
-              subBuilder.MergeFrom(RequestPruningPointUTXOSet);
-            }
-            input.ReadMessage(subBuilder);
-            RequestPruningPointUTXOSet = subBuilder;
-            break;
-          }
-          case 362: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.RequestHeadersMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestHeadersMessage();
-            if (payloadCase_ == PayloadOneofCase.RequestHeaders) {
-              subBuilder.MergeFrom(RequestHeaders);
-            }
-            input.ReadMessage(subBuilder);
-            RequestHeaders = subBuilder;
-            break;
-          }
-          case 370: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.RequestBlockLocatorMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestBlockLocatorMessage();
-            if (payloadCase_ == PayloadOneofCase.RequestBlockLocator) {
-              subBuilder.MergeFrom(RequestBlockLocator);
-            }
-            input.ReadMessage(subBuilder);
-            RequestBlockLocator = subBuilder;
-            break;
-          }
-          case 378: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointsMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointsMessage();
-            if (payloadCase_ == PayloadOneofCase.PruningPoints) {
-              subBuilder.MergeFrom(PruningPoints);
-            }
-            input.ReadMessage(subBuilder);
-            PruningPoints = subBuilder;
-            break;
-          }
-          case 386: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointProofMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointProofMessage();
-            if (payloadCase_ == PayloadOneofCase.RequestPruningPointProof) {
-              subBuilder.MergeFrom(RequestPruningPointProof);
-            }
-            input.ReadMessage(subBuilder);
-            RequestPruningPointProof = subBuilder;
-            break;
-          }
-          case 394: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointProofMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointProofMessage();
-            if (payloadCase_ == PayloadOneofCase.PruningPointProof) {
-              subBuilder.MergeFrom(PruningPointProof);
-            }
-            input.ReadMessage(subBuilder);
-            PruningPointProof = subBuilder;
-            break;
-          }
-          case 402: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.ReadyMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.ReadyMessage();
-            if (payloadCase_ == PayloadOneofCase.Ready) {
-              subBuilder.MergeFrom(Ready);
-            }
-            input.ReadMessage(subBuilder);
-            Ready = subBuilder;
-            break;
-          }
-          case 410: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.BlockWithTrustedDataV4Message subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockWithTrustedDataV4Message();
-            if (payloadCase_ == PayloadOneofCase.BlockWithTrustedDataV4) {
-              subBuilder.MergeFrom(BlockWithTrustedDataV4);
-            }
-            input.ReadMessage(subBuilder);
-            BlockWithTrustedDataV4 = subBuilder;
-            break;
-          }
-          case 418: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.TrustedDataMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.TrustedDataMessage();
-            if (payloadCase_ == PayloadOneofCase.TrustedData) {
-              subBuilder.MergeFrom(TrustedData);
-            }
-            input.ReadMessage(subBuilder);
-            TrustedData = subBuilder;
-            break;
-          }
-          case 426: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.RequestIBDChainBlockLocatorMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestIBDChainBlockLocatorMessage();
-            if (payloadCase_ == PayloadOneofCase.RequestIBDChainBlockLocator) {
-              subBuilder.MergeFrom(RequestIBDChainBlockLocator);
-            }
-            input.ReadMessage(subBuilder);
-            RequestIBDChainBlockLocator = subBuilder;
-            break;
-          }
-          case 434: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.IbdChainBlockLocatorMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.IbdChainBlockLocatorMessage();
-            if (payloadCase_ == PayloadOneofCase.IbdChainBlockLocator) {
-              subBuilder.MergeFrom(IbdChainBlockLocator);
-            }
-            input.ReadMessage(subBuilder);
-            IbdChainBlockLocator = subBuilder;
-            break;
-          }
-          case 442: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.RequestAnticoneMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestAnticoneMessage();
-            if (payloadCase_ == PayloadOneofCase.RequestAnticone) {
-              subBuilder.MergeFrom(RequestAnticone);
-            }
-            input.ReadMessage(subBuilder);
-            RequestAnticone = subBuilder;
-            break;
-          }
-          case 450: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextPruningPointAndItsAnticoneBlocksMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextPruningPointAndItsAnticoneBlocksMessage();
-            if (payloadCase_ == PayloadOneofCase.RequestNextPruningPointAndItsAnticoneBlocks) {
-              subBuilder.MergeFrom(RequestNextPruningPointAndItsAnticoneBlocks);
-            }
-            input.ReadMessage(subBuilder);
-            RequestNextPruningPointAndItsAnticoneBlocks = subBuilder;
-            break;
-          }
-          case 8010: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetCurrentNetworkRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetCurrentNetworkRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetCurrentNetworkRequest) {
-              subBuilder.MergeFrom(GetCurrentNetworkRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetCurrentNetworkRequest = subBuilder;
-            break;
-          }
-          case 8018: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetCurrentNetworkResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetCurrentNetworkResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetCurrentNetworkResponse) {
-              subBuilder.MergeFrom(GetCurrentNetworkResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetCurrentNetworkResponse = subBuilder;
-            break;
-          }
-          case 8026: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitBlockRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitBlockRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.SubmitBlockRequest) {
-              subBuilder.MergeFrom(SubmitBlockRequest);
-            }
-            input.ReadMessage(subBuilder);
-            SubmitBlockRequest = subBuilder;
-            break;
-          }
-          case 8034: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitBlockResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitBlockResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.SubmitBlockResponse) {
-              subBuilder.MergeFrom(SubmitBlockResponse);
-            }
-            input.ReadMessage(subBuilder);
-            SubmitBlockResponse = subBuilder;
-            break;
-          }
-          case 8042: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockTemplateRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockTemplateRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetBlockTemplateRequest) {
-              subBuilder.MergeFrom(GetBlockTemplateRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetBlockTemplateRequest = subBuilder;
-            break;
-          }
-          case 8050: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockTemplateResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockTemplateResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetBlockTemplateResponse) {
-              subBuilder.MergeFrom(GetBlockTemplateResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetBlockTemplateResponse = subBuilder;
-            break;
-          }
-          case 8058: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyBlockAddedRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyBlockAddedRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.NotifyBlockAddedRequest) {
-              subBuilder.MergeFrom(NotifyBlockAddedRequest);
-            }
-            input.ReadMessage(subBuilder);
-            NotifyBlockAddedRequest = subBuilder;
-            break;
-          }
-          case 8066: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyBlockAddedResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyBlockAddedResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.NotifyBlockAddedResponse) {
-              subBuilder.MergeFrom(NotifyBlockAddedResponse);
-            }
-            input.ReadMessage(subBuilder);
-            NotifyBlockAddedResponse = subBuilder;
-            break;
-          }
-          case 8074: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.BlockAddedNotificationMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockAddedNotificationMessage();
-            if (payloadCase_ == PayloadOneofCase.BlockAddedNotification) {
-              subBuilder.MergeFrom(BlockAddedNotification);
-            }
-            input.ReadMessage(subBuilder);
-            BlockAddedNotification = subBuilder;
-            break;
-          }
-          case 8082: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetPeerAddressesRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetPeerAddressesRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetPeerAddressesRequest) {
-              subBuilder.MergeFrom(GetPeerAddressesRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetPeerAddressesRequest = subBuilder;
-            break;
-          }
-          case 8090: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetPeerAddressesResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetPeerAddressesResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetPeerAddressesResponse) {
-              subBuilder.MergeFrom(GetPeerAddressesResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetPeerAddressesResponse = subBuilder;
-            break;
-          }
-          case 8098: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetSelectedTipHashRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetSelectedTipHashRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetSelectedTipHashRequest) {
-              subBuilder.MergeFrom(GetSelectedTipHashRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetSelectedTipHashRequest = subBuilder;
-            break;
-          }
-          case 8106: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetSelectedTipHashResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetSelectedTipHashResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetSelectedTipHashResponse) {
-              subBuilder.MergeFrom(GetSelectedTipHashResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetSelectedTipHashResponse = subBuilder;
-            break;
-          }
-          case 8114: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntryRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntryRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetMempoolEntryRequest) {
-              subBuilder.MergeFrom(GetMempoolEntryRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetMempoolEntryRequest = subBuilder;
-            break;
-          }
-          case 8122: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntryResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntryResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetMempoolEntryResponse) {
-              subBuilder.MergeFrom(GetMempoolEntryResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetMempoolEntryResponse = subBuilder;
-            break;
-          }
-          case 8130: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetConnectedPeerInfoRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetConnectedPeerInfoRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetConnectedPeerInfoRequest) {
-              subBuilder.MergeFrom(GetConnectedPeerInfoRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetConnectedPeerInfoRequest = subBuilder;
-            break;
-          }
-          case 8138: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetConnectedPeerInfoResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetConnectedPeerInfoResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetConnectedPeerInfoResponse) {
-              subBuilder.MergeFrom(GetConnectedPeerInfoResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetConnectedPeerInfoResponse = subBuilder;
-            break;
-          }
-          case 8146: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.AddPeerRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.AddPeerRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.AddPeerRequest) {
-              subBuilder.MergeFrom(AddPeerRequest);
-            }
-            input.ReadMessage(subBuilder);
-            AddPeerRequest = subBuilder;
-            break;
-          }
-          case 8154: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.AddPeerResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.AddPeerResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.AddPeerResponse) {
-              subBuilder.MergeFrom(AddPeerResponse);
-            }
-            input.ReadMessage(subBuilder);
-            AddPeerResponse = subBuilder;
-            break;
-          }
-          case 8162: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitTransactionRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitTransactionRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.SubmitTransactionRequest) {
-              subBuilder.MergeFrom(SubmitTransactionRequest);
-            }
-            input.ReadMessage(subBuilder);
-            SubmitTransactionRequest = subBuilder;
-            break;
-          }
-          case 8170: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitTransactionResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitTransactionResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.SubmitTransactionResponse) {
-              subBuilder.MergeFrom(SubmitTransactionResponse);
-            }
-            input.ReadMessage(subBuilder);
-            SubmitTransactionResponse = subBuilder;
-            break;
-          }
-          case 8178: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentChainChangedRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentChainChangedRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentChainChangedRequest) {
-              subBuilder.MergeFrom(NotifyVirtualSelectedParentChainChangedRequest);
-            }
-            input.ReadMessage(subBuilder);
-            NotifyVirtualSelectedParentChainChangedRequest = subBuilder;
-            break;
-          }
-          case 8186: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentChainChangedResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentChainChangedResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentChainChangedResponse) {
-              subBuilder.MergeFrom(NotifyVirtualSelectedParentChainChangedResponse);
-            }
-            input.ReadMessage(subBuilder);
-            NotifyVirtualSelectedParentChainChangedResponse = subBuilder;
-            break;
-          }
-          case 8194: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualSelectedParentChainChangedNotificationMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualSelectedParentChainChangedNotificationMessage();
-            if (payloadCase_ == PayloadOneofCase.VirtualSelectedParentChainChangedNotification) {
-              subBuilder.MergeFrom(VirtualSelectedParentChainChangedNotification);
-            }
-            input.ReadMessage(subBuilder);
-            VirtualSelectedParentChainChangedNotification = subBuilder;
-            break;
-          }
-          case 8202: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetBlockRequest) {
-              subBuilder.MergeFrom(GetBlockRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetBlockRequest = subBuilder;
-            break;
-          }
-          case 8210: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetBlockResponse) {
-              subBuilder.MergeFrom(GetBlockResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetBlockResponse = subBuilder;
-            break;
-          }
-          case 8218: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetSubnetworkRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetSubnetworkRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetSubnetworkRequest) {
-              subBuilder.MergeFrom(GetSubnetworkRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetSubnetworkRequest = subBuilder;
-            break;
-          }
-          case 8226: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetSubnetworkResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetSubnetworkResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetSubnetworkResponse) {
-              subBuilder.MergeFrom(GetSubnetworkResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetSubnetworkResponse = subBuilder;
-            break;
-          }
-          case 8234: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentChainFromBlockRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentChainFromBlockRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentChainFromBlockRequest) {
-              subBuilder.MergeFrom(GetVirtualSelectedParentChainFromBlockRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetVirtualSelectedParentChainFromBlockRequest = subBuilder;
-            break;
-          }
-          case 8242: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentChainFromBlockResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentChainFromBlockResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentChainFromBlockResponse) {
-              subBuilder.MergeFrom(GetVirtualSelectedParentChainFromBlockResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetVirtualSelectedParentChainFromBlockResponse = subBuilder;
-            break;
-          }
-          case 8250: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlocksRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlocksRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetBlocksRequest) {
-              subBuilder.MergeFrom(GetBlocksRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetBlocksRequest = subBuilder;
-            break;
-          }
-          case 8258: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlocksResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlocksResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetBlocksResponse) {
-              subBuilder.MergeFrom(GetBlocksResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetBlocksResponse = subBuilder;
-            break;
-          }
-          case 8266: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockCountRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockCountRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetBlockCountRequest) {
-              subBuilder.MergeFrom(GetBlockCountRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetBlockCountRequest = subBuilder;
-            break;
-          }
-          case 8274: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockCountResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockCountResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetBlockCountResponse) {
-              subBuilder.MergeFrom(GetBlockCountResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetBlockCountResponse = subBuilder;
-            break;
-          }
-          case 8282: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockDagInfoRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockDagInfoRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetBlockDagInfoRequest) {
-              subBuilder.MergeFrom(GetBlockDagInfoRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetBlockDagInfoRequest = subBuilder;
-            break;
-          }
-          case 8290: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockDagInfoResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockDagInfoResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetBlockDagInfoResponse) {
-              subBuilder.MergeFrom(GetBlockDagInfoResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetBlockDagInfoResponse = subBuilder;
-            break;
-          }
-          case 8298: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.ResolveFinalityConflictRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.ResolveFinalityConflictRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.ResolveFinalityConflictRequest) {
-              subBuilder.MergeFrom(ResolveFinalityConflictRequest);
-            }
-            input.ReadMessage(subBuilder);
-            ResolveFinalityConflictRequest = subBuilder;
-            break;
-          }
-          case 8306: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.ResolveFinalityConflictResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.ResolveFinalityConflictResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.ResolveFinalityConflictResponse) {
-              subBuilder.MergeFrom(ResolveFinalityConflictResponse);
-            }
-            input.ReadMessage(subBuilder);
-            ResolveFinalityConflictResponse = subBuilder;
-            break;
-          }
-          case 8314: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyFinalityConflictsRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyFinalityConflictsRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.NotifyFinalityConflictsRequest) {
-              subBuilder.MergeFrom(NotifyFinalityConflictsRequest);
-            }
-            input.ReadMessage(subBuilder);
-            NotifyFinalityConflictsRequest = subBuilder;
-            break;
-          }
-          case 8322: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyFinalityConflictsResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyFinalityConflictsResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.NotifyFinalityConflictsResponse) {
-              subBuilder.MergeFrom(NotifyFinalityConflictsResponse);
-            }
-            input.ReadMessage(subBuilder);
-            NotifyFinalityConflictsResponse = subBuilder;
-            break;
-          }
-          case 8330: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.FinalityConflictNotificationMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.FinalityConflictNotificationMessage();
-            if (payloadCase_ == PayloadOneofCase.FinalityConflictNotification) {
-              subBuilder.MergeFrom(FinalityConflictNotification);
-            }
-            input.ReadMessage(subBuilder);
-            FinalityConflictNotification = subBuilder;
-            break;
-          }
-          case 8338: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.FinalityConflictResolvedNotificationMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.FinalityConflictResolvedNotificationMessage();
-            if (payloadCase_ == PayloadOneofCase.FinalityConflictResolvedNotification) {
-              subBuilder.MergeFrom(FinalityConflictResolvedNotification);
-            }
-            input.ReadMessage(subBuilder);
-            FinalityConflictResolvedNotification = subBuilder;
-            break;
-          }
-          case 8346: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesRequest) {
-              subBuilder.MergeFrom(GetMempoolEntriesRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetMempoolEntriesRequest = subBuilder;
-            break;
-          }
-          case 8354: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesResponse) {
-              subBuilder.MergeFrom(GetMempoolEntriesResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetMempoolEntriesResponse = subBuilder;
-            break;
-          }
-          case 8362: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.ShutDownRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.ShutDownRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.ShutDownRequest) {
-              subBuilder.MergeFrom(ShutDownRequest);
-            }
-            input.ReadMessage(subBuilder);
-            ShutDownRequest = subBuilder;
-            break;
-          }
-          case 8370: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.ShutDownResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.ShutDownResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.ShutDownResponse) {
-              subBuilder.MergeFrom(ShutDownResponse);
-            }
-            input.ReadMessage(subBuilder);
-            ShutDownResponse = subBuilder;
-            break;
-          }
-          case 8378: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetHeadersRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetHeadersRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetHeadersRequest) {
-              subBuilder.MergeFrom(GetHeadersRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetHeadersRequest = subBuilder;
-            break;
-          }
-          case 8386: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetHeadersResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetHeadersResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetHeadersResponse) {
-              subBuilder.MergeFrom(GetHeadersResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetHeadersResponse = subBuilder;
-            break;
-          }
-          case 8394: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyUtxosChangedRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyUtxosChangedRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.NotifyUtxosChangedRequest) {
-              subBuilder.MergeFrom(NotifyUtxosChangedRequest);
-            }
-            input.ReadMessage(subBuilder);
-            NotifyUtxosChangedRequest = subBuilder;
-            break;
-          }
-          case 8402: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyUtxosChangedResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyUtxosChangedResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.NotifyUtxosChangedResponse) {
-              subBuilder.MergeFrom(NotifyUtxosChangedResponse);
-            }
-            input.ReadMessage(subBuilder);
-            NotifyUtxosChangedResponse = subBuilder;
-            break;
-          }
-          case 8410: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.UtxosChangedNotificationMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.UtxosChangedNotificationMessage();
-            if (payloadCase_ == PayloadOneofCase.UtxosChangedNotification) {
-              subBuilder.MergeFrom(UtxosChangedNotification);
-            }
-            input.ReadMessage(subBuilder);
-            UtxosChangedNotification = subBuilder;
-            break;
-          }
-          case 8418: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetUtxosByAddressesRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetUtxosByAddressesRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetUtxosByAddressesRequest) {
-              subBuilder.MergeFrom(GetUtxosByAddressesRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetUtxosByAddressesRequest = subBuilder;
-            break;
-          }
-          case 8426: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetUtxosByAddressesResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetUtxosByAddressesResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetUtxosByAddressesResponse) {
-              subBuilder.MergeFrom(GetUtxosByAddressesResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetUtxosByAddressesResponse = subBuilder;
-            break;
-          }
-          case 8434: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentBlueScoreRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentBlueScoreRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentBlueScoreRequest) {
-              subBuilder.MergeFrom(GetVirtualSelectedParentBlueScoreRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetVirtualSelectedParentBlueScoreRequest = subBuilder;
-            break;
-          }
-          case 8442: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentBlueScoreResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentBlueScoreResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentBlueScoreResponse) {
-              subBuilder.MergeFrom(GetVirtualSelectedParentBlueScoreResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetVirtualSelectedParentBlueScoreResponse = subBuilder;
-            break;
-          }
-          case 8450: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentBlueScoreChangedRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentBlueScoreChangedRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedRequest) {
-              subBuilder.MergeFrom(NotifyVirtualSelectedParentBlueScoreChangedRequest);
-            }
-            input.ReadMessage(subBuilder);
-            NotifyVirtualSelectedParentBlueScoreChangedRequest = subBuilder;
-            break;
-          }
-          case 8458: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentBlueScoreChangedResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentBlueScoreChangedResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedResponse) {
-              subBuilder.MergeFrom(NotifyVirtualSelectedParentBlueScoreChangedResponse);
-            }
-            input.ReadMessage(subBuilder);
-            NotifyVirtualSelectedParentBlueScoreChangedResponse = subBuilder;
-            break;
-          }
-          case 8466: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualSelectedParentBlueScoreChangedNotificationMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualSelectedParentBlueScoreChangedNotificationMessage();
-            if (payloadCase_ == PayloadOneofCase.VirtualSelectedParentBlueScoreChangedNotification) {
-              subBuilder.MergeFrom(VirtualSelectedParentBlueScoreChangedNotification);
-            }
-            input.ReadMessage(subBuilder);
-            VirtualSelectedParentBlueScoreChangedNotification = subBuilder;
-            break;
-          }
-          case 8474: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.BanRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.BanRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.BanRequest) {
-              subBuilder.MergeFrom(BanRequest);
-            }
-            input.ReadMessage(subBuilder);
-            BanRequest = subBuilder;
-            break;
-          }
-          case 8482: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.BanResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.BanResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.BanResponse) {
-              subBuilder.MergeFrom(BanResponse);
-            }
-            input.ReadMessage(subBuilder);
-            BanResponse = subBuilder;
-            break;
-          }
-          case 8490: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.UnbanRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.UnbanRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.UnbanRequest) {
-              subBuilder.MergeFrom(UnbanRequest);
-            }
-            input.ReadMessage(subBuilder);
-            UnbanRequest = subBuilder;
-            break;
-          }
-          case 8498: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.UnbanResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.UnbanResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.UnbanResponse) {
-              subBuilder.MergeFrom(UnbanResponse);
-            }
-            input.ReadMessage(subBuilder);
-            UnbanResponse = subBuilder;
-            break;
-          }
-          case 8506: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetInfoRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetInfoRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetInfoRequest) {
-              subBuilder.MergeFrom(GetInfoRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetInfoRequest = subBuilder;
-            break;
-          }
-          case 8514: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetInfoResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetInfoResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetInfoResponse) {
-              subBuilder.MergeFrom(GetInfoResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetInfoResponse = subBuilder;
-            break;
-          }
-          case 8522: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingUtxosChangedRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingUtxosChangedRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.StopNotifyingUtxosChangedRequest) {
-              subBuilder.MergeFrom(StopNotifyingUtxosChangedRequest);
-            }
-            input.ReadMessage(subBuilder);
-            StopNotifyingUtxosChangedRequest = subBuilder;
-            break;
-          }
-          case 8530: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingUtxosChangedResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingUtxosChangedResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.StopNotifyingUtxosChangedResponse) {
-              subBuilder.MergeFrom(StopNotifyingUtxosChangedResponse);
-            }
-            input.ReadMessage(subBuilder);
-            StopNotifyingUtxosChangedResponse = subBuilder;
-            break;
-          }
-          case 8538: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyPruningPointUTXOSetOverrideRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyPruningPointUTXOSetOverrideRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.NotifyPruningPointUTXOSetOverrideRequest) {
-              subBuilder.MergeFrom(NotifyPruningPointUTXOSetOverrideRequest);
-            }
-            input.ReadMessage(subBuilder);
-            NotifyPruningPointUTXOSetOverrideRequest = subBuilder;
-            break;
-          }
-          case 8546: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyPruningPointUTXOSetOverrideResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyPruningPointUTXOSetOverrideResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.NotifyPruningPointUTXOSetOverrideResponse) {
-              subBuilder.MergeFrom(NotifyPruningPointUTXOSetOverrideResponse);
-            }
-            input.ReadMessage(subBuilder);
-            NotifyPruningPointUTXOSetOverrideResponse = subBuilder;
-            break;
-          }
-          case 8554: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointUTXOSetOverrideNotificationMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointUTXOSetOverrideNotificationMessage();
-            if (payloadCase_ == PayloadOneofCase.PruningPointUTXOSetOverrideNotification) {
-              subBuilder.MergeFrom(PruningPointUTXOSetOverrideNotification);
-            }
-            input.ReadMessage(subBuilder);
-            PruningPointUTXOSetOverrideNotification = subBuilder;
-            break;
-          }
-          case 8562: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingPruningPointUTXOSetOverrideRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingPruningPointUTXOSetOverrideRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideRequest) {
-              subBuilder.MergeFrom(StopNotifyingPruningPointUTXOSetOverrideRequest);
-            }
-            input.ReadMessage(subBuilder);
-            StopNotifyingPruningPointUTXOSetOverrideRequest = subBuilder;
-            break;
-          }
-          case 8570: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingPruningPointUTXOSetOverrideResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingPruningPointUTXOSetOverrideResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideResponse) {
-              subBuilder.MergeFrom(StopNotifyingPruningPointUTXOSetOverrideResponse);
-            }
-            input.ReadMessage(subBuilder);
-            StopNotifyingPruningPointUTXOSetOverrideResponse = subBuilder;
-            break;
-          }
-          case 8578: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.EstimateNetworkHashesPerSecondRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.EstimateNetworkHashesPerSecondRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.EstimateNetworkHashesPerSecondRequest) {
-              subBuilder.MergeFrom(EstimateNetworkHashesPerSecondRequest);
-            }
-            input.ReadMessage(subBuilder);
-            EstimateNetworkHashesPerSecondRequest = subBuilder;
-            break;
-          }
-          case 8586: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.EstimateNetworkHashesPerSecondResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.EstimateNetworkHashesPerSecondResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.EstimateNetworkHashesPerSecondResponse) {
-              subBuilder.MergeFrom(EstimateNetworkHashesPerSecondResponse);
-            }
-            input.ReadMessage(subBuilder);
-            EstimateNetworkHashesPerSecondResponse = subBuilder;
-            break;
-          }
-          case 8594: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualDaaScoreChangedRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualDaaScoreChangedRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.NotifyVirtualDaaScoreChangedRequest) {
-              subBuilder.MergeFrom(NotifyVirtualDaaScoreChangedRequest);
-            }
-            input.ReadMessage(subBuilder);
-            NotifyVirtualDaaScoreChangedRequest = subBuilder;
-            break;
-          }
-          case 8602: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualDaaScoreChangedResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualDaaScoreChangedResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.NotifyVirtualDaaScoreChangedResponse) {
-              subBuilder.MergeFrom(NotifyVirtualDaaScoreChangedResponse);
-            }
-            input.ReadMessage(subBuilder);
-            NotifyVirtualDaaScoreChangedResponse = subBuilder;
-            break;
-          }
-          case 8610: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualDaaScoreChangedNotificationMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualDaaScoreChangedNotificationMessage();
-            if (payloadCase_ == PayloadOneofCase.VirtualDaaScoreChangedNotification) {
-              subBuilder.MergeFrom(VirtualDaaScoreChangedNotification);
-            }
-            input.ReadMessage(subBuilder);
-            VirtualDaaScoreChangedNotification = subBuilder;
-            break;
-          }
-          case 8618: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalanceByAddressRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalanceByAddressRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetBalanceByAddressRequest) {
-              subBuilder.MergeFrom(GetBalanceByAddressRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetBalanceByAddressRequest = subBuilder;
-            break;
-          }
-          case 8626: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalanceByAddressResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalanceByAddressResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetBalanceByAddressResponse) {
-              subBuilder.MergeFrom(GetBalanceByAddressResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetBalanceByAddressResponse = subBuilder;
-            break;
-          }
-          case 8634: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalancesByAddressesRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalancesByAddressesRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetBalancesByAddressesRequest) {
-              subBuilder.MergeFrom(GetBalancesByAddressesRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetBalancesByAddressesRequest = subBuilder;
-            break;
-          }
-          case 8642: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalancesByAddressesResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalancesByAddressesResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetBalancesByAddressesResponse) {
-              subBuilder.MergeFrom(GetBalancesByAddressesResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetBalancesByAddressesResponse = subBuilder;
-            break;
-          }
-          case 8650: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyNewBlockTemplateRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyNewBlockTemplateRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.NotifyNewBlockTemplateRequest) {
-              subBuilder.MergeFrom(NotifyNewBlockTemplateRequest);
-            }
-            input.ReadMessage(subBuilder);
-            NotifyNewBlockTemplateRequest = subBuilder;
-            break;
-          }
-          case 8658: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyNewBlockTemplateResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyNewBlockTemplateResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.NotifyNewBlockTemplateResponse) {
-              subBuilder.MergeFrom(NotifyNewBlockTemplateResponse);
-            }
-            input.ReadMessage(subBuilder);
-            NotifyNewBlockTemplateResponse = subBuilder;
-            break;
-          }
-          case 8666: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.NewBlockTemplateNotificationMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NewBlockTemplateNotificationMessage();
-            if (payloadCase_ == PayloadOneofCase.NewBlockTemplateNotification) {
-              subBuilder.MergeFrom(NewBlockTemplateNotification);
-            }
-            input.ReadMessage(subBuilder);
-            NewBlockTemplateNotification = subBuilder;
-            break;
-          }
-          case 8674: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesByAddressesRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesByAddressesRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesByAddressesRequest) {
-              subBuilder.MergeFrom(GetMempoolEntriesByAddressesRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetMempoolEntriesByAddressesRequest = subBuilder;
-            break;
-          }
-          case 8682: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesByAddressesResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesByAddressesResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesByAddressesResponse) {
-              subBuilder.MergeFrom(GetMempoolEntriesByAddressesResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetMempoolEntriesByAddressesResponse = subBuilder;
-            break;
-          }
-          case 8690: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetCoinSupplyRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetCoinSupplyRequestMessage();
-            if (payloadCase_ == PayloadOneofCase.GetCoinSupplyRequest) {
-              subBuilder.MergeFrom(GetCoinSupplyRequest);
-            }
-            input.ReadMessage(subBuilder);
-            GetCoinSupplyRequest = subBuilder;
-            break;
-          }
-          case 8698: {
-            global::Miningcore.Blockchain.Kaspa.Kaspad.GetCoinSupplyResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetCoinSupplyResponseMessage();
-            if (payloadCase_ == PayloadOneofCase.GetCoinSupplyResponse) {
-              subBuilder.MergeFrom(GetCoinSupplyResponse);
-            }
-            input.ReadMessage(subBuilder);
-            GetCoinSupplyResponse = subBuilder;
-            break;
-          }
+          case 10:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.AddressesMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.AddressesMessage();
+              if (payloadCase_ == PayloadOneofCase.Addresses)
+              {
+                subBuilder.MergeFrom(Addresses);
+              }
+              input.ReadMessage(subBuilder);
+              Addresses = subBuilder;
+              break;
+            }
+          case 18:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.BlockMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockMessage();
+              if (payloadCase_ == PayloadOneofCase.Block)
+              {
+                subBuilder.MergeFrom(Block);
+              }
+              input.ReadMessage(subBuilder);
+              Block = subBuilder;
+              break;
+            }
+          case 26:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.TransactionMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.TransactionMessage();
+              if (payloadCase_ == PayloadOneofCase.Transaction)
+              {
+                subBuilder.MergeFrom(Transaction);
+              }
+              input.ReadMessage(subBuilder);
+              Transaction = subBuilder;
+              break;
+            }
+          case 42:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.BlockLocatorMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockLocatorMessage();
+              if (payloadCase_ == PayloadOneofCase.BlockLocator)
+              {
+                subBuilder.MergeFrom(BlockLocator);
+              }
+              input.ReadMessage(subBuilder);
+              BlockLocator = subBuilder;
+              break;
+            }
+          case 50:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.RequestAddressesMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestAddressesMessage();
+              if (payloadCase_ == PayloadOneofCase.RequestAddresses)
+              {
+                subBuilder.MergeFrom(RequestAddresses);
+              }
+              input.ReadMessage(subBuilder);
+              RequestAddresses = subBuilder;
+              break;
+            }
+          case 82:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.RequestRelayBlocksMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestRelayBlocksMessage();
+              if (payloadCase_ == PayloadOneofCase.RequestRelayBlocks)
+              {
+                subBuilder.MergeFrom(RequestRelayBlocks);
+              }
+              input.ReadMessage(subBuilder);
+              RequestRelayBlocks = subBuilder;
+              break;
+            }
+          case 98:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.RequestTransactionsMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestTransactionsMessage();
+              if (payloadCase_ == PayloadOneofCase.RequestTransactions)
+              {
+                subBuilder.MergeFrom(RequestTransactions);
+              }
+              input.ReadMessage(subBuilder);
+              RequestTransactions = subBuilder;
+              break;
+            }
+          case 106:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.BlockMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockMessage();
+              if (payloadCase_ == PayloadOneofCase.IbdBlock)
+              {
+                subBuilder.MergeFrom(IbdBlock);
+              }
+              input.ReadMessage(subBuilder);
+              IbdBlock = subBuilder;
+              break;
+            }
+          case 114:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.InvRelayBlockMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.InvRelayBlockMessage();
+              if (payloadCase_ == PayloadOneofCase.InvRelayBlock)
+              {
+                subBuilder.MergeFrom(InvRelayBlock);
+              }
+              input.ReadMessage(subBuilder);
+              InvRelayBlock = subBuilder;
+              break;
+            }
+          case 122:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.InvTransactionsMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.InvTransactionsMessage();
+              if (payloadCase_ == PayloadOneofCase.InvTransactions)
+              {
+                subBuilder.MergeFrom(InvTransactions);
+              }
+              input.ReadMessage(subBuilder);
+              InvTransactions = subBuilder;
+              break;
+            }
+          case 130:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.PingMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.PingMessage();
+              if (payloadCase_ == PayloadOneofCase.Ping)
+              {
+                subBuilder.MergeFrom(Ping);
+              }
+              input.ReadMessage(subBuilder);
+              Ping = subBuilder;
+              break;
+            }
+          case 138:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.PongMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.PongMessage();
+              if (payloadCase_ == PayloadOneofCase.Pong)
+              {
+                subBuilder.MergeFrom(Pong);
+              }
+              input.ReadMessage(subBuilder);
+              Pong = subBuilder;
+              break;
+            }
+          case 154:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.VerackMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.VerackMessage();
+              if (payloadCase_ == PayloadOneofCase.Verack)
+              {
+                subBuilder.MergeFrom(Verack);
+              }
+              input.ReadMessage(subBuilder);
+              Verack = subBuilder;
+              break;
+            }
+          case 162:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.VersionMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.VersionMessage();
+              if (payloadCase_ == PayloadOneofCase.Version)
+              {
+                subBuilder.MergeFrom(Version);
+              }
+              input.ReadMessage(subBuilder);
+              Version = subBuilder;
+              break;
+            }
+          case 170:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.TransactionNotFoundMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.TransactionNotFoundMessage();
+              if (payloadCase_ == PayloadOneofCase.TransactionNotFound)
+              {
+                subBuilder.MergeFrom(TransactionNotFound);
+              }
+              input.ReadMessage(subBuilder);
+              TransactionNotFound = subBuilder;
+              break;
+            }
+          case 178:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.RejectMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RejectMessage();
+              if (payloadCase_ == PayloadOneofCase.Reject)
+              {
+                subBuilder.MergeFrom(Reject);
+              }
+              input.ReadMessage(subBuilder);
+              Reject = subBuilder;
+              break;
+            }
+          case 202:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointUtxoSetChunkMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointUtxoSetChunkMessage();
+              if (payloadCase_ == PayloadOneofCase.PruningPointUtxoSetChunk)
+              {
+                subBuilder.MergeFrom(PruningPointUtxoSetChunk);
+              }
+              input.ReadMessage(subBuilder);
+              PruningPointUtxoSetChunk = subBuilder;
+              break;
+            }
+          case 210:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.RequestIBDBlocksMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestIBDBlocksMessage();
+              if (payloadCase_ == PayloadOneofCase.RequestIBDBlocks)
+              {
+                subBuilder.MergeFrom(RequestIBDBlocks);
+              }
+              input.ReadMessage(subBuilder);
+              RequestIBDBlocks = subBuilder;
+              break;
+            }
+          case 218:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.UnexpectedPruningPointMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.UnexpectedPruningPointMessage();
+              if (payloadCase_ == PayloadOneofCase.UnexpectedPruningPoint)
+              {
+                subBuilder.MergeFrom(UnexpectedPruningPoint);
+              }
+              input.ReadMessage(subBuilder);
+              UnexpectedPruningPoint = subBuilder;
+              break;
+            }
+          case 242:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorMessage();
+              if (payloadCase_ == PayloadOneofCase.IbdBlockLocator)
+              {
+                subBuilder.MergeFrom(IbdBlockLocator);
+              }
+              input.ReadMessage(subBuilder);
+              IbdBlockLocator = subBuilder;
+              break;
+            }
+          case 250:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorHighestHashMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorHighestHashMessage();
+              if (payloadCase_ == PayloadOneofCase.IbdBlockLocatorHighestHash)
+              {
+                subBuilder.MergeFrom(IbdBlockLocatorHighestHash);
+              }
+              input.ReadMessage(subBuilder);
+              IbdBlockLocatorHighestHash = subBuilder;
+              break;
+            }
+          case 266:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextPruningPointUtxoSetChunkMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextPruningPointUtxoSetChunkMessage();
+              if (payloadCase_ == PayloadOneofCase.RequestNextPruningPointUtxoSetChunk)
+              {
+                subBuilder.MergeFrom(RequestNextPruningPointUtxoSetChunk);
+              }
+              input.ReadMessage(subBuilder);
+              RequestNextPruningPointUtxoSetChunk = subBuilder;
+              break;
+            }
+          case 274:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.DonePruningPointUtxoSetChunksMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.DonePruningPointUtxoSetChunksMessage();
+              if (payloadCase_ == PayloadOneofCase.DonePruningPointUtxoSetChunks)
+              {
+                subBuilder.MergeFrom(DonePruningPointUtxoSetChunks);
+              }
+              input.ReadMessage(subBuilder);
+              DonePruningPointUtxoSetChunks = subBuilder;
+              break;
+            }
+          case 282:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorHighestHashNotFoundMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.IbdBlockLocatorHighestHashNotFoundMessage();
+              if (payloadCase_ == PayloadOneofCase.IbdBlockLocatorHighestHashNotFound)
+              {
+                subBuilder.MergeFrom(IbdBlockLocatorHighestHashNotFound);
+              }
+              input.ReadMessage(subBuilder);
+              IbdBlockLocatorHighestHashNotFound = subBuilder;
+              break;
+            }
+          case 290:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.BlockWithTrustedDataMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockWithTrustedDataMessage();
+              if (payloadCase_ == PayloadOneofCase.BlockWithTrustedData)
+              {
+                subBuilder.MergeFrom(BlockWithTrustedData);
+              }
+              input.ReadMessage(subBuilder);
+              BlockWithTrustedData = subBuilder;
+              break;
+            }
+          case 298:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.DoneBlocksWithTrustedDataMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.DoneBlocksWithTrustedDataMessage();
+              if (payloadCase_ == PayloadOneofCase.DoneBlocksWithTrustedData)
+              {
+                subBuilder.MergeFrom(DoneBlocksWithTrustedData);
+              }
+              input.ReadMessage(subBuilder);
+              DoneBlocksWithTrustedData = subBuilder;
+              break;
+            }
+          case 322:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointAndItsAnticoneMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointAndItsAnticoneMessage();
+              if (payloadCase_ == PayloadOneofCase.RequestPruningPointAndItsAnticone)
+              {
+                subBuilder.MergeFrom(RequestPruningPointAndItsAnticone);
+              }
+              input.ReadMessage(subBuilder);
+              RequestPruningPointAndItsAnticone = subBuilder;
+              break;
+            }
+          case 330:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.BlockHeadersMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockHeadersMessage();
+              if (payloadCase_ == PayloadOneofCase.BlockHeaders)
+              {
+                subBuilder.MergeFrom(BlockHeaders);
+              }
+              input.ReadMessage(subBuilder);
+              BlockHeaders = subBuilder;
+              break;
+            }
+          case 338:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextHeadersMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextHeadersMessage();
+              if (payloadCase_ == PayloadOneofCase.RequestNextHeaders)
+              {
+                subBuilder.MergeFrom(RequestNextHeaders);
+              }
+              input.ReadMessage(subBuilder);
+              RequestNextHeaders = subBuilder;
+              break;
+            }
+          case 346:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.DoneHeadersMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.DoneHeadersMessage();
+              if (payloadCase_ == PayloadOneofCase.DoneHeaders)
+              {
+                subBuilder.MergeFrom(DoneHeaders);
+              }
+              input.ReadMessage(subBuilder);
+              DoneHeaders = subBuilder;
+              break;
+            }
+          case 354:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointUTXOSetMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointUTXOSetMessage();
+              if (payloadCase_ == PayloadOneofCase.RequestPruningPointUTXOSet)
+              {
+                subBuilder.MergeFrom(RequestPruningPointUTXOSet);
+              }
+              input.ReadMessage(subBuilder);
+              RequestPruningPointUTXOSet = subBuilder;
+              break;
+            }
+          case 362:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.RequestHeadersMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestHeadersMessage();
+              if (payloadCase_ == PayloadOneofCase.RequestHeaders)
+              {
+                subBuilder.MergeFrom(RequestHeaders);
+              }
+              input.ReadMessage(subBuilder);
+              RequestHeaders = subBuilder;
+              break;
+            }
+          case 370:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.RequestBlockLocatorMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestBlockLocatorMessage();
+              if (payloadCase_ == PayloadOneofCase.RequestBlockLocator)
+              {
+                subBuilder.MergeFrom(RequestBlockLocator);
+              }
+              input.ReadMessage(subBuilder);
+              RequestBlockLocator = subBuilder;
+              break;
+            }
+          case 378:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointsMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointsMessage();
+              if (payloadCase_ == PayloadOneofCase.PruningPoints)
+              {
+                subBuilder.MergeFrom(PruningPoints);
+              }
+              input.ReadMessage(subBuilder);
+              PruningPoints = subBuilder;
+              break;
+            }
+          case 386:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointProofMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestPruningPointProofMessage();
+              if (payloadCase_ == PayloadOneofCase.RequestPruningPointProof)
+              {
+                subBuilder.MergeFrom(RequestPruningPointProof);
+              }
+              input.ReadMessage(subBuilder);
+              RequestPruningPointProof = subBuilder;
+              break;
+            }
+          case 394:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointProofMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointProofMessage();
+              if (payloadCase_ == PayloadOneofCase.PruningPointProof)
+              {
+                subBuilder.MergeFrom(PruningPointProof);
+              }
+              input.ReadMessage(subBuilder);
+              PruningPointProof = subBuilder;
+              break;
+            }
+          case 402:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.ReadyMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.ReadyMessage();
+              if (payloadCase_ == PayloadOneofCase.Ready)
+              {
+                subBuilder.MergeFrom(Ready);
+              }
+              input.ReadMessage(subBuilder);
+              Ready = subBuilder;
+              break;
+            }
+          case 410:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.BlockWithTrustedDataV4Message subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockWithTrustedDataV4Message();
+              if (payloadCase_ == PayloadOneofCase.BlockWithTrustedDataV4)
+              {
+                subBuilder.MergeFrom(BlockWithTrustedDataV4);
+              }
+              input.ReadMessage(subBuilder);
+              BlockWithTrustedDataV4 = subBuilder;
+              break;
+            }
+          case 418:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.TrustedDataMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.TrustedDataMessage();
+              if (payloadCase_ == PayloadOneofCase.TrustedData)
+              {
+                subBuilder.MergeFrom(TrustedData);
+              }
+              input.ReadMessage(subBuilder);
+              TrustedData = subBuilder;
+              break;
+            }
+          case 426:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.RequestIBDChainBlockLocatorMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestIBDChainBlockLocatorMessage();
+              if (payloadCase_ == PayloadOneofCase.RequestIBDChainBlockLocator)
+              {
+                subBuilder.MergeFrom(RequestIBDChainBlockLocator);
+              }
+              input.ReadMessage(subBuilder);
+              RequestIBDChainBlockLocator = subBuilder;
+              break;
+            }
+          case 434:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.IbdChainBlockLocatorMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.IbdChainBlockLocatorMessage();
+              if (payloadCase_ == PayloadOneofCase.IbdChainBlockLocator)
+              {
+                subBuilder.MergeFrom(IbdChainBlockLocator);
+              }
+              input.ReadMessage(subBuilder);
+              IbdChainBlockLocator = subBuilder;
+              break;
+            }
+          case 442:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.RequestAnticoneMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestAnticoneMessage();
+              if (payloadCase_ == PayloadOneofCase.RequestAnticone)
+              {
+                subBuilder.MergeFrom(RequestAnticone);
+              }
+              input.ReadMessage(subBuilder);
+              RequestAnticone = subBuilder;
+              break;
+            }
+          case 450:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextPruningPointAndItsAnticoneBlocksMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.RequestNextPruningPointAndItsAnticoneBlocksMessage();
+              if (payloadCase_ == PayloadOneofCase.RequestNextPruningPointAndItsAnticoneBlocks)
+              {
+                subBuilder.MergeFrom(RequestNextPruningPointAndItsAnticoneBlocks);
+              }
+              input.ReadMessage(subBuilder);
+              RequestNextPruningPointAndItsAnticoneBlocks = subBuilder;
+              break;
+            }
+          case 8010:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetCurrentNetworkRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetCurrentNetworkRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetCurrentNetworkRequest)
+              {
+                subBuilder.MergeFrom(GetCurrentNetworkRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetCurrentNetworkRequest = subBuilder;
+              break;
+            }
+          case 8018:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetCurrentNetworkResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetCurrentNetworkResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetCurrentNetworkResponse)
+              {
+                subBuilder.MergeFrom(GetCurrentNetworkResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetCurrentNetworkResponse = subBuilder;
+              break;
+            }
+          case 8026:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitBlockRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitBlockRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.SubmitBlockRequest)
+              {
+                subBuilder.MergeFrom(SubmitBlockRequest);
+              }
+              input.ReadMessage(subBuilder);
+              SubmitBlockRequest = subBuilder;
+              break;
+            }
+          case 8034:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitBlockResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitBlockResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.SubmitBlockResponse)
+              {
+                subBuilder.MergeFrom(SubmitBlockResponse);
+              }
+              input.ReadMessage(subBuilder);
+              SubmitBlockResponse = subBuilder;
+              break;
+            }
+          case 8042:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockTemplateRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockTemplateRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetBlockTemplateRequest)
+              {
+                subBuilder.MergeFrom(GetBlockTemplateRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetBlockTemplateRequest = subBuilder;
+              break;
+            }
+          case 8050:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockTemplateResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockTemplateResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetBlockTemplateResponse)
+              {
+                subBuilder.MergeFrom(GetBlockTemplateResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetBlockTemplateResponse = subBuilder;
+              break;
+            }
+          case 8058:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyBlockAddedRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyBlockAddedRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.NotifyBlockAddedRequest)
+              {
+                subBuilder.MergeFrom(NotifyBlockAddedRequest);
+              }
+              input.ReadMessage(subBuilder);
+              NotifyBlockAddedRequest = subBuilder;
+              break;
+            }
+          case 8066:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyBlockAddedResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyBlockAddedResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.NotifyBlockAddedResponse)
+              {
+                subBuilder.MergeFrom(NotifyBlockAddedResponse);
+              }
+              input.ReadMessage(subBuilder);
+              NotifyBlockAddedResponse = subBuilder;
+              break;
+            }
+          case 8074:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.BlockAddedNotificationMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.BlockAddedNotificationMessage();
+              if (payloadCase_ == PayloadOneofCase.BlockAddedNotification)
+              {
+                subBuilder.MergeFrom(BlockAddedNotification);
+              }
+              input.ReadMessage(subBuilder);
+              BlockAddedNotification = subBuilder;
+              break;
+            }
+          case 8082:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetPeerAddressesRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetPeerAddressesRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetPeerAddressesRequest)
+              {
+                subBuilder.MergeFrom(GetPeerAddressesRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetPeerAddressesRequest = subBuilder;
+              break;
+            }
+          case 8090:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetPeerAddressesResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetPeerAddressesResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetPeerAddressesResponse)
+              {
+                subBuilder.MergeFrom(GetPeerAddressesResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetPeerAddressesResponse = subBuilder;
+              break;
+            }
+          case 8098:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetSelectedTipHashRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetSelectedTipHashRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetSelectedTipHashRequest)
+              {
+                subBuilder.MergeFrom(GetSelectedTipHashRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetSelectedTipHashRequest = subBuilder;
+              break;
+            }
+          case 8106:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetSelectedTipHashResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetSelectedTipHashResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetSelectedTipHashResponse)
+              {
+                subBuilder.MergeFrom(GetSelectedTipHashResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetSelectedTipHashResponse = subBuilder;
+              break;
+            }
+          case 8114:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntryRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntryRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetMempoolEntryRequest)
+              {
+                subBuilder.MergeFrom(GetMempoolEntryRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetMempoolEntryRequest = subBuilder;
+              break;
+            }
+          case 8122:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntryResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntryResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetMempoolEntryResponse)
+              {
+                subBuilder.MergeFrom(GetMempoolEntryResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetMempoolEntryResponse = subBuilder;
+              break;
+            }
+          case 8130:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetConnectedPeerInfoRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetConnectedPeerInfoRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetConnectedPeerInfoRequest)
+              {
+                subBuilder.MergeFrom(GetConnectedPeerInfoRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetConnectedPeerInfoRequest = subBuilder;
+              break;
+            }
+          case 8138:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetConnectedPeerInfoResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetConnectedPeerInfoResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetConnectedPeerInfoResponse)
+              {
+                subBuilder.MergeFrom(GetConnectedPeerInfoResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetConnectedPeerInfoResponse = subBuilder;
+              break;
+            }
+          case 8146:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.AddPeerRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.AddPeerRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.AddPeerRequest)
+              {
+                subBuilder.MergeFrom(AddPeerRequest);
+              }
+              input.ReadMessage(subBuilder);
+              AddPeerRequest = subBuilder;
+              break;
+            }
+          case 8154:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.AddPeerResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.AddPeerResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.AddPeerResponse)
+              {
+                subBuilder.MergeFrom(AddPeerResponse);
+              }
+              input.ReadMessage(subBuilder);
+              AddPeerResponse = subBuilder;
+              break;
+            }
+          case 8162:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitTransactionRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitTransactionRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.SubmitTransactionRequest)
+              {
+                subBuilder.MergeFrom(SubmitTransactionRequest);
+              }
+              input.ReadMessage(subBuilder);
+              SubmitTransactionRequest = subBuilder;
+              break;
+            }
+          case 8170:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitTransactionResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.SubmitTransactionResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.SubmitTransactionResponse)
+              {
+                subBuilder.MergeFrom(SubmitTransactionResponse);
+              }
+              input.ReadMessage(subBuilder);
+              SubmitTransactionResponse = subBuilder;
+              break;
+            }
+          case 8178:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentChainChangedRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentChainChangedRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentChainChangedRequest)
+              {
+                subBuilder.MergeFrom(NotifyVirtualSelectedParentChainChangedRequest);
+              }
+              input.ReadMessage(subBuilder);
+              NotifyVirtualSelectedParentChainChangedRequest = subBuilder;
+              break;
+            }
+          case 8186:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentChainChangedResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentChainChangedResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentChainChangedResponse)
+              {
+                subBuilder.MergeFrom(NotifyVirtualSelectedParentChainChangedResponse);
+              }
+              input.ReadMessage(subBuilder);
+              NotifyVirtualSelectedParentChainChangedResponse = subBuilder;
+              break;
+            }
+          case 8194:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualSelectedParentChainChangedNotificationMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualSelectedParentChainChangedNotificationMessage();
+              if (payloadCase_ == PayloadOneofCase.VirtualSelectedParentChainChangedNotification)
+              {
+                subBuilder.MergeFrom(VirtualSelectedParentChainChangedNotification);
+              }
+              input.ReadMessage(subBuilder);
+              VirtualSelectedParentChainChangedNotification = subBuilder;
+              break;
+            }
+          case 8202:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetBlockRequest)
+              {
+                subBuilder.MergeFrom(GetBlockRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetBlockRequest = subBuilder;
+              break;
+            }
+          case 8210:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetBlockResponse)
+              {
+                subBuilder.MergeFrom(GetBlockResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetBlockResponse = subBuilder;
+              break;
+            }
+          case 8218:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetSubnetworkRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetSubnetworkRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetSubnetworkRequest)
+              {
+                subBuilder.MergeFrom(GetSubnetworkRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetSubnetworkRequest = subBuilder;
+              break;
+            }
+          case 8226:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetSubnetworkResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetSubnetworkResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetSubnetworkResponse)
+              {
+                subBuilder.MergeFrom(GetSubnetworkResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetSubnetworkResponse = subBuilder;
+              break;
+            }
+          case 8234:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentChainFromBlockRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentChainFromBlockRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentChainFromBlockRequest)
+              {
+                subBuilder.MergeFrom(GetVirtualSelectedParentChainFromBlockRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetVirtualSelectedParentChainFromBlockRequest = subBuilder;
+              break;
+            }
+          case 8242:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentChainFromBlockResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentChainFromBlockResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentChainFromBlockResponse)
+              {
+                subBuilder.MergeFrom(GetVirtualSelectedParentChainFromBlockResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetVirtualSelectedParentChainFromBlockResponse = subBuilder;
+              break;
+            }
+          case 8250:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlocksRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlocksRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetBlocksRequest)
+              {
+                subBuilder.MergeFrom(GetBlocksRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetBlocksRequest = subBuilder;
+              break;
+            }
+          case 8258:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlocksResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlocksResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetBlocksResponse)
+              {
+                subBuilder.MergeFrom(GetBlocksResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetBlocksResponse = subBuilder;
+              break;
+            }
+          case 8266:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockCountRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockCountRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetBlockCountRequest)
+              {
+                subBuilder.MergeFrom(GetBlockCountRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetBlockCountRequest = subBuilder;
+              break;
+            }
+          case 8274:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockCountResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockCountResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetBlockCountResponse)
+              {
+                subBuilder.MergeFrom(GetBlockCountResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetBlockCountResponse = subBuilder;
+              break;
+            }
+          case 8282:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockDagInfoRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockDagInfoRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetBlockDagInfoRequest)
+              {
+                subBuilder.MergeFrom(GetBlockDagInfoRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetBlockDagInfoRequest = subBuilder;
+              break;
+            }
+          case 8290:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockDagInfoResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBlockDagInfoResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetBlockDagInfoResponse)
+              {
+                subBuilder.MergeFrom(GetBlockDagInfoResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetBlockDagInfoResponse = subBuilder;
+              break;
+            }
+          case 8298:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.ResolveFinalityConflictRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.ResolveFinalityConflictRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.ResolveFinalityConflictRequest)
+              {
+                subBuilder.MergeFrom(ResolveFinalityConflictRequest);
+              }
+              input.ReadMessage(subBuilder);
+              ResolveFinalityConflictRequest = subBuilder;
+              break;
+            }
+          case 8306:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.ResolveFinalityConflictResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.ResolveFinalityConflictResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.ResolveFinalityConflictResponse)
+              {
+                subBuilder.MergeFrom(ResolveFinalityConflictResponse);
+              }
+              input.ReadMessage(subBuilder);
+              ResolveFinalityConflictResponse = subBuilder;
+              break;
+            }
+          case 8314:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyFinalityConflictsRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyFinalityConflictsRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.NotifyFinalityConflictsRequest)
+              {
+                subBuilder.MergeFrom(NotifyFinalityConflictsRequest);
+              }
+              input.ReadMessage(subBuilder);
+              NotifyFinalityConflictsRequest = subBuilder;
+              break;
+            }
+          case 8322:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyFinalityConflictsResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyFinalityConflictsResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.NotifyFinalityConflictsResponse)
+              {
+                subBuilder.MergeFrom(NotifyFinalityConflictsResponse);
+              }
+              input.ReadMessage(subBuilder);
+              NotifyFinalityConflictsResponse = subBuilder;
+              break;
+            }
+          case 8330:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.FinalityConflictNotificationMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.FinalityConflictNotificationMessage();
+              if (payloadCase_ == PayloadOneofCase.FinalityConflictNotification)
+              {
+                subBuilder.MergeFrom(FinalityConflictNotification);
+              }
+              input.ReadMessage(subBuilder);
+              FinalityConflictNotification = subBuilder;
+              break;
+            }
+          case 8338:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.FinalityConflictResolvedNotificationMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.FinalityConflictResolvedNotificationMessage();
+              if (payloadCase_ == PayloadOneofCase.FinalityConflictResolvedNotification)
+              {
+                subBuilder.MergeFrom(FinalityConflictResolvedNotification);
+              }
+              input.ReadMessage(subBuilder);
+              FinalityConflictResolvedNotification = subBuilder;
+              break;
+            }
+          case 8346:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesRequest)
+              {
+                subBuilder.MergeFrom(GetMempoolEntriesRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetMempoolEntriesRequest = subBuilder;
+              break;
+            }
+          case 8354:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesResponse)
+              {
+                subBuilder.MergeFrom(GetMempoolEntriesResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetMempoolEntriesResponse = subBuilder;
+              break;
+            }
+          case 8362:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.ShutDownRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.ShutDownRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.ShutDownRequest)
+              {
+                subBuilder.MergeFrom(ShutDownRequest);
+              }
+              input.ReadMessage(subBuilder);
+              ShutDownRequest = subBuilder;
+              break;
+            }
+          case 8370:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.ShutDownResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.ShutDownResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.ShutDownResponse)
+              {
+                subBuilder.MergeFrom(ShutDownResponse);
+              }
+              input.ReadMessage(subBuilder);
+              ShutDownResponse = subBuilder;
+              break;
+            }
+          case 8378:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetHeadersRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetHeadersRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetHeadersRequest)
+              {
+                subBuilder.MergeFrom(GetHeadersRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetHeadersRequest = subBuilder;
+              break;
+            }
+          case 8386:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetHeadersResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetHeadersResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetHeadersResponse)
+              {
+                subBuilder.MergeFrom(GetHeadersResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetHeadersResponse = subBuilder;
+              break;
+            }
+          case 8394:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyUtxosChangedRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyUtxosChangedRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.NotifyUtxosChangedRequest)
+              {
+                subBuilder.MergeFrom(NotifyUtxosChangedRequest);
+              }
+              input.ReadMessage(subBuilder);
+              NotifyUtxosChangedRequest = subBuilder;
+              break;
+            }
+          case 8402:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyUtxosChangedResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyUtxosChangedResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.NotifyUtxosChangedResponse)
+              {
+                subBuilder.MergeFrom(NotifyUtxosChangedResponse);
+              }
+              input.ReadMessage(subBuilder);
+              NotifyUtxosChangedResponse = subBuilder;
+              break;
+            }
+          case 8410:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.UtxosChangedNotificationMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.UtxosChangedNotificationMessage();
+              if (payloadCase_ == PayloadOneofCase.UtxosChangedNotification)
+              {
+                subBuilder.MergeFrom(UtxosChangedNotification);
+              }
+              input.ReadMessage(subBuilder);
+              UtxosChangedNotification = subBuilder;
+              break;
+            }
+          case 8418:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetUtxosByAddressesRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetUtxosByAddressesRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetUtxosByAddressesRequest)
+              {
+                subBuilder.MergeFrom(GetUtxosByAddressesRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetUtxosByAddressesRequest = subBuilder;
+              break;
+            }
+          case 8426:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetUtxosByAddressesResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetUtxosByAddressesResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetUtxosByAddressesResponse)
+              {
+                subBuilder.MergeFrom(GetUtxosByAddressesResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetUtxosByAddressesResponse = subBuilder;
+              break;
+            }
+          case 8434:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentBlueScoreRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentBlueScoreRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentBlueScoreRequest)
+              {
+                subBuilder.MergeFrom(GetVirtualSelectedParentBlueScoreRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetVirtualSelectedParentBlueScoreRequest = subBuilder;
+              break;
+            }
+          case 8442:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentBlueScoreResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetVirtualSelectedParentBlueScoreResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetVirtualSelectedParentBlueScoreResponse)
+              {
+                subBuilder.MergeFrom(GetVirtualSelectedParentBlueScoreResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetVirtualSelectedParentBlueScoreResponse = subBuilder;
+              break;
+            }
+          case 8450:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentBlueScoreChangedRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentBlueScoreChangedRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedRequest)
+              {
+                subBuilder.MergeFrom(NotifyVirtualSelectedParentBlueScoreChangedRequest);
+              }
+              input.ReadMessage(subBuilder);
+              NotifyVirtualSelectedParentBlueScoreChangedRequest = subBuilder;
+              break;
+            }
+          case 8458:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentBlueScoreChangedResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualSelectedParentBlueScoreChangedResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.NotifyVirtualSelectedParentBlueScoreChangedResponse)
+              {
+                subBuilder.MergeFrom(NotifyVirtualSelectedParentBlueScoreChangedResponse);
+              }
+              input.ReadMessage(subBuilder);
+              NotifyVirtualSelectedParentBlueScoreChangedResponse = subBuilder;
+              break;
+            }
+          case 8466:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualSelectedParentBlueScoreChangedNotificationMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualSelectedParentBlueScoreChangedNotificationMessage();
+              if (payloadCase_ == PayloadOneofCase.VirtualSelectedParentBlueScoreChangedNotification)
+              {
+                subBuilder.MergeFrom(VirtualSelectedParentBlueScoreChangedNotification);
+              }
+              input.ReadMessage(subBuilder);
+              VirtualSelectedParentBlueScoreChangedNotification = subBuilder;
+              break;
+            }
+          case 8474:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.BanRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.BanRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.BanRequest)
+              {
+                subBuilder.MergeFrom(BanRequest);
+              }
+              input.ReadMessage(subBuilder);
+              BanRequest = subBuilder;
+              break;
+            }
+          case 8482:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.BanResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.BanResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.BanResponse)
+              {
+                subBuilder.MergeFrom(BanResponse);
+              }
+              input.ReadMessage(subBuilder);
+              BanResponse = subBuilder;
+              break;
+            }
+          case 8490:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.UnbanRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.UnbanRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.UnbanRequest)
+              {
+                subBuilder.MergeFrom(UnbanRequest);
+              }
+              input.ReadMessage(subBuilder);
+              UnbanRequest = subBuilder;
+              break;
+            }
+          case 8498:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.UnbanResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.UnbanResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.UnbanResponse)
+              {
+                subBuilder.MergeFrom(UnbanResponse);
+              }
+              input.ReadMessage(subBuilder);
+              UnbanResponse = subBuilder;
+              break;
+            }
+          case 8506:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetInfoRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetInfoRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetInfoRequest)
+              {
+                subBuilder.MergeFrom(GetInfoRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetInfoRequest = subBuilder;
+              break;
+            }
+          case 8514:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetInfoResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetInfoResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetInfoResponse)
+              {
+                subBuilder.MergeFrom(GetInfoResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetInfoResponse = subBuilder;
+              break;
+            }
+          case 8522:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingUtxosChangedRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingUtxosChangedRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.StopNotifyingUtxosChangedRequest)
+              {
+                subBuilder.MergeFrom(StopNotifyingUtxosChangedRequest);
+              }
+              input.ReadMessage(subBuilder);
+              StopNotifyingUtxosChangedRequest = subBuilder;
+              break;
+            }
+          case 8530:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingUtxosChangedResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingUtxosChangedResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.StopNotifyingUtxosChangedResponse)
+              {
+                subBuilder.MergeFrom(StopNotifyingUtxosChangedResponse);
+              }
+              input.ReadMessage(subBuilder);
+              StopNotifyingUtxosChangedResponse = subBuilder;
+              break;
+            }
+          case 8538:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyPruningPointUTXOSetOverrideRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyPruningPointUTXOSetOverrideRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.NotifyPruningPointUTXOSetOverrideRequest)
+              {
+                subBuilder.MergeFrom(NotifyPruningPointUTXOSetOverrideRequest);
+              }
+              input.ReadMessage(subBuilder);
+              NotifyPruningPointUTXOSetOverrideRequest = subBuilder;
+              break;
+            }
+          case 8546:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyPruningPointUTXOSetOverrideResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyPruningPointUTXOSetOverrideResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.NotifyPruningPointUTXOSetOverrideResponse)
+              {
+                subBuilder.MergeFrom(NotifyPruningPointUTXOSetOverrideResponse);
+              }
+              input.ReadMessage(subBuilder);
+              NotifyPruningPointUTXOSetOverrideResponse = subBuilder;
+              break;
+            }
+          case 8554:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointUTXOSetOverrideNotificationMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.PruningPointUTXOSetOverrideNotificationMessage();
+              if (payloadCase_ == PayloadOneofCase.PruningPointUTXOSetOverrideNotification)
+              {
+                subBuilder.MergeFrom(PruningPointUTXOSetOverrideNotification);
+              }
+              input.ReadMessage(subBuilder);
+              PruningPointUTXOSetOverrideNotification = subBuilder;
+              break;
+            }
+          case 8562:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingPruningPointUTXOSetOverrideRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingPruningPointUTXOSetOverrideRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideRequest)
+              {
+                subBuilder.MergeFrom(StopNotifyingPruningPointUTXOSetOverrideRequest);
+              }
+              input.ReadMessage(subBuilder);
+              StopNotifyingPruningPointUTXOSetOverrideRequest = subBuilder;
+              break;
+            }
+          case 8570:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingPruningPointUTXOSetOverrideResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.StopNotifyingPruningPointUTXOSetOverrideResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.StopNotifyingPruningPointUTXOSetOverrideResponse)
+              {
+                subBuilder.MergeFrom(StopNotifyingPruningPointUTXOSetOverrideResponse);
+              }
+              input.ReadMessage(subBuilder);
+              StopNotifyingPruningPointUTXOSetOverrideResponse = subBuilder;
+              break;
+            }
+          case 8578:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.EstimateNetworkHashesPerSecondRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.EstimateNetworkHashesPerSecondRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.EstimateNetworkHashesPerSecondRequest)
+              {
+                subBuilder.MergeFrom(EstimateNetworkHashesPerSecondRequest);
+              }
+              input.ReadMessage(subBuilder);
+              EstimateNetworkHashesPerSecondRequest = subBuilder;
+              break;
+            }
+          case 8586:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.EstimateNetworkHashesPerSecondResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.EstimateNetworkHashesPerSecondResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.EstimateNetworkHashesPerSecondResponse)
+              {
+                subBuilder.MergeFrom(EstimateNetworkHashesPerSecondResponse);
+              }
+              input.ReadMessage(subBuilder);
+              EstimateNetworkHashesPerSecondResponse = subBuilder;
+              break;
+            }
+          case 8594:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualDaaScoreChangedRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualDaaScoreChangedRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.NotifyVirtualDaaScoreChangedRequest)
+              {
+                subBuilder.MergeFrom(NotifyVirtualDaaScoreChangedRequest);
+              }
+              input.ReadMessage(subBuilder);
+              NotifyVirtualDaaScoreChangedRequest = subBuilder;
+              break;
+            }
+          case 8602:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualDaaScoreChangedResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyVirtualDaaScoreChangedResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.NotifyVirtualDaaScoreChangedResponse)
+              {
+                subBuilder.MergeFrom(NotifyVirtualDaaScoreChangedResponse);
+              }
+              input.ReadMessage(subBuilder);
+              NotifyVirtualDaaScoreChangedResponse = subBuilder;
+              break;
+            }
+          case 8610:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualDaaScoreChangedNotificationMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.VirtualDaaScoreChangedNotificationMessage();
+              if (payloadCase_ == PayloadOneofCase.VirtualDaaScoreChangedNotification)
+              {
+                subBuilder.MergeFrom(VirtualDaaScoreChangedNotification);
+              }
+              input.ReadMessage(subBuilder);
+              VirtualDaaScoreChangedNotification = subBuilder;
+              break;
+            }
+          case 8618:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalanceByAddressRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalanceByAddressRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetBalanceByAddressRequest)
+              {
+                subBuilder.MergeFrom(GetBalanceByAddressRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetBalanceByAddressRequest = subBuilder;
+              break;
+            }
+          case 8626:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalanceByAddressResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalanceByAddressResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetBalanceByAddressResponse)
+              {
+                subBuilder.MergeFrom(GetBalanceByAddressResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetBalanceByAddressResponse = subBuilder;
+              break;
+            }
+          case 8634:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalancesByAddressesRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalancesByAddressesRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetBalancesByAddressesRequest)
+              {
+                subBuilder.MergeFrom(GetBalancesByAddressesRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetBalancesByAddressesRequest = subBuilder;
+              break;
+            }
+          case 8642:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalancesByAddressesResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetBalancesByAddressesResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetBalancesByAddressesResponse)
+              {
+                subBuilder.MergeFrom(GetBalancesByAddressesResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetBalancesByAddressesResponse = subBuilder;
+              break;
+            }
+          case 8650:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyNewBlockTemplateRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyNewBlockTemplateRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.NotifyNewBlockTemplateRequest)
+              {
+                subBuilder.MergeFrom(NotifyNewBlockTemplateRequest);
+              }
+              input.ReadMessage(subBuilder);
+              NotifyNewBlockTemplateRequest = subBuilder;
+              break;
+            }
+          case 8658:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyNewBlockTemplateResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NotifyNewBlockTemplateResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.NotifyNewBlockTemplateResponse)
+              {
+                subBuilder.MergeFrom(NotifyNewBlockTemplateResponse);
+              }
+              input.ReadMessage(subBuilder);
+              NotifyNewBlockTemplateResponse = subBuilder;
+              break;
+            }
+          case 8666:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.NewBlockTemplateNotificationMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.NewBlockTemplateNotificationMessage();
+              if (payloadCase_ == PayloadOneofCase.NewBlockTemplateNotification)
+              {
+                subBuilder.MergeFrom(NewBlockTemplateNotification);
+              }
+              input.ReadMessage(subBuilder);
+              NewBlockTemplateNotification = subBuilder;
+              break;
+            }
+          case 8674:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesByAddressesRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesByAddressesRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesByAddressesRequest)
+              {
+                subBuilder.MergeFrom(GetMempoolEntriesByAddressesRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetMempoolEntriesByAddressesRequest = subBuilder;
+              break;
+            }
+          case 8682:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesByAddressesResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetMempoolEntriesByAddressesResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetMempoolEntriesByAddressesResponse)
+              {
+                subBuilder.MergeFrom(GetMempoolEntriesByAddressesResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetMempoolEntriesByAddressesResponse = subBuilder;
+              break;
+            }
+          case 8690:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetCoinSupplyRequestMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetCoinSupplyRequestMessage();
+              if (payloadCase_ == PayloadOneofCase.GetCoinSupplyRequest)
+              {
+                subBuilder.MergeFrom(GetCoinSupplyRequest);
+              }
+              input.ReadMessage(subBuilder);
+              GetCoinSupplyRequest = subBuilder;
+              break;
+            }
+          case 8698:
+            {
+              global::Miningcore.Blockchain.Kaspa.Kaspad.GetCoinSupplyResponseMessage subBuilder = new global::Miningcore.Blockchain.Kaspa.Kaspad.GetCoinSupplyResponseMessage();
+              if (payloadCase_ == PayloadOneofCase.GetCoinSupplyResponse)
+              {
+                subBuilder.MergeFrom(GetCoinSupplyResponse);
+              }
+              input.ReadMessage(subBuilder);
+              GetCoinSupplyResponse = subBuilder;
+              break;
+            }
         }
       }
     }

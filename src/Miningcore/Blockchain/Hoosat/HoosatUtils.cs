@@ -17,12 +17,12 @@ public static class HoosatUtils
 {
     public static (HoosatAddressUtility, Exception) ValidateAddress(string address, string network, string coinSymbol = "HTN")
     {
-        if(string.IsNullOrEmpty(address))
+        if (string.IsNullOrEmpty(address))
             return (null, new ArgumentException($"Empty address..."));
 
         HoosatBech32Prefix networkBech32Prefix;
 
-        switch(network.ToLower())
+        switch (network.ToLower())
         {
             case "devnet":
                 networkBech32Prefix = HoosatBech32Prefix.HoosatDev;
@@ -36,9 +36,9 @@ public static class HoosatUtils
                 networkBech32Prefix = HoosatBech32Prefix.HoosatTest;
 
                 break;
-        default:
+            default:
                 networkBech32Prefix = HoosatBech32Prefix.HoosatMain;
-            break;
+                break;
         }
 
         try
@@ -88,12 +88,12 @@ public static class HoosatUtils
 
     public static double TargetToDifficulty(BigInteger target)
     {
-        return (double) new BigRational(HoosatConstants.Diff1Target, target);
+        return (double)new BigRational(HoosatConstants.Diff1Target, target);
     }
 
     public static double DifficultyToHashrate(double diff)
     {
-        return (double) new BigRational(BigInteger.Multiply(BigInteger.Multiply(HoosatConstants.MinHash, HoosatConstants.BigGig), new BigInteger(diff)), HoosatConstants.Diff1);
+        return (double)new BigRational(BigInteger.Multiply(BigInteger.Multiply(HoosatConstants.MinHash, HoosatConstants.BigGig), new BigInteger(diff)), HoosatConstants.Diff1);
     }
 
     public static double BigDiffToLittle(BigInteger diff)
@@ -106,7 +106,7 @@ public static class HoosatUtils
         BigInteger tempA = BigInteger.Pow(2, 30);
         final = BigInteger.Divide(final, tempA);
 
-        return (double) final;
+        return (double)final;
     }
 
     public static BigInteger CompactToBig(uint compact)
@@ -178,9 +178,9 @@ public static class HoosatUtils
         BigInteger difficultyNum = CompactToBig(bits);
 
         if (difficultyNum.Sign <= 0)
-            return (double) BigInteger.Zero;
+            return (double)BigInteger.Zero;
 
-        return (double) new BigRational(HoosatConstants.OneLsh256, BigInteger.Add(difficultyNum, HoosatConstants.BigOne));
+        return (double)new BigRational(HoosatConstants.OneLsh256, BigInteger.Add(difficultyNum, HoosatConstants.BigOne));
     }
 
     public static byte[] HashBlake2b(byte[] serializedScript)
@@ -348,7 +348,7 @@ public class HoosatAddressUtility
 
     public HoosatAddressUtility(string coinSymbol = "HTN")
     {
-//        this.CoinSymbol = coinSymbol;
+        //        this.CoinSymbol = coinSymbol;
 
         Console.WriteLine("Configuration par défaut utilisée.");
         this.stringsToBech32Prefixes = new Dictionary<string, HoosatBech32Prefix>
@@ -358,7 +358,7 @@ public class HoosatAddressUtility
         { HoosatConstants.ChainPrefixTestnet, HoosatBech32Prefix.HoosatTest },
         { HoosatConstants.ChainPrefixSimnet, HoosatBech32Prefix.HoosatSim },
     };
-}
+    }
 
     public string EncodeAddress(HoosatBech32Prefix prefix, byte[] payload, byte version)
     {

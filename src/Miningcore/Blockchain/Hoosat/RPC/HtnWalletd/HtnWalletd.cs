@@ -5,7 +5,8 @@
 #pragma warning disable 1591, 0612, 3021
 #region Designer generated code
 
-namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
+namespace Miningcore.Blockchain.Hoosat.HtnWalletd
+{
 
   using pb = global::Google.Protobuf;
   using pbc = global::Google.Protobuf.Collections;
@@ -13,16 +14,19 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
   using scg = global::System.Collections.Generic;
 
   /// <summary>Holder for reflection information generated from Hoosatwalletd.proto</summary>
-  public static partial class HtnWalletdReflection {
+  public static partial class HtnWalletdReflection
+  {
 
     #region Descriptor
     /// <summary>File descriptor for Hoosatwalletd.proto</summary>
-    public static pbr::FileDescriptor Descriptor {
+    public static pbr::FileDescriptor Descriptor
+    {
       get { return descriptor; }
     }
     private static pbr::FileDescriptor descriptor;
 
-    static HtnWalletdReflection() {
+    static HtnWalletdReflection()
+    {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChJrYXNwYXdhbGxldGQucHJvdG8SDEthc3BhV2FsbGV0ZCITChFHZXRCYWxh",
@@ -111,98 +115,120 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
 
   }
   #region Messages
-  public sealed partial class GetBalanceRequest : pb::IMessage<GetBalanceRequest> {
+  public sealed partial class GetBalanceRequest : pb::IMessage<GetBalanceRequest>
+  {
     private static readonly pb::MessageParser<GetBalanceRequest> _parser = new pb::MessageParser<GetBalanceRequest>(() => new GetBalanceRequest());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<GetBalanceRequest> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetBalanceRequest() {
+    public GetBalanceRequest()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetBalanceRequest(GetBalanceRequest other) : this() {
+    public GetBalanceRequest(GetBalanceRequest other) : this()
+    {
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetBalanceRequest Clone() {
+    public GetBalanceRequest Clone()
+    {
       return new GetBalanceRequest(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as GetBalanceRequest);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(GetBalanceRequest other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(GetBalanceRequest other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (_unknownFields != null) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(GetBalanceRequest other) {
-      if (other == null) {
+    public void MergeFrom(GetBalanceRequest other)
+    {
+      if (other == null)
+      {
         return;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -212,31 +238,36 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
 
   }
 
-  public sealed partial class GetBalanceResponse : pb::IMessage<GetBalanceResponse> {
+  public sealed partial class GetBalanceResponse : pb::IMessage<GetBalanceResponse>
+  {
     private static readonly pb::MessageParser<GetBalanceResponse> _parser = new pb::MessageParser<GetBalanceResponse>(() => new GetBalanceResponse());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<GetBalanceResponse> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetBalanceResponse() {
+    public GetBalanceResponse()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetBalanceResponse(GetBalanceResponse other) : this() {
+    public GetBalanceResponse(GetBalanceResponse other) : this()
+    {
       available_ = other.available_;
       pending_ = other.pending_;
       addressBalances_ = other.addressBalances_.Clone();
@@ -244,7 +275,8 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetBalanceResponse Clone() {
+    public GetBalanceResponse Clone()
+    {
       return new GetBalanceResponse(this);
     }
 
@@ -252,9 +284,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int AvailableFieldNumber = 1;
     private ulong available_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ulong Available {
+    public ulong Available
+    {
       get { return available_; }
-      set {
+      set
+      {
         available_ = value;
       }
     }
@@ -263,9 +297,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int PendingFieldNumber = 2;
     private ulong pending_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ulong Pending {
+    public ulong Pending
+    {
       get { return pending_; }
-      set {
+      set
+      {
         pending_ = value;
       }
     }
@@ -276,87 +312,107 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
         = pb::FieldCodec.ForMessage(26, global::Miningcore.Blockchain.Hoosat.HtnWalletd.AddressBalances.Parser);
     private readonly pbc::RepeatedField<global::Miningcore.Blockchain.Hoosat.HtnWalletd.AddressBalances> addressBalances_ = new pbc::RepeatedField<global::Miningcore.Blockchain.Hoosat.HtnWalletd.AddressBalances>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::Miningcore.Blockchain.Hoosat.HtnWalletd.AddressBalances> AddressBalances {
+    public pbc::RepeatedField<global::Miningcore.Blockchain.Hoosat.HtnWalletd.AddressBalances> AddressBalances
+    {
       get { return addressBalances_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as GetBalanceResponse);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(GetBalanceResponse other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(GetBalanceResponse other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
       if (Available != other.Available) return false;
       if (Pending != other.Pending) return false;
-      if(!addressBalances_.Equals(other.addressBalances_)) return false;
+      if (!addressBalances_.Equals(other.addressBalances_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       if (Available != 0UL) hash ^= Available.GetHashCode();
       if (Pending != 0UL) hash ^= Pending.GetHashCode();
       hash ^= addressBalances_.GetHashCode();
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (Available != 0UL) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
+      if (Available != 0UL)
+      {
         output.WriteRawTag(8);
         output.WriteUInt64(Available);
       }
-      if (Pending != 0UL) {
+      if (Pending != 0UL)
+      {
         output.WriteRawTag(16);
         output.WriteUInt64(Pending);
       }
       addressBalances_.WriteTo(output, _repeated_addressBalances_codec);
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
-      if (Available != 0UL) {
+      if (Available != 0UL)
+      {
         size += 1 + pb::CodedOutputStream.ComputeUInt64Size(Available);
       }
-      if (Pending != 0UL) {
+      if (Pending != 0UL)
+      {
         size += 1 + pb::CodedOutputStream.ComputeUInt64Size(Pending);
       }
       size += addressBalances_.CalculateSize(_repeated_addressBalances_codec);
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(GetBalanceResponse other) {
-      if (other == null) {
+    public void MergeFrom(GetBalanceResponse other)
+    {
+      if (other == null)
+      {
         return;
       }
-      if (other.Available != 0UL) {
+      if (other.Available != 0UL)
+      {
         Available = other.Available;
       }
-      if (other.Pending != 0UL) {
+      if (other.Pending != 0UL)
+      {
         Pending = other.Pending;
       }
       addressBalances_.Add(other.addressBalances_);
@@ -364,56 +420,67 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 8: {
-            Available = input.ReadUInt64();
-            break;
-          }
-          case 16: {
-            Pending = input.ReadUInt64();
-            break;
-          }
-          case 26: {
-            addressBalances_.AddEntriesFrom(input, _repeated_addressBalances_codec);
-            break;
-          }
+          case 8:
+            {
+              Available = input.ReadUInt64();
+              break;
+            }
+          case 16:
+            {
+              Pending = input.ReadUInt64();
+              break;
+            }
+          case 26:
+            {
+              addressBalances_.AddEntriesFrom(input, _repeated_addressBalances_codec);
+              break;
+            }
         }
       }
     }
 
   }
 
-  public sealed partial class AddressBalances : pb::IMessage<AddressBalances> {
+  public sealed partial class AddressBalances : pb::IMessage<AddressBalances>
+  {
     private static readonly pb::MessageParser<AddressBalances> _parser = new pb::MessageParser<AddressBalances>(() => new AddressBalances());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<AddressBalances> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public AddressBalances() {
+    public AddressBalances()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public AddressBalances(AddressBalances other) : this() {
+    public AddressBalances(AddressBalances other) : this()
+    {
       address_ = other.address_;
       available_ = other.available_;
       pending_ = other.pending_;
@@ -421,7 +488,8 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public AddressBalances Clone() {
+    public AddressBalances Clone()
+    {
       return new AddressBalances(this);
     }
 
@@ -429,9 +497,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int AddressFieldNumber = 1;
     private string address_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Address {
+    public string Address
+    {
       get { return address_; }
-      set {
+      set
+      {
         address_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
@@ -440,9 +510,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int AvailableFieldNumber = 2;
     private ulong available_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ulong Available {
+    public ulong Available
+    {
       get { return available_; }
-      set {
+      set
+      {
         available_ = value;
       }
     }
@@ -451,24 +523,30 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int PendingFieldNumber = 3;
     private ulong pending_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ulong Pending {
+    public ulong Pending
+    {
       get { return pending_; }
-      set {
+      set
+      {
         pending_ = value;
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as AddressBalances);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(AddressBalances other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(AddressBalances other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
       if (Address != other.Address) return false;
@@ -478,127 +556,156 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       if (Address.Length != 0) hash ^= Address.GetHashCode();
       if (Available != 0UL) hash ^= Available.GetHashCode();
       if (Pending != 0UL) hash ^= Pending.GetHashCode();
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (Address.Length != 0) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
+      if (Address.Length != 0)
+      {
         output.WriteRawTag(10);
         output.WriteString(Address);
       }
-      if (Available != 0UL) {
+      if (Available != 0UL)
+      {
         output.WriteRawTag(16);
         output.WriteUInt64(Available);
       }
-      if (Pending != 0UL) {
+      if (Pending != 0UL)
+      {
         output.WriteRawTag(24);
         output.WriteUInt64(Pending);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
-      if (Address.Length != 0) {
+      if (Address.Length != 0)
+      {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Address);
       }
-      if (Available != 0UL) {
+      if (Available != 0UL)
+      {
         size += 1 + pb::CodedOutputStream.ComputeUInt64Size(Available);
       }
-      if (Pending != 0UL) {
+      if (Pending != 0UL)
+      {
         size += 1 + pb::CodedOutputStream.ComputeUInt64Size(Pending);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(AddressBalances other) {
-      if (other == null) {
+    public void MergeFrom(AddressBalances other)
+    {
+      if (other == null)
+      {
         return;
       }
-      if (other.Address.Length != 0) {
+      if (other.Address.Length != 0)
+      {
         Address = other.Address;
       }
-      if (other.Available != 0UL) {
+      if (other.Available != 0UL)
+      {
         Available = other.Available;
       }
-      if (other.Pending != 0UL) {
+      if (other.Pending != 0UL)
+      {
         Pending = other.Pending;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            Address = input.ReadString();
-            break;
-          }
-          case 16: {
-            Available = input.ReadUInt64();
-            break;
-          }
-          case 24: {
-            Pending = input.ReadUInt64();
-            break;
-          }
+          case 10:
+            {
+              Address = input.ReadString();
+              break;
+            }
+          case 16:
+            {
+              Available = input.ReadUInt64();
+              break;
+            }
+          case 24:
+            {
+              Pending = input.ReadUInt64();
+              break;
+            }
         }
       }
     }
 
   }
 
-  public sealed partial class CreateUnsignedTransactionsRequest : pb::IMessage<CreateUnsignedTransactionsRequest> {
+  public sealed partial class CreateUnsignedTransactionsRequest : pb::IMessage<CreateUnsignedTransactionsRequest>
+  {
     private static readonly pb::MessageParser<CreateUnsignedTransactionsRequest> _parser = new pb::MessageParser<CreateUnsignedTransactionsRequest>(() => new CreateUnsignedTransactionsRequest());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<CreateUnsignedTransactionsRequest> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[3]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public CreateUnsignedTransactionsRequest() {
+    public CreateUnsignedTransactionsRequest()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public CreateUnsignedTransactionsRequest(CreateUnsignedTransactionsRequest other) : this() {
+    public CreateUnsignedTransactionsRequest(CreateUnsignedTransactionsRequest other) : this()
+    {
       address_ = other.address_;
       amount_ = other.amount_;
       from_ = other.from_.Clone();
@@ -608,7 +715,8 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public CreateUnsignedTransactionsRequest Clone() {
+    public CreateUnsignedTransactionsRequest Clone()
+    {
       return new CreateUnsignedTransactionsRequest(this);
     }
 
@@ -616,9 +724,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int AddressFieldNumber = 1;
     private string address_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Address {
+    public string Address
+    {
       get { return address_; }
-      set {
+      set
+      {
         address_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
@@ -627,9 +737,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int AmountFieldNumber = 2;
     private ulong amount_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ulong Amount {
+    public ulong Amount
+    {
       get { return amount_; }
-      set {
+      set
+      {
         amount_ = value;
       }
     }
@@ -640,7 +752,8 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
         = pb::FieldCodec.ForString(26);
     private readonly pbc::RepeatedField<string> from_ = new pbc::RepeatedField<string>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<string> From {
+    public pbc::RepeatedField<string> From
+    {
       get { return from_; }
     }
 
@@ -648,9 +761,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int UseExistingChangeAddressFieldNumber = 4;
     private bool useExistingChangeAddress_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool UseExistingChangeAddress {
+    public bool UseExistingChangeAddress
+    {
       get { return useExistingChangeAddress_; }
-      set {
+      set
+      {
         useExistingChangeAddress_ = value;
       }
     }
@@ -659,185 +774,226 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int IsSendAllFieldNumber = 5;
     private bool isSendAll_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool IsSendAll {
+    public bool IsSendAll
+    {
       get { return isSendAll_; }
-      set {
+      set
+      {
         isSendAll_ = value;
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as CreateUnsignedTransactionsRequest);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(CreateUnsignedTransactionsRequest other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(CreateUnsignedTransactionsRequest other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
       if (Address != other.Address) return false;
       if (Amount != other.Amount) return false;
-      if(!from_.Equals(other.from_)) return false;
+      if (!from_.Equals(other.from_)) return false;
       if (UseExistingChangeAddress != other.UseExistingChangeAddress) return false;
       if (IsSendAll != other.IsSendAll) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       if (Address.Length != 0) hash ^= Address.GetHashCode();
       if (Amount != 0UL) hash ^= Amount.GetHashCode();
       hash ^= from_.GetHashCode();
       if (UseExistingChangeAddress != false) hash ^= UseExistingChangeAddress.GetHashCode();
       if (IsSendAll != false) hash ^= IsSendAll.GetHashCode();
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (Address.Length != 0) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
+      if (Address.Length != 0)
+      {
         output.WriteRawTag(10);
         output.WriteString(Address);
       }
-      if (Amount != 0UL) {
+      if (Amount != 0UL)
+      {
         output.WriteRawTag(16);
         output.WriteUInt64(Amount);
       }
       from_.WriteTo(output, _repeated_from_codec);
-      if (UseExistingChangeAddress != false) {
+      if (UseExistingChangeAddress != false)
+      {
         output.WriteRawTag(32);
         output.WriteBool(UseExistingChangeAddress);
       }
-      if (IsSendAll != false) {
+      if (IsSendAll != false)
+      {
         output.WriteRawTag(40);
         output.WriteBool(IsSendAll);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
-      if (Address.Length != 0) {
+      if (Address.Length != 0)
+      {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Address);
       }
-      if (Amount != 0UL) {
+      if (Amount != 0UL)
+      {
         size += 1 + pb::CodedOutputStream.ComputeUInt64Size(Amount);
       }
       size += from_.CalculateSize(_repeated_from_codec);
-      if (UseExistingChangeAddress != false) {
+      if (UseExistingChangeAddress != false)
+      {
         size += 1 + 1;
       }
-      if (IsSendAll != false) {
+      if (IsSendAll != false)
+      {
         size += 1 + 1;
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(CreateUnsignedTransactionsRequest other) {
-      if (other == null) {
+    public void MergeFrom(CreateUnsignedTransactionsRequest other)
+    {
+      if (other == null)
+      {
         return;
       }
-      if (other.Address.Length != 0) {
+      if (other.Address.Length != 0)
+      {
         Address = other.Address;
       }
-      if (other.Amount != 0UL) {
+      if (other.Amount != 0UL)
+      {
         Amount = other.Amount;
       }
       from_.Add(other.from_);
-      if (other.UseExistingChangeAddress != false) {
+      if (other.UseExistingChangeAddress != false)
+      {
         UseExistingChangeAddress = other.UseExistingChangeAddress;
       }
-      if (other.IsSendAll != false) {
+      if (other.IsSendAll != false)
+      {
         IsSendAll = other.IsSendAll;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            Address = input.ReadString();
-            break;
-          }
-          case 16: {
-            Amount = input.ReadUInt64();
-            break;
-          }
-          case 26: {
-            from_.AddEntriesFrom(input, _repeated_from_codec);
-            break;
-          }
-          case 32: {
-            UseExistingChangeAddress = input.ReadBool();
-            break;
-          }
-          case 40: {
-            IsSendAll = input.ReadBool();
-            break;
-          }
+          case 10:
+            {
+              Address = input.ReadString();
+              break;
+            }
+          case 16:
+            {
+              Amount = input.ReadUInt64();
+              break;
+            }
+          case 26:
+            {
+              from_.AddEntriesFrom(input, _repeated_from_codec);
+              break;
+            }
+          case 32:
+            {
+              UseExistingChangeAddress = input.ReadBool();
+              break;
+            }
+          case 40:
+            {
+              IsSendAll = input.ReadBool();
+              break;
+            }
         }
       }
     }
 
   }
 
-  public sealed partial class CreateUnsignedTransactionsResponse : pb::IMessage<CreateUnsignedTransactionsResponse> {
+  public sealed partial class CreateUnsignedTransactionsResponse : pb::IMessage<CreateUnsignedTransactionsResponse>
+  {
     private static readonly pb::MessageParser<CreateUnsignedTransactionsResponse> _parser = new pb::MessageParser<CreateUnsignedTransactionsResponse>(() => new CreateUnsignedTransactionsResponse());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<CreateUnsignedTransactionsResponse> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[4]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public CreateUnsignedTransactionsResponse() {
+    public CreateUnsignedTransactionsResponse()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public CreateUnsignedTransactionsResponse(CreateUnsignedTransactionsResponse other) : this() {
+    public CreateUnsignedTransactionsResponse(CreateUnsignedTransactionsResponse other) : this()
+    {
       unsignedTransactions_ = other.unsignedTransactions_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public CreateUnsignedTransactionsResponse Clone() {
+    public CreateUnsignedTransactionsResponse Clone()
+    {
       return new CreateUnsignedTransactionsResponse(this);
     }
 
@@ -847,63 +1003,77 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
         = pb::FieldCodec.ForBytes(10);
     private readonly pbc::RepeatedField<pb::ByteString> unsignedTransactions_ = new pbc::RepeatedField<pb::ByteString>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<pb::ByteString> UnsignedTransactions {
+    public pbc::RepeatedField<pb::ByteString> UnsignedTransactions
+    {
       get { return unsignedTransactions_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as CreateUnsignedTransactionsResponse);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(CreateUnsignedTransactionsResponse other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(CreateUnsignedTransactionsResponse other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
-      if(!unsignedTransactions_.Equals(other.unsignedTransactions_)) return false;
+      if (!unsignedTransactions_.Equals(other.unsignedTransactions_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       hash ^= unsignedTransactions_.GetHashCode();
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
       unsignedTransactions_.WriteTo(output, _repeated_unsignedTransactions_codec);
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
       size += unsignedTransactions_.CalculateSize(_repeated_unsignedTransactions_codec);
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(CreateUnsignedTransactionsResponse other) {
-      if (other == null) {
+    public void MergeFrom(CreateUnsignedTransactionsResponse other)
+    {
+      if (other == null)
+      {
         return;
       }
       unsignedTransactions_.Add(other.unsignedTransactions_);
@@ -911,115 +1081,141 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            unsignedTransactions_.AddEntriesFrom(input, _repeated_unsignedTransactions_codec);
-            break;
-          }
+          case 10:
+            {
+              unsignedTransactions_.AddEntriesFrom(input, _repeated_unsignedTransactions_codec);
+              break;
+            }
         }
       }
     }
 
   }
 
-  public sealed partial class ShowAddressesRequest : pb::IMessage<ShowAddressesRequest> {
+  public sealed partial class ShowAddressesRequest : pb::IMessage<ShowAddressesRequest>
+  {
     private static readonly pb::MessageParser<ShowAddressesRequest> _parser = new pb::MessageParser<ShowAddressesRequest>(() => new ShowAddressesRequest());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<ShowAddressesRequest> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[5]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ShowAddressesRequest() {
+    public ShowAddressesRequest()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ShowAddressesRequest(ShowAddressesRequest other) : this() {
+    public ShowAddressesRequest(ShowAddressesRequest other) : this()
+    {
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ShowAddressesRequest Clone() {
+    public ShowAddressesRequest Clone()
+    {
       return new ShowAddressesRequest(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as ShowAddressesRequest);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(ShowAddressesRequest other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(ShowAddressesRequest other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (_unknownFields != null) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(ShowAddressesRequest other) {
-      if (other == null) {
+    public void MergeFrom(ShowAddressesRequest other)
+    {
+      if (other == null)
+      {
         return;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -1029,37 +1225,43 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
 
   }
 
-  public sealed partial class ShowAddressesResponse : pb::IMessage<ShowAddressesResponse> {
+  public sealed partial class ShowAddressesResponse : pb::IMessage<ShowAddressesResponse>
+  {
     private static readonly pb::MessageParser<ShowAddressesResponse> _parser = new pb::MessageParser<ShowAddressesResponse>(() => new ShowAddressesResponse());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<ShowAddressesResponse> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[6]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ShowAddressesResponse() {
+    public ShowAddressesResponse()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ShowAddressesResponse(ShowAddressesResponse other) : this() {
+    public ShowAddressesResponse(ShowAddressesResponse other) : this()
+    {
       address_ = other.address_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ShowAddressesResponse Clone() {
+    public ShowAddressesResponse Clone()
+    {
       return new ShowAddressesResponse(this);
     }
 
@@ -1069,63 +1271,77 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
         = pb::FieldCodec.ForString(10);
     private readonly pbc::RepeatedField<string> address_ = new pbc::RepeatedField<string>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<string> Address {
+    public pbc::RepeatedField<string> Address
+    {
       get { return address_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as ShowAddressesResponse);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(ShowAddressesResponse other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(ShowAddressesResponse other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
-      if(!address_.Equals(other.address_)) return false;
+      if (!address_.Equals(other.address_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       hash ^= address_.GetHashCode();
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
       address_.WriteTo(output, _repeated_address_codec);
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
       size += address_.CalculateSize(_repeated_address_codec);
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(ShowAddressesResponse other) {
-      if (other == null) {
+    public void MergeFrom(ShowAddressesResponse other)
+    {
+      if (other == null)
+      {
         return;
       }
       address_.Add(other.address_);
@@ -1133,115 +1349,141 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            address_.AddEntriesFrom(input, _repeated_address_codec);
-            break;
-          }
+          case 10:
+            {
+              address_.AddEntriesFrom(input, _repeated_address_codec);
+              break;
+            }
         }
       }
     }
 
   }
 
-  public sealed partial class NewAddressRequest : pb::IMessage<NewAddressRequest> {
+  public sealed partial class NewAddressRequest : pb::IMessage<NewAddressRequest>
+  {
     private static readonly pb::MessageParser<NewAddressRequest> _parser = new pb::MessageParser<NewAddressRequest>(() => new NewAddressRequest());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<NewAddressRequest> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[7]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public NewAddressRequest() {
+    public NewAddressRequest()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public NewAddressRequest(NewAddressRequest other) : this() {
+    public NewAddressRequest(NewAddressRequest other) : this()
+    {
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public NewAddressRequest Clone() {
+    public NewAddressRequest Clone()
+    {
       return new NewAddressRequest(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as NewAddressRequest);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(NewAddressRequest other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(NewAddressRequest other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (_unknownFields != null) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(NewAddressRequest other) {
-      if (other == null) {
+    public void MergeFrom(NewAddressRequest other)
+    {
+      if (other == null)
+      {
         return;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -1251,37 +1493,43 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
 
   }
 
-  public sealed partial class NewAddressResponse : pb::IMessage<NewAddressResponse> {
+  public sealed partial class NewAddressResponse : pb::IMessage<NewAddressResponse>
+  {
     private static readonly pb::MessageParser<NewAddressResponse> _parser = new pb::MessageParser<NewAddressResponse>(() => new NewAddressResponse());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<NewAddressResponse> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[8]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public NewAddressResponse() {
+    public NewAddressResponse()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public NewAddressResponse(NewAddressResponse other) : this() {
+    public NewAddressResponse(NewAddressResponse other) : this()
+    {
       address_ = other.address_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public NewAddressResponse Clone() {
+    public NewAddressResponse Clone()
+    {
       return new NewAddressResponse(this);
     }
 
@@ -1289,24 +1537,30 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int AddressFieldNumber = 1;
     private string address_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Address {
+    public string Address
+    {
       get { return address_; }
-      set {
+      set
+      {
         address_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as NewAddressResponse);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(NewAddressResponse other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(NewAddressResponse other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
       if (Address != other.Address) return false;
@@ -1314,104 +1568,126 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       if (Address.Length != 0) hash ^= Address.GetHashCode();
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (Address.Length != 0) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
+      if (Address.Length != 0)
+      {
         output.WriteRawTag(10);
         output.WriteString(Address);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
-      if (Address.Length != 0) {
+      if (Address.Length != 0)
+      {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Address);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(NewAddressResponse other) {
-      if (other == null) {
+    public void MergeFrom(NewAddressResponse other)
+    {
+      if (other == null)
+      {
         return;
       }
-      if (other.Address.Length != 0) {
+      if (other.Address.Length != 0)
+      {
         Address = other.Address;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            Address = input.ReadString();
-            break;
-          }
+          case 10:
+            {
+              Address = input.ReadString();
+              break;
+            }
         }
       }
     }
 
   }
 
-  public sealed partial class BroadcastRequest : pb::IMessage<BroadcastRequest> {
+  public sealed partial class BroadcastRequest : pb::IMessage<BroadcastRequest>
+  {
     private static readonly pb::MessageParser<BroadcastRequest> _parser = new pb::MessageParser<BroadcastRequest>(() => new BroadcastRequest());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<BroadcastRequest> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[9]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public BroadcastRequest() {
+    public BroadcastRequest()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public BroadcastRequest(BroadcastRequest other) : this() {
+    public BroadcastRequest(BroadcastRequest other) : this()
+    {
       isDomain_ = other.isDomain_;
       transactions_ = other.transactions_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public BroadcastRequest Clone() {
+    public BroadcastRequest Clone()
+    {
       return new BroadcastRequest(this);
     }
 
@@ -1419,9 +1695,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int IsDomainFieldNumber = 1;
     private bool isDomain_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool IsDomain {
+    public bool IsDomain
+    {
       get { return isDomain_; }
-      set {
+      set
+      {
         isDomain_ = value;
       }
     }
@@ -1432,75 +1710,92 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
         = pb::FieldCodec.ForBytes(18);
     private readonly pbc::RepeatedField<pb::ByteString> transactions_ = new pbc::RepeatedField<pb::ByteString>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<pb::ByteString> Transactions {
+    public pbc::RepeatedField<pb::ByteString> Transactions
+    {
       get { return transactions_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as BroadcastRequest);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(BroadcastRequest other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(BroadcastRequest other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
       if (IsDomain != other.IsDomain) return false;
-      if(!transactions_.Equals(other.transactions_)) return false;
+      if (!transactions_.Equals(other.transactions_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       if (IsDomain != false) hash ^= IsDomain.GetHashCode();
       hash ^= transactions_.GetHashCode();
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (IsDomain != false) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
+      if (IsDomain != false)
+      {
         output.WriteRawTag(8);
         output.WriteBool(IsDomain);
       }
       transactions_.WriteTo(output, _repeated_transactions_codec);
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
-      if (IsDomain != false) {
+      if (IsDomain != false)
+      {
         size += 1 + 1;
       }
       size += transactions_.CalculateSize(_repeated_transactions_codec);
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(BroadcastRequest other) {
-      if (other == null) {
+    public void MergeFrom(BroadcastRequest other)
+    {
+      if (other == null)
+      {
         return;
       }
-      if (other.IsDomain != false) {
+      if (other.IsDomain != false)
+      {
         IsDomain = other.IsDomain;
       }
       transactions_.Add(other.transactions_);
@@ -1508,58 +1803,69 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 8: {
-            IsDomain = input.ReadBool();
-            break;
-          }
-          case 18: {
-            transactions_.AddEntriesFrom(input, _repeated_transactions_codec);
-            break;
-          }
+          case 8:
+            {
+              IsDomain = input.ReadBool();
+              break;
+            }
+          case 18:
+            {
+              transactions_.AddEntriesFrom(input, _repeated_transactions_codec);
+              break;
+            }
         }
       }
     }
 
   }
 
-  public sealed partial class BroadcastResponse : pb::IMessage<BroadcastResponse> {
+  public sealed partial class BroadcastResponse : pb::IMessage<BroadcastResponse>
+  {
     private static readonly pb::MessageParser<BroadcastResponse> _parser = new pb::MessageParser<BroadcastResponse>(() => new BroadcastResponse());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<BroadcastResponse> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[10]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public BroadcastResponse() {
+    public BroadcastResponse()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public BroadcastResponse(BroadcastResponse other) : this() {
+    public BroadcastResponse(BroadcastResponse other) : this()
+    {
       txIDs_ = other.txIDs_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public BroadcastResponse Clone() {
+    public BroadcastResponse Clone()
+    {
       return new BroadcastResponse(this);
     }
 
@@ -1569,63 +1875,77 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
         = pb::FieldCodec.ForString(10);
     private readonly pbc::RepeatedField<string> txIDs_ = new pbc::RepeatedField<string>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<string> TxIDs {
+    public pbc::RepeatedField<string> TxIDs
+    {
       get { return txIDs_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as BroadcastResponse);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(BroadcastResponse other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(BroadcastResponse other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
-      if(!txIDs_.Equals(other.txIDs_)) return false;
+      if (!txIDs_.Equals(other.txIDs_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       hash ^= txIDs_.GetHashCode();
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
       txIDs_.WriteTo(output, _repeated_txIDs_codec);
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
       size += txIDs_.CalculateSize(_repeated_txIDs_codec);
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(BroadcastResponse other) {
-      if (other == null) {
+    public void MergeFrom(BroadcastResponse other)
+    {
+      if (other == null)
+      {
         return;
       }
       txIDs_.Add(other.txIDs_);
@@ -1633,115 +1953,141 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            txIDs_.AddEntriesFrom(input, _repeated_txIDs_codec);
-            break;
-          }
+          case 10:
+            {
+              txIDs_.AddEntriesFrom(input, _repeated_txIDs_codec);
+              break;
+            }
         }
       }
     }
 
   }
 
-  public sealed partial class ShutdownRequest : pb::IMessage<ShutdownRequest> {
+  public sealed partial class ShutdownRequest : pb::IMessage<ShutdownRequest>
+  {
     private static readonly pb::MessageParser<ShutdownRequest> _parser = new pb::MessageParser<ShutdownRequest>(() => new ShutdownRequest());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<ShutdownRequest> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[11]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ShutdownRequest() {
+    public ShutdownRequest()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ShutdownRequest(ShutdownRequest other) : this() {
+    public ShutdownRequest(ShutdownRequest other) : this()
+    {
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ShutdownRequest Clone() {
+    public ShutdownRequest Clone()
+    {
       return new ShutdownRequest(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as ShutdownRequest);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(ShutdownRequest other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(ShutdownRequest other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (_unknownFields != null) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(ShutdownRequest other) {
-      if (other == null) {
+    public void MergeFrom(ShutdownRequest other)
+    {
+      if (other == null)
+      {
         return;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -1751,98 +2097,120 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
 
   }
 
-  public sealed partial class ShutdownResponse : pb::IMessage<ShutdownResponse> {
+  public sealed partial class ShutdownResponse : pb::IMessage<ShutdownResponse>
+  {
     private static readonly pb::MessageParser<ShutdownResponse> _parser = new pb::MessageParser<ShutdownResponse>(() => new ShutdownResponse());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<ShutdownResponse> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[12]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ShutdownResponse() {
+    public ShutdownResponse()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ShutdownResponse(ShutdownResponse other) : this() {
+    public ShutdownResponse(ShutdownResponse other) : this()
+    {
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ShutdownResponse Clone() {
+    public ShutdownResponse Clone()
+    {
       return new ShutdownResponse(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as ShutdownResponse);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(ShutdownResponse other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(ShutdownResponse other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (_unknownFields != null) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(ShutdownResponse other) {
-      if (other == null) {
+    public void MergeFrom(ShutdownResponse other)
+    {
+      if (other == null)
+      {
         return;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -1852,38 +2220,44 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
 
   }
 
-  public sealed partial class Outpoint : pb::IMessage<Outpoint> {
+  public sealed partial class Outpoint : pb::IMessage<Outpoint>
+  {
     private static readonly pb::MessageParser<Outpoint> _parser = new pb::MessageParser<Outpoint>(() => new Outpoint());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<Outpoint> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[13]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public Outpoint() {
+    public Outpoint()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public Outpoint(Outpoint other) : this() {
+    public Outpoint(Outpoint other) : this()
+    {
       transactionId_ = other.transactionId_;
       index_ = other.index_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public Outpoint Clone() {
+    public Outpoint Clone()
+    {
       return new Outpoint(this);
     }
 
@@ -1891,9 +2265,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int TransactionIdFieldNumber = 1;
     private string transactionId_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string TransactionId {
+    public string TransactionId
+    {
       get { return transactionId_; }
-      set {
+      set
+      {
         transactionId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
@@ -1902,24 +2278,30 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int IndexFieldNumber = 2;
     private uint index_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint Index {
+    public uint Index
+    {
       get { return index_; }
-      set {
+      set
+      {
         index_ = value;
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as Outpoint);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(Outpoint other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(Outpoint other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
       if (TransactionId != other.TransactionId) return false;
@@ -1928,112 +2310,137 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       if (TransactionId.Length != 0) hash ^= TransactionId.GetHashCode();
       if (Index != 0) hash ^= Index.GetHashCode();
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (TransactionId.Length != 0) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
+      if (TransactionId.Length != 0)
+      {
         output.WriteRawTag(10);
         output.WriteString(TransactionId);
       }
-      if (Index != 0) {
+      if (Index != 0)
+      {
         output.WriteRawTag(16);
         output.WriteUInt32(Index);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
-      if (TransactionId.Length != 0) {
+      if (TransactionId.Length != 0)
+      {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(TransactionId);
       }
-      if (Index != 0) {
+      if (Index != 0)
+      {
         size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Index);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(Outpoint other) {
-      if (other == null) {
+    public void MergeFrom(Outpoint other)
+    {
+      if (other == null)
+      {
         return;
       }
-      if (other.TransactionId.Length != 0) {
+      if (other.TransactionId.Length != 0)
+      {
         TransactionId = other.TransactionId;
       }
-      if (other.Index != 0) {
+      if (other.Index != 0)
+      {
         Index = other.Index;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            TransactionId = input.ReadString();
-            break;
-          }
-          case 16: {
-            Index = input.ReadUInt32();
-            break;
-          }
+          case 10:
+            {
+              TransactionId = input.ReadString();
+              break;
+            }
+          case 16:
+            {
+              Index = input.ReadUInt32();
+              break;
+            }
         }
       }
     }
 
   }
 
-  public sealed partial class UtxosByAddressesEntry : pb::IMessage<UtxosByAddressesEntry> {
+  public sealed partial class UtxosByAddressesEntry : pb::IMessage<UtxosByAddressesEntry>
+  {
     private static readonly pb::MessageParser<UtxosByAddressesEntry> _parser = new pb::MessageParser<UtxosByAddressesEntry>(() => new UtxosByAddressesEntry());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<UtxosByAddressesEntry> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[14]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public UtxosByAddressesEntry() {
+    public UtxosByAddressesEntry()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public UtxosByAddressesEntry(UtxosByAddressesEntry other) : this() {
+    public UtxosByAddressesEntry(UtxosByAddressesEntry other) : this()
+    {
       address_ = other.address_;
       outpoint_ = other.outpoint_ != null ? other.outpoint_.Clone() : null;
       utxoEntry_ = other.utxoEntry_ != null ? other.utxoEntry_.Clone() : null;
@@ -2041,7 +2448,8 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public UtxosByAddressesEntry Clone() {
+    public UtxosByAddressesEntry Clone()
+    {
       return new UtxosByAddressesEntry(this);
     }
 
@@ -2049,9 +2457,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int AddressFieldNumber = 1;
     private string address_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Address {
+    public string Address
+    {
       get { return address_; }
-      set {
+      set
+      {
         address_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
@@ -2060,9 +2470,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int OutpointFieldNumber = 2;
     private global::Miningcore.Blockchain.Hoosat.HtnWalletd.Outpoint outpoint_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Hoosat.HtnWalletd.Outpoint Outpoint {
+    public global::Miningcore.Blockchain.Hoosat.HtnWalletd.Outpoint Outpoint
+    {
       get { return outpoint_; }
-      set {
+      set
+      {
         outpoint_ = value;
       }
     }
@@ -2071,24 +2483,30 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int UtxoEntryFieldNumber = 3;
     private global::Miningcore.Blockchain.Hoosat.HtnWalletd.UtxoEntry utxoEntry_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Hoosat.HtnWalletd.UtxoEntry UtxoEntry {
+    public global::Miningcore.Blockchain.Hoosat.HtnWalletd.UtxoEntry UtxoEntry
+    {
       get { return utxoEntry_; }
-      set {
+      set
+      {
         utxoEntry_ = value;
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as UtxosByAddressesEntry);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(UtxosByAddressesEntry other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(UtxosByAddressesEntry other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
       if (Address != other.Address) return false;
@@ -2098,75 +2516,95 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       if (Address.Length != 0) hash ^= Address.GetHashCode();
       if (outpoint_ != null) hash ^= Outpoint.GetHashCode();
       if (utxoEntry_ != null) hash ^= UtxoEntry.GetHashCode();
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (Address.Length != 0) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
+      if (Address.Length != 0)
+      {
         output.WriteRawTag(10);
         output.WriteString(Address);
       }
-      if (outpoint_ != null) {
+      if (outpoint_ != null)
+      {
         output.WriteRawTag(18);
         output.WriteMessage(Outpoint);
       }
-      if (utxoEntry_ != null) {
+      if (utxoEntry_ != null)
+      {
         output.WriteRawTag(26);
         output.WriteMessage(UtxoEntry);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
-      if (Address.Length != 0) {
+      if (Address.Length != 0)
+      {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Address);
       }
-      if (outpoint_ != null) {
+      if (outpoint_ != null)
+      {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Outpoint);
       }
-      if (utxoEntry_ != null) {
+      if (utxoEntry_ != null)
+      {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(UtxoEntry);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(UtxosByAddressesEntry other) {
-      if (other == null) {
+    public void MergeFrom(UtxosByAddressesEntry other)
+    {
+      if (other == null)
+      {
         return;
       }
-      if (other.Address.Length != 0) {
+      if (other.Address.Length != 0)
+      {
         Address = other.Address;
       }
-      if (other.outpoint_ != null) {
-        if (outpoint_ == null) {
+      if (other.outpoint_ != null)
+      {
+        if (outpoint_ == null)
+        {
           Outpoint = new global::Miningcore.Blockchain.Hoosat.HtnWalletd.Outpoint();
         }
         Outpoint.MergeFrom(other.Outpoint);
       }
-      if (other.utxoEntry_ != null) {
-        if (utxoEntry_ == null) {
+      if (other.utxoEntry_ != null)
+      {
+        if (utxoEntry_ == null)
+        {
           UtxoEntry = new global::Miningcore.Blockchain.Hoosat.HtnWalletd.UtxoEntry();
         }
         UtxoEntry.MergeFrom(other.UtxoEntry);
@@ -2175,69 +2613,83 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            Address = input.ReadString();
-            break;
-          }
-          case 18: {
-            if (outpoint_ == null) {
-              Outpoint = new global::Miningcore.Blockchain.Hoosat.HtnWalletd.Outpoint();
+          case 10:
+            {
+              Address = input.ReadString();
+              break;
             }
-            input.ReadMessage(Outpoint);
-            break;
-          }
-          case 26: {
-            if (utxoEntry_ == null) {
-              UtxoEntry = new global::Miningcore.Blockchain.Hoosat.HtnWalletd.UtxoEntry();
+          case 18:
+            {
+              if (outpoint_ == null)
+              {
+                Outpoint = new global::Miningcore.Blockchain.Hoosat.HtnWalletd.Outpoint();
+              }
+              input.ReadMessage(Outpoint);
+              break;
             }
-            input.ReadMessage(UtxoEntry);
-            break;
-          }
+          case 26:
+            {
+              if (utxoEntry_ == null)
+              {
+                UtxoEntry = new global::Miningcore.Blockchain.Hoosat.HtnWalletd.UtxoEntry();
+              }
+              input.ReadMessage(UtxoEntry);
+              break;
+            }
         }
       }
     }
 
   }
 
-  public sealed partial class ScriptPublicKey : pb::IMessage<ScriptPublicKey> {
+  public sealed partial class ScriptPublicKey : pb::IMessage<ScriptPublicKey>
+  {
     private static readonly pb::MessageParser<ScriptPublicKey> _parser = new pb::MessageParser<ScriptPublicKey>(() => new ScriptPublicKey());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<ScriptPublicKey> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[15]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ScriptPublicKey() {
+    public ScriptPublicKey()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ScriptPublicKey(ScriptPublicKey other) : this() {
+    public ScriptPublicKey(ScriptPublicKey other) : this()
+    {
       version_ = other.version_;
       scriptPublicKey_ = other.scriptPublicKey_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ScriptPublicKey Clone() {
+    public ScriptPublicKey Clone()
+    {
       return new ScriptPublicKey(this);
     }
 
@@ -2245,9 +2697,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int VersionFieldNumber = 1;
     private uint version_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint Version {
+    public uint Version
+    {
       get { return version_; }
-      set {
+      set
+      {
         version_ = value;
       }
     }
@@ -2256,24 +2710,30 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int ScriptPublicKey_FieldNumber = 2;
     private string scriptPublicKey_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string ScriptPublicKey_ {
+    public string ScriptPublicKey_
+    {
       get { return scriptPublicKey_; }
-      set {
+      set
+      {
         scriptPublicKey_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as ScriptPublicKey);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(ScriptPublicKey other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(ScriptPublicKey other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
       if (Version != other.Version) return false;
@@ -2282,112 +2742,137 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       if (Version != 0) hash ^= Version.GetHashCode();
       if (ScriptPublicKey_.Length != 0) hash ^= ScriptPublicKey_.GetHashCode();
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (Version != 0) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
+      if (Version != 0)
+      {
         output.WriteRawTag(8);
         output.WriteUInt32(Version);
       }
-      if (ScriptPublicKey_.Length != 0) {
+      if (ScriptPublicKey_.Length != 0)
+      {
         output.WriteRawTag(18);
         output.WriteString(ScriptPublicKey_);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
-      if (Version != 0) {
+      if (Version != 0)
+      {
         size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Version);
       }
-      if (ScriptPublicKey_.Length != 0) {
+      if (ScriptPublicKey_.Length != 0)
+      {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(ScriptPublicKey_);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(ScriptPublicKey other) {
-      if (other == null) {
+    public void MergeFrom(ScriptPublicKey other)
+    {
+      if (other == null)
+      {
         return;
       }
-      if (other.Version != 0) {
+      if (other.Version != 0)
+      {
         Version = other.Version;
       }
-      if (other.ScriptPublicKey_.Length != 0) {
+      if (other.ScriptPublicKey_.Length != 0)
+      {
         ScriptPublicKey_ = other.ScriptPublicKey_;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 8: {
-            Version = input.ReadUInt32();
-            break;
-          }
-          case 18: {
-            ScriptPublicKey_ = input.ReadString();
-            break;
-          }
+          case 8:
+            {
+              Version = input.ReadUInt32();
+              break;
+            }
+          case 18:
+            {
+              ScriptPublicKey_ = input.ReadString();
+              break;
+            }
         }
       }
     }
 
   }
 
-  public sealed partial class UtxoEntry : pb::IMessage<UtxoEntry> {
+  public sealed partial class UtxoEntry : pb::IMessage<UtxoEntry>
+  {
     private static readonly pb::MessageParser<UtxoEntry> _parser = new pb::MessageParser<UtxoEntry>(() => new UtxoEntry());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<UtxoEntry> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[16]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public UtxoEntry() {
+    public UtxoEntry()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public UtxoEntry(UtxoEntry other) : this() {
+    public UtxoEntry(UtxoEntry other) : this()
+    {
       amount_ = other.amount_;
       scriptPublicKey_ = other.scriptPublicKey_ != null ? other.scriptPublicKey_.Clone() : null;
       blockDaaScore_ = other.blockDaaScore_;
@@ -2396,7 +2881,8 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public UtxoEntry Clone() {
+    public UtxoEntry Clone()
+    {
       return new UtxoEntry(this);
     }
 
@@ -2404,9 +2890,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int AmountFieldNumber = 1;
     private ulong amount_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ulong Amount {
+    public ulong Amount
+    {
       get { return amount_; }
-      set {
+      set
+      {
         amount_ = value;
       }
     }
@@ -2415,9 +2903,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int ScriptPublicKeyFieldNumber = 2;
     private global::Miningcore.Blockchain.Hoosat.HtnWalletd.ScriptPublicKey scriptPublicKey_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Miningcore.Blockchain.Hoosat.HtnWalletd.ScriptPublicKey ScriptPublicKey {
+    public global::Miningcore.Blockchain.Hoosat.HtnWalletd.ScriptPublicKey ScriptPublicKey
+    {
       get { return scriptPublicKey_; }
-      set {
+      set
+      {
         scriptPublicKey_ = value;
       }
     }
@@ -2426,9 +2916,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int BlockDaaScoreFieldNumber = 3;
     private ulong blockDaaScore_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ulong BlockDaaScore {
+    public ulong BlockDaaScore
+    {
       get { return blockDaaScore_; }
-      set {
+      set
+      {
         blockDaaScore_ = value;
       }
     }
@@ -2437,24 +2929,30 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int IsCoinbaseFieldNumber = 4;
     private bool isCoinbase_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool IsCoinbase {
+    public bool IsCoinbase
+    {
       get { return isCoinbase_; }
-      set {
+      set
+      {
         isCoinbase_ = value;
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as UtxoEntry);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(UtxoEntry other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(UtxoEntry other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
       if (Amount != other.Amount) return false;
@@ -2465,154 +2963,190 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       if (Amount != 0UL) hash ^= Amount.GetHashCode();
       if (scriptPublicKey_ != null) hash ^= ScriptPublicKey.GetHashCode();
       if (BlockDaaScore != 0UL) hash ^= BlockDaaScore.GetHashCode();
       if (IsCoinbase != false) hash ^= IsCoinbase.GetHashCode();
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (Amount != 0UL) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
+      if (Amount != 0UL)
+      {
         output.WriteRawTag(8);
         output.WriteUInt64(Amount);
       }
-      if (scriptPublicKey_ != null) {
+      if (scriptPublicKey_ != null)
+      {
         output.WriteRawTag(18);
         output.WriteMessage(ScriptPublicKey);
       }
-      if (BlockDaaScore != 0UL) {
+      if (BlockDaaScore != 0UL)
+      {
         output.WriteRawTag(24);
         output.WriteUInt64(BlockDaaScore);
       }
-      if (IsCoinbase != false) {
+      if (IsCoinbase != false)
+      {
         output.WriteRawTag(32);
         output.WriteBool(IsCoinbase);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
-      if (Amount != 0UL) {
+      if (Amount != 0UL)
+      {
         size += 1 + pb::CodedOutputStream.ComputeUInt64Size(Amount);
       }
-      if (scriptPublicKey_ != null) {
+      if (scriptPublicKey_ != null)
+      {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ScriptPublicKey);
       }
-      if (BlockDaaScore != 0UL) {
+      if (BlockDaaScore != 0UL)
+      {
         size += 1 + pb::CodedOutputStream.ComputeUInt64Size(BlockDaaScore);
       }
-      if (IsCoinbase != false) {
+      if (IsCoinbase != false)
+      {
         size += 1 + 1;
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(UtxoEntry other) {
-      if (other == null) {
+    public void MergeFrom(UtxoEntry other)
+    {
+      if (other == null)
+      {
         return;
       }
-      if (other.Amount != 0UL) {
+      if (other.Amount != 0UL)
+      {
         Amount = other.Amount;
       }
-      if (other.scriptPublicKey_ != null) {
-        if (scriptPublicKey_ == null) {
+      if (other.scriptPublicKey_ != null)
+      {
+        if (scriptPublicKey_ == null)
+        {
           ScriptPublicKey = new global::Miningcore.Blockchain.Hoosat.HtnWalletd.ScriptPublicKey();
         }
         ScriptPublicKey.MergeFrom(other.ScriptPublicKey);
       }
-      if (other.BlockDaaScore != 0UL) {
+      if (other.BlockDaaScore != 0UL)
+      {
         BlockDaaScore = other.BlockDaaScore;
       }
-      if (other.IsCoinbase != false) {
+      if (other.IsCoinbase != false)
+      {
         IsCoinbase = other.IsCoinbase;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 8: {
-            Amount = input.ReadUInt64();
-            break;
-          }
-          case 18: {
-            if (scriptPublicKey_ == null) {
-              ScriptPublicKey = new global::Miningcore.Blockchain.Hoosat.HtnWalletd.ScriptPublicKey();
+          case 8:
+            {
+              Amount = input.ReadUInt64();
+              break;
             }
-            input.ReadMessage(ScriptPublicKey);
-            break;
-          }
-          case 24: {
-            BlockDaaScore = input.ReadUInt64();
-            break;
-          }
-          case 32: {
-            IsCoinbase = input.ReadBool();
-            break;
-          }
+          case 18:
+            {
+              if (scriptPublicKey_ == null)
+              {
+                ScriptPublicKey = new global::Miningcore.Blockchain.Hoosat.HtnWalletd.ScriptPublicKey();
+              }
+              input.ReadMessage(ScriptPublicKey);
+              break;
+            }
+          case 24:
+            {
+              BlockDaaScore = input.ReadUInt64();
+              break;
+            }
+          case 32:
+            {
+              IsCoinbase = input.ReadBool();
+              break;
+            }
         }
       }
     }
 
   }
 
-  public sealed partial class GetExternalSpendableUTXOsRequest : pb::IMessage<GetExternalSpendableUTXOsRequest> {
+  public sealed partial class GetExternalSpendableUTXOsRequest : pb::IMessage<GetExternalSpendableUTXOsRequest>
+  {
     private static readonly pb::MessageParser<GetExternalSpendableUTXOsRequest> _parser = new pb::MessageParser<GetExternalSpendableUTXOsRequest>(() => new GetExternalSpendableUTXOsRequest());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<GetExternalSpendableUTXOsRequest> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[17]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetExternalSpendableUTXOsRequest() {
+    public GetExternalSpendableUTXOsRequest()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetExternalSpendableUTXOsRequest(GetExternalSpendableUTXOsRequest other) : this() {
+    public GetExternalSpendableUTXOsRequest(GetExternalSpendableUTXOsRequest other) : this()
+    {
       address_ = other.address_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetExternalSpendableUTXOsRequest Clone() {
+    public GetExternalSpendableUTXOsRequest Clone()
+    {
       return new GetExternalSpendableUTXOsRequest(this);
     }
 
@@ -2620,24 +3154,30 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int AddressFieldNumber = 1;
     private string address_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Address {
+    public string Address
+    {
       get { return address_; }
-      set {
+      set
+      {
         address_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as GetExternalSpendableUTXOsRequest);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(GetExternalSpendableUTXOsRequest other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(GetExternalSpendableUTXOsRequest other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
       if (Address != other.Address) return false;
@@ -2645,103 +3185,125 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       if (Address.Length != 0) hash ^= Address.GetHashCode();
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (Address.Length != 0) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
+      if (Address.Length != 0)
+      {
         output.WriteRawTag(10);
         output.WriteString(Address);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
-      if (Address.Length != 0) {
+      if (Address.Length != 0)
+      {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Address);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(GetExternalSpendableUTXOsRequest other) {
-      if (other == null) {
+    public void MergeFrom(GetExternalSpendableUTXOsRequest other)
+    {
+      if (other == null)
+      {
         return;
       }
-      if (other.Address.Length != 0) {
+      if (other.Address.Length != 0)
+      {
         Address = other.Address;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            Address = input.ReadString();
-            break;
-          }
+          case 10:
+            {
+              Address = input.ReadString();
+              break;
+            }
         }
       }
     }
 
   }
 
-  public sealed partial class GetExternalSpendableUTXOsResponse : pb::IMessage<GetExternalSpendableUTXOsResponse> {
+  public sealed partial class GetExternalSpendableUTXOsResponse : pb::IMessage<GetExternalSpendableUTXOsResponse>
+  {
     private static readonly pb::MessageParser<GetExternalSpendableUTXOsResponse> _parser = new pb::MessageParser<GetExternalSpendableUTXOsResponse>(() => new GetExternalSpendableUTXOsResponse());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<GetExternalSpendableUTXOsResponse> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[18]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetExternalSpendableUTXOsResponse() {
+    public GetExternalSpendableUTXOsResponse()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetExternalSpendableUTXOsResponse(GetExternalSpendableUTXOsResponse other) : this() {
+    public GetExternalSpendableUTXOsResponse(GetExternalSpendableUTXOsResponse other) : this()
+    {
       entries_ = other.entries_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetExternalSpendableUTXOsResponse Clone() {
+    public GetExternalSpendableUTXOsResponse Clone()
+    {
       return new GetExternalSpendableUTXOsResponse(this);
     }
 
@@ -2751,63 +3313,77 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
         = pb::FieldCodec.ForMessage(10, global::Miningcore.Blockchain.Hoosat.HtnWalletd.UtxosByAddressesEntry.Parser);
     private readonly pbc::RepeatedField<global::Miningcore.Blockchain.Hoosat.HtnWalletd.UtxosByAddressesEntry> entries_ = new pbc::RepeatedField<global::Miningcore.Blockchain.Hoosat.HtnWalletd.UtxosByAddressesEntry>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::Miningcore.Blockchain.Hoosat.HtnWalletd.UtxosByAddressesEntry> Entries {
+    public pbc::RepeatedField<global::Miningcore.Blockchain.Hoosat.HtnWalletd.UtxosByAddressesEntry> Entries
+    {
       get { return entries_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as GetExternalSpendableUTXOsResponse);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(GetExternalSpendableUTXOsResponse other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(GetExternalSpendableUTXOsResponse other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
-      if(!entries_.Equals(other.entries_)) return false;
+      if (!entries_.Equals(other.entries_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       hash ^= entries_.GetHashCode();
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
       entries_.WriteTo(output, _repeated_entries_codec);
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
       size += entries_.CalculateSize(_repeated_entries_codec);
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(GetExternalSpendableUTXOsResponse other) {
-      if (other == null) {
+    public void MergeFrom(GetExternalSpendableUTXOsResponse other)
+    {
+      if (other == null)
+      {
         return;
       }
       entries_.Add(other.entries_);
@@ -2815,17 +3391,21 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            entries_.AddEntriesFrom(input, _repeated_entries_codec);
-            break;
-          }
+          case 10:
+            {
+              entries_.AddEntriesFrom(input, _repeated_entries_codec);
+              break;
+            }
         }
       }
     }
@@ -2835,31 +3415,36 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
   /// <summary>
   /// Since SendRequest contains a password - this command should only be used on a trusted or secure connection
   /// </summary>
-  public sealed partial class SendRequest : pb::IMessage<SendRequest> {
+  public sealed partial class SendRequest : pb::IMessage<SendRequest>
+  {
     private static readonly pb::MessageParser<SendRequest> _parser = new pb::MessageParser<SendRequest>(() => new SendRequest());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<SendRequest> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[19]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public SendRequest() {
+    public SendRequest()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public SendRequest(SendRequest other) : this() {
+    public SendRequest(SendRequest other) : this()
+    {
       toAddress_ = other.toAddress_;
       amount_ = other.amount_;
       password_ = other.password_;
@@ -2870,7 +3455,8 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public SendRequest Clone() {
+    public SendRequest Clone()
+    {
       return new SendRequest(this);
     }
 
@@ -2878,9 +3464,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int ToAddressFieldNumber = 1;
     private string toAddress_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string ToAddress {
+    public string ToAddress
+    {
       get { return toAddress_; }
-      set {
+      set
+      {
         toAddress_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
@@ -2889,9 +3477,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int AmountFieldNumber = 2;
     private ulong amount_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ulong Amount {
+    public ulong Amount
+    {
       get { return amount_; }
-      set {
+      set
+      {
         amount_ = value;
       }
     }
@@ -2900,9 +3490,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int PasswordFieldNumber = 3;
     private string password_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Password {
+    public string Password
+    {
       get { return password_; }
-      set {
+      set
+      {
         password_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
@@ -2913,7 +3505,8 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
         = pb::FieldCodec.ForString(34);
     private readonly pbc::RepeatedField<string> from_ = new pbc::RepeatedField<string>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<string> From {
+    public pbc::RepeatedField<string> From
+    {
       get { return from_; }
     }
 
@@ -2921,9 +3514,11 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int UseExistingChangeAddressFieldNumber = 5;
     private bool useExistingChangeAddress_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool UseExistingChangeAddress {
+    public bool UseExistingChangeAddress
+    {
       get { return useExistingChangeAddress_; }
-      set {
+      set
+      {
         useExistingChangeAddress_ = value;
       }
     }
@@ -2932,37 +3527,44 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int IsSendAllFieldNumber = 6;
     private bool isSendAll_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool IsSendAll {
+    public bool IsSendAll
+    {
       get { return isSendAll_; }
-      set {
+      set
+      {
         isSendAll_ = value;
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as SendRequest);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(SendRequest other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(SendRequest other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
       if (ToAddress != other.ToAddress) return false;
       if (Amount != other.Amount) return false;
       if (Password != other.Password) return false;
-      if(!from_.Equals(other.from_)) return false;
+      if (!from_.Equals(other.from_)) return false;
       if (UseExistingChangeAddress != other.UseExistingChangeAddress) return false;
       if (IsSendAll != other.IsSendAll) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       if (ToAddress.Length != 0) hash ^= ToAddress.GetHashCode();
       if (Amount != 0UL) hash ^= Amount.GetHashCode();
@@ -2970,164 +3572,202 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
       hash ^= from_.GetHashCode();
       if (UseExistingChangeAddress != false) hash ^= UseExistingChangeAddress.GetHashCode();
       if (IsSendAll != false) hash ^= IsSendAll.GetHashCode();
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (ToAddress.Length != 0) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
+      if (ToAddress.Length != 0)
+      {
         output.WriteRawTag(10);
         output.WriteString(ToAddress);
       }
-      if (Amount != 0UL) {
+      if (Amount != 0UL)
+      {
         output.WriteRawTag(16);
         output.WriteUInt64(Amount);
       }
-      if (Password.Length != 0) {
+      if (Password.Length != 0)
+      {
         output.WriteRawTag(26);
         output.WriteString(Password);
       }
       from_.WriteTo(output, _repeated_from_codec);
-      if (UseExistingChangeAddress != false) {
+      if (UseExistingChangeAddress != false)
+      {
         output.WriteRawTag(40);
         output.WriteBool(UseExistingChangeAddress);
       }
-      if (IsSendAll != false) {
+      if (IsSendAll != false)
+      {
         output.WriteRawTag(48);
         output.WriteBool(IsSendAll);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
-      if (ToAddress.Length != 0) {
+      if (ToAddress.Length != 0)
+      {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(ToAddress);
       }
-      if (Amount != 0UL) {
+      if (Amount != 0UL)
+      {
         size += 1 + pb::CodedOutputStream.ComputeUInt64Size(Amount);
       }
-      if (Password.Length != 0) {
+      if (Password.Length != 0)
+      {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Password);
       }
       size += from_.CalculateSize(_repeated_from_codec);
-      if (UseExistingChangeAddress != false) {
+      if (UseExistingChangeAddress != false)
+      {
         size += 1 + 1;
       }
-      if (IsSendAll != false) {
+      if (IsSendAll != false)
+      {
         size += 1 + 1;
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(SendRequest other) {
-      if (other == null) {
+    public void MergeFrom(SendRequest other)
+    {
+      if (other == null)
+      {
         return;
       }
-      if (other.ToAddress.Length != 0) {
+      if (other.ToAddress.Length != 0)
+      {
         ToAddress = other.ToAddress;
       }
-      if (other.Amount != 0UL) {
+      if (other.Amount != 0UL)
+      {
         Amount = other.Amount;
       }
-      if (other.Password.Length != 0) {
+      if (other.Password.Length != 0)
+      {
         Password = other.Password;
       }
       from_.Add(other.from_);
-      if (other.UseExistingChangeAddress != false) {
+      if (other.UseExistingChangeAddress != false)
+      {
         UseExistingChangeAddress = other.UseExistingChangeAddress;
       }
-      if (other.IsSendAll != false) {
+      if (other.IsSendAll != false)
+      {
         IsSendAll = other.IsSendAll;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            ToAddress = input.ReadString();
-            break;
-          }
-          case 16: {
-            Amount = input.ReadUInt64();
-            break;
-          }
-          case 26: {
-            Password = input.ReadString();
-            break;
-          }
-          case 34: {
-            from_.AddEntriesFrom(input, _repeated_from_codec);
-            break;
-          }
-          case 40: {
-            UseExistingChangeAddress = input.ReadBool();
-            break;
-          }
-          case 48: {
-            IsSendAll = input.ReadBool();
-            break;
-          }
+          case 10:
+            {
+              ToAddress = input.ReadString();
+              break;
+            }
+          case 16:
+            {
+              Amount = input.ReadUInt64();
+              break;
+            }
+          case 26:
+            {
+              Password = input.ReadString();
+              break;
+            }
+          case 34:
+            {
+              from_.AddEntriesFrom(input, _repeated_from_codec);
+              break;
+            }
+          case 40:
+            {
+              UseExistingChangeAddress = input.ReadBool();
+              break;
+            }
+          case 48:
+            {
+              IsSendAll = input.ReadBool();
+              break;
+            }
         }
       }
     }
 
   }
 
-  public sealed partial class SendResponse : pb::IMessage<SendResponse> {
+  public sealed partial class SendResponse : pb::IMessage<SendResponse>
+  {
     private static readonly pb::MessageParser<SendResponse> _parser = new pb::MessageParser<SendResponse>(() => new SendResponse());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<SendResponse> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[20]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public SendResponse() {
+    public SendResponse()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public SendResponse(SendResponse other) : this() {
+    public SendResponse(SendResponse other) : this()
+    {
       txIDs_ = other.txIDs_.Clone();
       signedTransactions_ = other.signedTransactions_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public SendResponse Clone() {
+    public SendResponse Clone()
+    {
       return new SendResponse(this);
     }
 
@@ -3137,7 +3777,8 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
         = pb::FieldCodec.ForString(10);
     private readonly pbc::RepeatedField<string> txIDs_ = new pbc::RepeatedField<string>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<string> TxIDs {
+    public pbc::RepeatedField<string> TxIDs
+    {
       get { return txIDs_; }
     }
 
@@ -3147,67 +3788,81 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
         = pb::FieldCodec.ForBytes(18);
     private readonly pbc::RepeatedField<pb::ByteString> signedTransactions_ = new pbc::RepeatedField<pb::ByteString>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<pb::ByteString> SignedTransactions {
+    public pbc::RepeatedField<pb::ByteString> SignedTransactions
+    {
       get { return signedTransactions_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as SendResponse);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(SendResponse other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(SendResponse other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
-      if(!txIDs_.Equals(other.txIDs_)) return false;
-      if(!signedTransactions_.Equals(other.signedTransactions_)) return false;
+      if (!txIDs_.Equals(other.txIDs_)) return false;
+      if (!signedTransactions_.Equals(other.signedTransactions_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       hash ^= txIDs_.GetHashCode();
       hash ^= signedTransactions_.GetHashCode();
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
       txIDs_.WriteTo(output, _repeated_txIDs_codec);
       signedTransactions_.WriteTo(output, _repeated_signedTransactions_codec);
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
       size += txIDs_.CalculateSize(_repeated_txIDs_codec);
       size += signedTransactions_.CalculateSize(_repeated_signedTransactions_codec);
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(SendResponse other) {
-      if (other == null) {
+    public void MergeFrom(SendResponse other)
+    {
+      if (other == null)
+      {
         return;
       }
       txIDs_.Add(other.txIDs_);
@@ -3216,21 +3871,26 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            txIDs_.AddEntriesFrom(input, _repeated_txIDs_codec);
-            break;
-          }
-          case 18: {
-            signedTransactions_.AddEntriesFrom(input, _repeated_signedTransactions_codec);
-            break;
-          }
+          case 10:
+            {
+              txIDs_.AddEntriesFrom(input, _repeated_txIDs_codec);
+              break;
+            }
+          case 18:
+            {
+              signedTransactions_.AddEntriesFrom(input, _repeated_signedTransactions_codec);
+              break;
+            }
         }
       }
     }
@@ -3240,38 +3900,44 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
   /// <summary>
   /// Since SignRequest contains a password - this command should only be used on a trusted or secure connection
   /// </summary>
-  public sealed partial class SignRequest : pb::IMessage<SignRequest> {
+  public sealed partial class SignRequest : pb::IMessage<SignRequest>
+  {
     private static readonly pb::MessageParser<SignRequest> _parser = new pb::MessageParser<SignRequest>(() => new SignRequest());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<SignRequest> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[21]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public SignRequest() {
+    public SignRequest()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public SignRequest(SignRequest other) : this() {
+    public SignRequest(SignRequest other) : this()
+    {
       unsignedTransactions_ = other.unsignedTransactions_.Clone();
       password_ = other.password_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public SignRequest Clone() {
+    public SignRequest Clone()
+    {
       return new SignRequest(this);
     }
 
@@ -3281,7 +3947,8 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
         = pb::FieldCodec.ForBytes(10);
     private readonly pbc::RepeatedField<pb::ByteString> unsignedTransactions_ = new pbc::RepeatedField<pb::ByteString>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<pb::ByteString> UnsignedTransactions {
+    public pbc::RepeatedField<pb::ByteString> UnsignedTransactions
+    {
       get { return unsignedTransactions_; }
     }
 
@@ -3289,137 +3956,166 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     public const int PasswordFieldNumber = 2;
     private string password_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Password {
+    public string Password
+    {
       get { return password_; }
-      set {
+      set
+      {
         password_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as SignRequest);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(SignRequest other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(SignRequest other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
-      if(!unsignedTransactions_.Equals(other.unsignedTransactions_)) return false;
+      if (!unsignedTransactions_.Equals(other.unsignedTransactions_)) return false;
       if (Password != other.Password) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       hash ^= unsignedTransactions_.GetHashCode();
       if (Password.Length != 0) hash ^= Password.GetHashCode();
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
       unsignedTransactions_.WriteTo(output, _repeated_unsignedTransactions_codec);
-      if (Password.Length != 0) {
+      if (Password.Length != 0)
+      {
         output.WriteRawTag(18);
         output.WriteString(Password);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
       size += unsignedTransactions_.CalculateSize(_repeated_unsignedTransactions_codec);
-      if (Password.Length != 0) {
+      if (Password.Length != 0)
+      {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Password);
       }
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(SignRequest other) {
-      if (other == null) {
+    public void MergeFrom(SignRequest other)
+    {
+      if (other == null)
+      {
         return;
       }
       unsignedTransactions_.Add(other.unsignedTransactions_);
-      if (other.Password.Length != 0) {
+      if (other.Password.Length != 0)
+      {
         Password = other.Password;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            unsignedTransactions_.AddEntriesFrom(input, _repeated_unsignedTransactions_codec);
-            break;
-          }
-          case 18: {
-            Password = input.ReadString();
-            break;
-          }
+          case 10:
+            {
+              unsignedTransactions_.AddEntriesFrom(input, _repeated_unsignedTransactions_codec);
+              break;
+            }
+          case 18:
+            {
+              Password = input.ReadString();
+              break;
+            }
         }
       }
     }
 
   }
 
-  public sealed partial class SignResponse : pb::IMessage<SignResponse> {
+  public sealed partial class SignResponse : pb::IMessage<SignResponse>
+  {
     private static readonly pb::MessageParser<SignResponse> _parser = new pb::MessageParser<SignResponse>(() => new SignResponse());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<SignResponse> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
+    public static pbr::MessageDescriptor Descriptor
+    {
       get { return global::Miningcore.Blockchain.Hoosat.HtnWalletd.HtnWalletdReflection.Descriptor.MessageTypes[22]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
+    pbr::MessageDescriptor pb::IMessage.Descriptor
+    {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public SignResponse() {
+    public SignResponse()
+    {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public SignResponse(SignResponse other) : this() {
+    public SignResponse(SignResponse other) : this()
+    {
       signedTransactions_ = other.signedTransactions_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public SignResponse Clone() {
+    public SignResponse Clone()
+    {
       return new SignResponse(this);
     }
 
@@ -3429,63 +4125,77 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
         = pb::FieldCodec.ForBytes(10);
     private readonly pbc::RepeatedField<pb::ByteString> signedTransactions_ = new pbc::RepeatedField<pb::ByteString>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<pb::ByteString> SignedTransactions {
+    public pbc::RepeatedField<pb::ByteString> SignedTransactions
+    {
       get { return signedTransactions_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
+    public override bool Equals(object other)
+    {
       return Equals(other as SignResponse);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(SignResponse other) {
-      if (ReferenceEquals(other, null)) {
+    public bool Equals(SignResponse other)
+    {
+      if (ReferenceEquals(other, null))
+      {
         return false;
       }
-      if (ReferenceEquals(other, this)) {
+      if (ReferenceEquals(other, this))
+      {
         return true;
       }
-      if(!signedTransactions_.Equals(other.signedTransactions_)) return false;
+      if (!signedTransactions_.Equals(other.signedTransactions_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       int hash = 1;
       hash ^= signedTransactions_.GetHashCode();
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
+    public override string ToString()
+    {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
+    public void WriteTo(pb::CodedOutputStream output)
+    {
       signedTransactions_.WriteTo(output, _repeated_signedTransactions_codec);
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         _unknownFields.WriteTo(output);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
+    public int CalculateSize()
+    {
       int size = 0;
       size += signedTransactions_.CalculateSize(_repeated_signedTransactions_codec);
-      if (_unknownFields != null) {
+      if (_unknownFields != null)
+      {
         size += _unknownFields.CalculateSize();
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(SignResponse other) {
-      if (other == null) {
+    public void MergeFrom(SignResponse other)
+    {
+      if (other == null)
+      {
         return;
       }
       signedTransactions_.Add(other.signedTransactions_);
@@ -3493,17 +4203,21 @@ namespace Miningcore.Blockchain.Hoosat.HtnWalletd {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
+    public void MergeFrom(pb::CodedInputStream input)
+    {
       uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      while ((tag = input.ReadTag()) != 0)
+      {
+        switch (tag)
+        {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            signedTransactions_.AddEntriesFrom(input, _repeated_signedTransactions_codec);
-            break;
-          }
+          case 10:
+            {
+              signedTransactions_.AddEntriesFrom(input, _repeated_signedTransactions_codec);
+              break;
+            }
         }
       }
     }

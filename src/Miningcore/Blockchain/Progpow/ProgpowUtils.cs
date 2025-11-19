@@ -17,7 +17,7 @@ public static class ProgpowUtils
 
         string StringDiff = difficulty.ToString(CultureInfo.InvariantCulture);
         int DecimalOffset = StringDiff.IndexOf(".");
-        if(DecimalOffset > -1)
+        if (DecimalOffset > -1)
         {
             int Precision = (StringDiff.Length - 1) - DecimalOffset;
             DecimalDiff = BigInteger.Parse(StringDiff.Substring(DecimalOffset + 1));
@@ -32,7 +32,7 @@ public static class ProgpowUtils
 
         return string.Format("{0:x64}", NewTarget);
     }
-    
+
     public static string RavencoinEncodeTarget(double difficulty)
     {
         difficulty = 1.0 / difficulty;
@@ -45,7 +45,7 @@ public static class ProgpowUtils
 
         string StringDiff = difficulty.ToString(CultureInfo.InvariantCulture);
         int DecimalOffset = StringDiff.IndexOf(".");
-        if(DecimalOffset > -1)
+        if (DecimalOffset > -1)
         {
             int Precision = (StringDiff.Length - 1) - DecimalOffset;
             DecimalDiff = BigInteger.Parse(StringDiff.Substring(DecimalOffset + 1));

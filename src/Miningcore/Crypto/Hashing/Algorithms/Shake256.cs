@@ -15,7 +15,7 @@ public unsafe class Shake256 : IHashAlgorithm
         {
             fixed (byte* output = result)
             {
-                Multihash.shake256(input, (uint) data.Length, output, (uint) result.Length);
+                Multihash.shake256(input, (uint)data.Length, output, (uint)result.Length);
             }
         }
     }

@@ -82,7 +82,7 @@ namespace Miningcore.Blockchain.Kaspa.Custom.Astrix
                 }
 
                 var shareDiff = (double)new BigRational(numerator, denominator) * 1;
-            //    var shareDiff = (double)new BigRational(numerator, denominator) * shareMultiplier;
+                //    var shareDiff = (double)new BigRational(numerator, denominator) * shareMultiplier;
 
 
                 Console.WriteLine($"elva Debug AstrixJob -----> ProcessShareInternal ---> Share Difficulty = {shareDiff}");

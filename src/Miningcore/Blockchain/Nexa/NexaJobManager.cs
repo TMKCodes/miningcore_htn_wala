@@ -61,7 +61,7 @@ public class NexaJobManager : BitcoinJobManagerBase<NexaJob>
     private async Task<RpcResponse<BlockTemplate>> GetBlockTemplateAsync(CancellationToken ct)
     {
         var result = await rpc.ExecuteAsync<BlockTemplate>(logger,
-            BitcoinCommands.GetBlockTemplate, ct, extraPoolConfig?.GBTArgs ?? (object) GetBlockTemplateParams());
+            BitcoinCommands.GetBlockTemplate, ct, extraPoolConfig?.GBTArgs ?? (object)GetBlockTemplateParams());
 
         return result;
     }
@@ -75,9 +75,9 @@ public class NexaJobManager : BitcoinJobManagerBase<NexaJob>
     {
         base.PostChainIdentifyConfigure();
 
-        if(poolConfig.EnableInternalStratum == true && coin.HeaderHasherValue is IHashAlgorithmInit hashInit)
+        if (poolConfig.EnableInternalStratum == true && coin.HeaderHasherValue is IHashAlgorithmInit hashInit)
         {
-            if(!hashInit.DigestInit(poolConfig))
+            if (!hashInit.DigestInit(poolConfig))
                 logger.Error(() => $"{hashInit.GetType().Name} initialization failed");
         }
     }
@@ -86,7 +86,7 @@ public class NexaJobManager : BitcoinJobManagerBase<NexaJob>
     {
         try
         {
-            if(forceUpdate)
+            if (forceUpdate)
                 lastJobRebroadcast = clock.Now;
 
             var response = string.IsNullOrEmpty(json) ?
@@ -94,7 +94,7 @@ public class NexaJobManager : BitcoinJobManagerBase<NexaJob>
                 GetMiningCandidateFromJson(json);
 
             // may happen if daemon is currently not connected to peers
-            if(response.Error != null)
+            if (response.Error != null)
             {
                 logger.Warn(() => $"Unable to update job. GetMiningCandidate failed. Daemon responded with: {response.Error.Message} Code {response.Error.Code}");
                 return (false, forceUpdate);
@@ -108,10 +108,10 @@ public class NexaJobManager : BitcoinJobManagerBase<NexaJob>
                     (job.MiningCandidate.HeaderCommitment != miningCandidate.HeaderCommitment ||
                         miningCandidate.Id > job.MiningCandidate?.Id));
 
-            if(isNew)
+            if (isNew)
             {
                 var gbtResponse = await GetBlockTemplateAsync(ct);
-                if(gbtResponse.Error != null)
+                if (gbtResponse.Error != null)
                 {
                     logger.Warn(() => $"Unable to update job. GetBlockTemplate failed. Daemon responded with: {gbtResponse.Error.Message} Code {gbtResponse.Error.Code}");
                     return (false, forceUpdate);
@@ -120,25 +120,25 @@ public class NexaJobManager : BitcoinJobManagerBase<NexaJob>
                 messageBus.NotifyChainHeight(poolConfig.Id, blockTemplate.Height, poolConfig.Template);
             }
 
-            if(isNew || forceUpdate)
+            if (isNew || forceUpdate)
             {
                 job = CreateJob();
 
                 job.Init(miningCandidate, blockTemplate, NextJobId(),
                     poolConfig, clock, ShareMultiplier, coin.HeaderHasherValue);
 
-                lock(jobLock)
+                lock (jobLock)
                 {
                     validJobs.Insert(0, job);
 
                     // trim active jobs
-                    while(validJobs.Count > maxActiveJobs)
+                    while (validJobs.Count > maxActiveJobs)
                         validJobs.RemoveAt(validJobs.Count - 1);
                 }
 
-                if(isNew)
+                if (isNew)
                 {
-                    if(via != null)
+                    if (via != null)
                         logger.Info(() => $"Detected new block {blockTemplate.Height} [{via}]");
                     else
                         logger.Info(() => $"Detected new block {blockTemplate.Height}");
@@ -153,7 +153,7 @@ public class NexaJobManager : BitcoinJobManagerBase<NexaJob>
 
                 else
                 {
-                    if(via != null)
+                    if (via != null)
                         logger.Debug(() => $"Template update {blockTemplate?.Height} [{via}]");
                     else
                         logger.Debug(() => $"Template update {blockTemplate?.Height}");
@@ -165,12 +165,12 @@ public class NexaJobManager : BitcoinJobManagerBase<NexaJob>
             return (isNew, forceUpdate);
         }
 
-        catch(OperationCanceledException)
+        catch (OperationCanceledException)
         {
             // ignored
         }
 
-        catch(Exception ex)
+        catch (Exception ex)
         {
             logger.Error(ex, () => $"Error during {nameof(UpdateJob)}");
         }
@@ -192,7 +192,7 @@ public class NexaJobManager : BitcoinJobManagerBase<NexaJob>
         coin = pc.Template.As<BitcoinTemplate>();
         extraPoolConfig = pc.Extra.SafeExtensionDataAs<BitcoinPoolConfigExtra>();
 
-        if(extraPoolConfig?.MaxActiveJobs.HasValue == true)
+        if (extraPoolConfig?.MaxActiveJobs.HasValue == true)
             maxActiveJobs = extraPoolConfig.MaxActiveJobs.Value;
 
         base.Configure(pc, cc);
@@ -223,7 +223,7 @@ public class NexaJobManager : BitcoinJobManagerBase<NexaJob>
         Contract.RequiresNonNull(worker);
         Contract.RequiresNonNull(submission);
 
-        if(submission is not object[] submitParams)
+        if (submission is not object[] submitParams)
             throw new StratumException(StratumError.Other, "invalid params");
 
         var context = worker.ContextAs<BitcoinWorkerContext>();
@@ -234,20 +234,20 @@ public class NexaJobManager : BitcoinJobManagerBase<NexaJob>
         //var nTime = submitParams[3] as string; // not really required
         var nonce = submitParams[4] as string;
 
-        if(string.IsNullOrEmpty(workerValue))
+        if (string.IsNullOrEmpty(workerValue))
             throw new StratumException(StratumError.Other, "missing or invalid workername");
 
-        if(extraNonce1 != context.ExtraNonce1)
+        if (extraNonce1 != context.ExtraNonce1)
             throw new StratumException(StratumError.Other, "invalid extranonce");
 
         NexaJob job;
 
-        lock(jobLock)
+        lock (jobLock)
         {
             job = validJobs.FirstOrDefault(x => x.JobId == jobId);
         }
 
-        if(job == null)
+        if (job == null)
             throw new StratumException(StratumError.JobNotFound, "job not found");
 
         // validate & process
@@ -263,7 +263,7 @@ public class NexaJobManager : BitcoinJobManagerBase<NexaJob>
         share.Created = clock.Now;
 
         // if block candidate, submit & check if accepted by network
-        if(share.IsBlockCandidate)
+        if (share.IsBlockCandidate)
         {
             logger.Info(() => $"Submitting block {share.BlockHeight}");
 
@@ -273,7 +273,7 @@ public class NexaJobManager : BitcoinJobManagerBase<NexaJob>
             share.IsBlockCandidate = acceptResponse.Accepted;
             share.BlockHash = acceptResponse.BlockHash;
 
-            if(share.IsBlockCandidate)
+            if (share.IsBlockCandidate)
             {
                 logger.Info(() => $"Daemon accepted block {share.BlockHeight} block [{share.BlockHash}] submitted by {context.Miner}");
 
@@ -307,7 +307,7 @@ public class NexaJobManager : BitcoinJobManagerBase<NexaJob>
         var rawSubmitString = rawSubmitRes?.Response.ToString();
         string submitError = null;
         SubmitMiningSolution submitResult = null;
-        if(string.IsNullOrEmpty(rawSubmitString) || rawSubmitRes.Error != null || rawSubmitString == "id not found (stale candidate)")
+        if (string.IsNullOrEmpty(rawSubmitString) || rawSubmitRes.Error != null || rawSubmitString == "id not found (stale candidate)")
         {
             submitError = rawSubmitRes?.Error?.Message ??
                 rawSubmitRes?.Error?.Code.ToString(CultureInfo.InvariantCulture) ??
@@ -317,13 +317,13 @@ public class NexaJobManager : BitcoinJobManagerBase<NexaJob>
         else
         {
             submitResult = JsonConvert.DeserializeObject<SubmitMiningSolution>(rawSubmitString);
-            if(!string.IsNullOrEmpty(submitResult.Result))
+            if (!string.IsNullOrEmpty(submitResult.Result))
             {
                 submitError = submitResult.Result;
             }
         }
 
-        if(!string.IsNullOrEmpty(submitError))
+        if (!string.IsNullOrEmpty(submitError))
         {
             logger.Warn(() => $"Block {share.BlockHeight} submission failed with: {submitError}");
             messageBus.SendMessage(new AdminNotification("Block submission failed", $"Pool {poolConfig.Id} {(!string.IsNullOrEmpty(share.Source) ? $"[{share.Source.ToUpper()}] " : string.Empty)}failed to submit block {share.BlockHeight}: {submitError}"));
@@ -336,7 +336,7 @@ public class NexaJobManager : BitcoinJobManagerBase<NexaJob>
 
         var accepted = blockResult != null && blockResult.Error == null;
 
-        if(!accepted)
+        if (!accepted)
         {
             logger.Warn(() => $"Block {share.BlockHeight} submission failed for pool {poolConfig.Id} because block was not found after submission");
             messageBus.SendMessage(new AdminNotification($"[{share.PoolId.ToUpper()}]-[{share.Source}] Block submission failed", $"[{share.PoolId.ToUpper()}]-[{share.Source}] Block {share.BlockHeight} submission failed for pool {poolConfig.Id} because block was not found after submission"));

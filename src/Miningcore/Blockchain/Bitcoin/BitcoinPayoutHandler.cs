@@ -70,7 +70,7 @@ public class BitcoinPayoutHandler : PayoutHandlerBase,
         extraPoolPaymentProcessingConfig = pc.PaymentProcessing.Extra.SafeExtensionDataAs<BitcoinPoolPaymentProcessingConfigExtra>();
 
         coin = poolConfig.Template.As<CoinTemplate>();
-        if(coin is BitcoinTemplate bitcoinTemplate)
+        if (coin is BitcoinTemplate bitcoinTemplate)
         {
             minConfirmations = extraPoolEndpointConfig?.MinimumConfirmations ?? bitcoinTemplate.CoinbaseMinConfimations ?? BitcoinConstants.CoinbaseMinConfimations;
             payoutDecimalPlaces = bitcoinTemplate.PayoutDecimalPlaces ?? 4;
@@ -92,10 +92,10 @@ public class BitcoinPayoutHandler : PayoutHandlerBase,
         Contract.RequiresNonNull(blocks);
 
         var pageSize = 100;
-        var pageCount = (int) Math.Ceiling(blocks.Length / (double) pageSize);
+        var pageCount = (int)Math.Ceiling(blocks.Length / (double)pageSize);
         var result = new List<Block>();
 
-        for(var i = 0; i < pageCount; i++)
+        for (var i = 0; i < pageCount; i++)
         {
             // get a page full of blocks
             var page = blocks
@@ -110,7 +110,7 @@ public class BitcoinPayoutHandler : PayoutHandlerBase,
             // execute batch
             var results = await rpcClient.ExecuteBatchAsync(logger, ct, batch);
 
-            for(var j = 0; j < results.Length; j++)
+            for (var j = 0; j < results.Length; j++)
             {
                 var cmdResult = results[j];
 
@@ -118,10 +118,10 @@ public class BitcoinPayoutHandler : PayoutHandlerBase,
                 var block = page[j];
 
                 // check error
-                if(cmdResult.Error != null)
+                if (cmdResult.Error != null)
                 {
                     // Code -5 interpreted as "orphaned"
-                    if(cmdResult.Error.Code == -5)
+                    if (cmdResult.Error.Code == -5)
                     {
                         block.Status = BlockStatus.Orphaned;
                         block.Reward = 0;
@@ -137,7 +137,7 @@ public class BitcoinPayoutHandler : PayoutHandlerBase,
                 }
 
                 // missing transaction details are interpreted as "orphaned"
-                else if(transactionInfo?.Details == null || transactionInfo.Details.Length == 0)
+                else if (transactionInfo?.Details == null || transactionInfo.Details.Length == 0)
                 {
                     block.Status = BlockStatus.Orphaned;
                     block.Reward = 0;
@@ -150,11 +150,11 @@ public class BitcoinPayoutHandler : PayoutHandlerBase,
 
                 else
                 {
-                    switch(transactionInfo.Details[0].Category)
+                    switch (transactionInfo.Details[0].Category)
                     {
                         case "immature":
                             // update progress
-                            block.ConfirmationProgress = Math.Min(1.0d, (double) transactionInfo.Confirmations / minConfirmations);
+                            block.ConfirmationProgress = Math.Min(1.0d, (double)transactionInfo.Confirmations / minConfirmations);
                             block.Reward = transactionInfo.Amount;  // update actual block-reward from coinbase-tx
                             result.Add(block);
 
@@ -199,7 +199,7 @@ public class BitcoinPayoutHandler : PayoutHandlerBase,
             .Where(x => x.Amount > 0)
             .ToDictionary(x => x.Address, x => Math.Round(x.Amount, payoutDecimalPlaces));
 
-        if(amounts.Count == 0)
+        if (amounts.Count == 0)
             return;
 
         logger.Info(() => $"[{LogCategory}] Paying {FormatAmount(balances.Sum(x => x.Amount))} to {balances.Length} addresses");
@@ -211,13 +211,13 @@ public class BitcoinPayoutHandler : PayoutHandlerBase,
 
         var comment = $"{identifier} Payment";
 
-        if(!(extraPoolConfig?.HasBrokenSendMany == true || poolConfig.Template is BitcoinTemplate { HasBrokenSendMany: true }))
+        if (!(extraPoolConfig?.HasBrokenSendMany == true || poolConfig.Template is BitcoinTemplate { HasBrokenSendMany: true }))
         {
-            if(extraPoolPaymentProcessingConfig?.MinersPayTxFees == true)
+            if (extraPoolPaymentProcessingConfig?.MinersPayTxFees == true)
             {
                 var subtractFeesFrom = amounts.Keys.ToArray();
 
-                if(!poolConfig.Template.As<BitcoinTemplate>().HasMasterNodes)
+                if (!poolConfig.Template.As<BitcoinTemplate>().HasMasterNodes)
                 {
                     args = new object[]
                     {
@@ -256,13 +256,13 @@ public class BitcoinPayoutHandler : PayoutHandlerBase,
 
             var didUnlockWallet = false;
 
-            // send command
-            tryTransfer:
+        // send command
+        tryTransfer:
             var result = await rpcClient.ExecuteAsync<string>(logger, BitcoinCommands.SendMany, ct, args);
 
-            if(result.Error == null)
+            if (result.Error == null)
             {
-                if(didUnlockWallet)
+                if (didUnlockWallet)
                 {
                     // lock wallet
                     logger.Info(() => $"[{LogCategory}] Locking wallet");
@@ -272,7 +272,7 @@ public class BitcoinPayoutHandler : PayoutHandlerBase,
                 // check result
                 var txId = result.Response;
 
-                if(string.IsNullOrEmpty(txId))
+                if (string.IsNullOrEmpty(txId))
                     logger.Error(() => $"[{LogCategory}] {BitcoinCommands.SendMany} did not return a transaction id!");
                 else
                     logger.Info(() => $"[{LogCategory}] Payment transaction id: {txId}");
@@ -287,9 +287,9 @@ public class BitcoinPayoutHandler : PayoutHandlerBase,
 
             else
             {
-                if(result.Error.Code == (int) BitcoinRPCErrorCode.RPC_WALLET_UNLOCK_NEEDED && !didUnlockWallet)
+                if (result.Error.Code == (int)BitcoinRPCErrorCode.RPC_WALLET_UNLOCK_NEEDED && !didUnlockWallet)
                 {
-                    if(!string.IsNullOrEmpty(extraPoolPaymentProcessingConfig?.WalletPassword))
+                    if (!string.IsNullOrEmpty(extraPoolPaymentProcessingConfig?.WalletPassword))
                     {
                         logger.Info(() => $"[{LogCategory}] Unlocking wallet");
 
@@ -299,7 +299,7 @@ public class BitcoinPayoutHandler : PayoutHandlerBase,
                             (object) 5 // unlock for N seconds
                         });
 
-                        if(unlockResult.Error == null)
+                        if (unlockResult.Error == null)
                         {
                             didUnlockWallet = true;
                             goto tryTransfer;
@@ -342,7 +342,7 @@ public class BitcoinPayoutHandler : PayoutHandlerBase,
                     // use a common id for all log entries related to this transfer
                     var transferId = CorrelationIdGenerator.GetNextId();
 
-                    logger.Info(()=> $"[{LogCategory}] [{transferId}] Sending {FormatAmount(amount)} to {address}");
+                    logger.Info(() => $"[{LogCategory}] [{transferId}] Sending {FormatAmount(amount)} to {address}");
 
                     var result = await rpcClient.ExecuteAsync<string>(logger, BitcoinCommands.SendToAddress, ct, new object[]
                     {
@@ -353,10 +353,10 @@ public class BitcoinPayoutHandler : PayoutHandlerBase,
                     // check result
                     var txId = result.Response;
 
-                    if(result.Error != null)
+                    if (result.Error != null)
                         throw new Exception($"[{transferId}] {BitcoinCommands.SendToAddress} returned error: {result.Error.Message} code {result.Error.Code}");
 
-                    if(string.IsNullOrEmpty(txId))
+                    if (string.IsNullOrEmpty(txId))
                         throw new Exception($"[{transferId}] {BitcoinCommands.SendToAddress} did not return a transaction id!");
                     else
                         logger.Info(() => $"[{LogCategory}] [{transferId}] Payment transaction id: {txId}");
@@ -373,19 +373,19 @@ public class BitcoinPayoutHandler : PayoutHandlerBase,
                 });
             });
 
-            if(successBalances.Any())
+            if (successBalances.Any())
             {
                 await PersistPaymentsAsync(successBalances);
 
                 NotifyPayoutSuccess(poolConfig.Id, successBalances.Keys.ToArray(), successBalances.Values.ToArray(), null);
             }
 
-            if(txFailures.Any())
+            if (txFailures.Any())
             {
-                var failureBalances = txFailures.Select(x=> new Balance { Amount = x.Item1.Value }).ToArray();
+                var failureBalances = txFailures.Select(x => new Balance { Amount = x.Item1.Value }).ToArray();
                 var error = string.Join(", ", txFailures.Select(x => $"{x.Item1.Key} {FormatAmount(x.Item1.Value)}: {x.Item2.Message}"));
 
-                logger.Error(()=> $"[{LogCategory}] Failed to transfer the following balances: {error}");
+                logger.Error(() => $"[{LogCategory}] Failed to transfer the following balances: {error}");
 
                 NotifyPayoutFailure(poolConfig.Id, failureBalances, error, null);
             }

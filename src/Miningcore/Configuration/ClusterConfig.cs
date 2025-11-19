@@ -197,135 +197,135 @@ public enum BitcoinSubfamily
     //Florincoin,
 }
 public partial class BitcoinTemplate : CoinTemplate
+{
+    // Lazy-initialized hashers
+    private readonly Lazy<IHashAlgorithm> coinbaseHasherValue;
+    private readonly Lazy<IHashAlgorithm> headerHasherValue;
+    private readonly Lazy<IHashAlgorithm> merkleTreeHasherValue;
+    private readonly Lazy<IHashAlgorithm> shareHasherValue;
+    private readonly Lazy<IHashAlgorithm> blockHasherValue;
+    private readonly Lazy<IHashAlgorithm> posBlockHasherValue;
+
+    public BitcoinTemplate()
     {
-        // Lazy-initialized hashers
-        private readonly Lazy<IHashAlgorithm> coinbaseHasherValue;
-        private readonly Lazy<IHashAlgorithm> headerHasherValue;
-        private readonly Lazy<IHashAlgorithm> merkleTreeHasherValue;
-        private readonly Lazy<IHashAlgorithm> shareHasherValue;
-        private readonly Lazy<IHashAlgorithm> blockHasherValue;
-        private readonly Lazy<IHashAlgorithm> posBlockHasherValue;
+        // Initialize lazy hashers with the appropriate algorithms
+        coinbaseHasherValue = new Lazy<IHashAlgorithm>(() =>
+            HashAlgorithmFactory.GetHash(ComponentContext, CoinbaseHasher));
 
-        public BitcoinTemplate()
-        {
-            // Initialize lazy hashers with the appropriate algorithms
-            coinbaseHasherValue = new Lazy<IHashAlgorithm>(() =>
-                HashAlgorithmFactory.GetHash(ComponentContext, CoinbaseHasher));
+        headerHasherValue = new Lazy<IHashAlgorithm>(() =>
+            HashAlgorithmFactory.GetHash(ComponentContext, HeaderHasher));
 
-            headerHasherValue = new Lazy<IHashAlgorithm>(() =>
-                HashAlgorithmFactory.GetHash(ComponentContext, HeaderHasher));
+        merkleTreeHasherValue = new Lazy<IHashAlgorithm>(() =>
+            HashAlgorithmFactory.GetHash(ComponentContext, MerkleTreeHasher));
 
-            merkleTreeHasherValue = new Lazy<IHashAlgorithm>(() =>
-                HashAlgorithmFactory.GetHash(ComponentContext, MerkleTreeHasher));
+        shareHasherValue = new Lazy<IHashAlgorithm>(() =>
+            HashAlgorithmFactory.GetHash(ComponentContext, ShareHasher));
 
-            shareHasherValue = new Lazy<IHashAlgorithm>(() =>
-                HashAlgorithmFactory.GetHash(ComponentContext, ShareHasher));
+        blockHasherValue = new Lazy<IHashAlgorithm>(() =>
+            HashAlgorithmFactory.GetHash(ComponentContext, BlockHasher));
 
-            blockHasherValue = new Lazy<IHashAlgorithm>(() =>
-                HashAlgorithmFactory.GetHash(ComponentContext, BlockHasher));
-
-            posBlockHasherValue = new Lazy<IHashAlgorithm>(() =>
-                HashAlgorithmFactory.GetHash(ComponentContext, PoSBlockHasher));
-        }
-
-        // Dependency injection context
-        public IComponentContext ComponentContext { get; set; }
-
-        // Expose the hashers
-        public IHashAlgorithm CoinbaseHasherValue => coinbaseHasherValue.Value;
-        public IHashAlgorithm HeaderHasherValue => headerHasherValue.Value;
-        public IHashAlgorithm MerkleTreeHasherValue => merkleTreeHasherValue.Value;
-        public IHashAlgorithm ShareHasherValue => shareHasherValue.Value;
-        public IHashAlgorithm BlockHasherValue => blockHasherValue.Value;
-        public IHashAlgorithm PoSBlockHasherValue => posBlockHasherValue.Value;
-
-        // Hash configuration
-        public JObject MerkleTreeHasher { get; set; }
-        public JObject CoinbaseHasher { get; set; }
-        public JObject HeaderHasher { get; set; }
-        public JObject ShareHasher { get; set; }
-        public JObject BlockHasher { get; set; }
-
-        [JsonProperty("posBlockHasher")]
-        public JObject PoSBlockHasher { get; set; }
-
-        // Additional Bitcoin-specific settings
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        [DefaultValue(1u)]
-        public uint CoinbaseTxVersion { get; set; }
-
-        public string CoinbaseTxComment { get; set; }
-
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasPayee { get; set; }
-
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasMasterNodes { get; set; }
-
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasSmartNodes { get; set; }
-
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasBrokenSendMany { get; set; } = false;
-
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasFounderFee { get; set; }
-
-        // Custom settings
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasFortuneReward { get; set; }
-
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasMinerFund { get; set; }
-
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasCommunityAddress { get; set; }
-
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasCoinbaseDevReward { get; set; }
-
-
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        [DefaultValue(1.0d)]
-        public double ShareMultiplier { get; set; } = 1.0d;
-
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasMWEB { get; set; }
-
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public double? HashrateMultiplier { get; set; }
-
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool CoinbaseIgnoreAuxFlags { get; set; }
-
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool IsPseudoPoS { get; set; }
-
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public JToken BlockTemplateRpcExtraParams { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public Dictionary<string, BitcoinNetworkParams> Networks { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public int? CoinbaseMinConfimations { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string BlockSerializer { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public bool ForcePoolAddressDestinationWithPubKey { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public int? PayoutDecimalPlaces { get; set; } = 4;
-
-        // Nested Bitcoin network parameters
-        public class BitcoinNetworkParams
-        {
-            [JsonExtensionData]
-            public IDictionary<string, object> Extra { get; set; }
-        }
+        posBlockHasherValue = new Lazy<IHashAlgorithm>(() =>
+            HashAlgorithmFactory.GetHash(ComponentContext, PoSBlockHasher));
     }
+
+    // Dependency injection context
+    public IComponentContext ComponentContext { get; set; }
+
+    // Expose the hashers
+    public IHashAlgorithm CoinbaseHasherValue => coinbaseHasherValue.Value;
+    public IHashAlgorithm HeaderHasherValue => headerHasherValue.Value;
+    public IHashAlgorithm MerkleTreeHasherValue => merkleTreeHasherValue.Value;
+    public IHashAlgorithm ShareHasherValue => shareHasherValue.Value;
+    public IHashAlgorithm BlockHasherValue => blockHasherValue.Value;
+    public IHashAlgorithm PoSBlockHasherValue => posBlockHasherValue.Value;
+
+    // Hash configuration
+    public JObject MerkleTreeHasher { get; set; }
+    public JObject CoinbaseHasher { get; set; }
+    public JObject HeaderHasher { get; set; }
+    public JObject ShareHasher { get; set; }
+    public JObject BlockHasher { get; set; }
+
+    [JsonProperty("posBlockHasher")]
+    public JObject PoSBlockHasher { get; set; }
+
+    // Additional Bitcoin-specific settings
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [DefaultValue(1u)]
+    public uint CoinbaseTxVersion { get; set; }
+
+    public string CoinbaseTxComment { get; set; }
+
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasPayee { get; set; }
+
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasMasterNodes { get; set; }
+
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasSmartNodes { get; set; }
+
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasBrokenSendMany { get; set; } = false;
+
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasFounderFee { get; set; }
+
+    // Custom settings
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasFortuneReward { get; set; }
+
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasMinerFund { get; set; }
+
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasCommunityAddress { get; set; }
+
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasCoinbaseDevReward { get; set; }
+
+
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [DefaultValue(1.0d)]
+    public double ShareMultiplier { get; set; } = 1.0d;
+
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasMWEB { get; set; }
+
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public double? HashrateMultiplier { get; set; }
+
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool CoinbaseIgnoreAuxFlags { get; set; }
+
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool IsPseudoPoS { get; set; }
+
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public JToken BlockTemplateRpcExtraParams { get; set; }
+
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public Dictionary<string, BitcoinNetworkParams> Networks { get; set; }
+
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int? CoinbaseMinConfimations { get; set; }
+
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string BlockSerializer { get; set; }
+
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public bool ForcePoolAddressDestinationWithPubKey { get; set; }
+
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int? PayoutDecimalPlaces { get; set; } = 4;
+
+    // Nested Bitcoin network parameters
+    public class BitcoinNetworkParams
+    {
+        [JsonExtensionData]
+        public IDictionary<string, object> Extra { get; set; }
+    }
+}
 
 
 
@@ -352,139 +352,139 @@ public partial class BitcoinTemplate : CoinTemplate
 
 
 public partial class ScashTemplate : CoinTemplate
+{
+    // Lazy-initialized hashers
+    private readonly Lazy<IHashAlgorithm> coinbaseHasherValue;
+    private readonly Lazy<IHashAlgorithm> headerHasherValue;
+    private readonly Lazy<IHashAlgorithm> merkleTreeHasherValue;
+    private readonly Lazy<IHashAlgorithm> shareHasherValue;
+    private readonly Lazy<IHashAlgorithm> blockHasherValue;
+    private readonly Lazy<IHashAlgorithm> posBlockHasherValue;
+
+    public ScashTemplate()
     {
-        // Lazy-initialized hashers
-        private readonly Lazy<IHashAlgorithm> coinbaseHasherValue;
-        private readonly Lazy<IHashAlgorithm> headerHasherValue;
-        private readonly Lazy<IHashAlgorithm> merkleTreeHasherValue;
-        private readonly Lazy<IHashAlgorithm> shareHasherValue;
-        private readonly Lazy<IHashAlgorithm> blockHasherValue;
-        private readonly Lazy<IHashAlgorithm> posBlockHasherValue;
+        // Initialize lazy hashers with the appropriate algorithms
+        coinbaseHasherValue = new Lazy<IHashAlgorithm>(() =>
+            HashAlgorithmFactory.GetHash(ComponentContext, CoinbaseHasher));
 
-        public ScashTemplate()
-        {
-            // Initialize lazy hashers with the appropriate algorithms
-            coinbaseHasherValue = new Lazy<IHashAlgorithm>(() =>
-                HashAlgorithmFactory.GetHash(ComponentContext, CoinbaseHasher));
+        headerHasherValue = new Lazy<IHashAlgorithm>(() =>
+            HashAlgorithmFactory.GetHash(ComponentContext, HeaderHasher));
 
-            headerHasherValue = new Lazy<IHashAlgorithm>(() =>
-                HashAlgorithmFactory.GetHash(ComponentContext, HeaderHasher));
+        merkleTreeHasherValue = new Lazy<IHashAlgorithm>(() =>
+            HashAlgorithmFactory.GetHash(ComponentContext, MerkleTreeHasher));
 
-            merkleTreeHasherValue = new Lazy<IHashAlgorithm>(() =>
-                HashAlgorithmFactory.GetHash(ComponentContext, MerkleTreeHasher));
+        shareHasherValue = new Lazy<IHashAlgorithm>(() =>
+            HashAlgorithmFactory.GetHash(ComponentContext, ShareHasher));
 
-            shareHasherValue = new Lazy<IHashAlgorithm>(() =>
-                HashAlgorithmFactory.GetHash(ComponentContext, ShareHasher));
+        blockHasherValue = new Lazy<IHashAlgorithm>(() =>
+            HashAlgorithmFactory.GetHash(ComponentContext, BlockHasher));
 
-            blockHasherValue = new Lazy<IHashAlgorithm>(() =>
-                HashAlgorithmFactory.GetHash(ComponentContext, BlockHasher));
+        posBlockHasherValue = new Lazy<IHashAlgorithm>(() =>
+            HashAlgorithmFactory.GetHash(ComponentContext, PoSBlockHasher));
+    }
 
-            posBlockHasherValue = new Lazy<IHashAlgorithm>(() =>
-                HashAlgorithmFactory.GetHash(ComponentContext, PoSBlockHasher));
-        }
+    // Dependency injection context
+    public IComponentContext ComponentContext { get; set; }
 
-        // Dependency injection context
-        public IComponentContext ComponentContext { get; set; }
+    // Expose the hashers
+    public IHashAlgorithm CoinbaseHasherValue => coinbaseHasherValue.Value;
+    public IHashAlgorithm HeaderHasherValue => headerHasherValue.Value;
+    public IHashAlgorithm MerkleTreeHasherValue => merkleTreeHasherValue.Value;
+    public IHashAlgorithm ShareHasherValue => shareHasherValue.Value;
+    public IHashAlgorithm BlockHasherValue => blockHasherValue.Value;
+    public IHashAlgorithm PoSBlockHasherValue => posBlockHasherValue.Value;
 
-        // Expose the hashers
-        public IHashAlgorithm CoinbaseHasherValue => coinbaseHasherValue.Value;
-        public IHashAlgorithm HeaderHasherValue => headerHasherValue.Value;
-        public IHashAlgorithm MerkleTreeHasherValue => merkleTreeHasherValue.Value;
-        public IHashAlgorithm ShareHasherValue => shareHasherValue.Value;
-        public IHashAlgorithm BlockHasherValue => blockHasherValue.Value;
-        public IHashAlgorithm PoSBlockHasherValue => posBlockHasherValue.Value;
+    // Hash configuration
+    public JObject MerkleTreeHasher { get; set; }
+    public JObject CoinbaseHasher { get; set; }
+    public JObject HeaderHasher { get; set; }
+    public JObject ShareHasher { get; set; }
+    public JObject BlockHasher { get; set; }
 
-        // Hash configuration
-        public JObject MerkleTreeHasher { get; set; }
-        public JObject CoinbaseHasher { get; set; }
-        public JObject HeaderHasher { get; set; }
-        public JObject ShareHasher { get; set; }
-        public JObject BlockHasher { get; set; }
+    [JsonProperty("posBlockHasher")]
+    public JObject PoSBlockHasher { get; set; }
 
-        [JsonProperty("posBlockHasher")]
-        public JObject PoSBlockHasher { get; set; }
+    // Additional Bitcoin-specific settings
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [DefaultValue(1u)]
+    public uint CoinbaseTxVersion { get; set; }
 
-        // Additional Bitcoin-specific settings
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        [DefaultValue(1u)]
-        public uint CoinbaseTxVersion { get; set; }
+    public string CoinbaseTxComment { get; set; }
 
-        public string CoinbaseTxComment { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasPayee { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasPayee { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasMasterNodes { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasMasterNodes { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasSmartNodes { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasSmartNodes { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasBrokenSendMany { get; set; } = false;
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasBrokenSendMany { get; set; } = false;
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasFounderFee { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasFounderFee { get; set; }
+    // Custom settings
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasFortuneReward { get; set; }
 
-        // Custom settings
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasFortuneReward { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasMinerFund { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasMinerFund { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasCommunityAddress { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasCommunityAddress { get; set; }
-
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasCoinbaseDevReward { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasCoinbaseDevReward { get; set; }
 
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        [DefaultValue(1.0d)]
-        public double ShareMultiplier { get; set; } = 1.0d;
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [DefaultValue(1.0d)]
+    public double ShareMultiplier { get; set; } = 1.0d;
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool HasMWEB { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasMWEB { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public double? HashrateMultiplier { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public double? HashrateMultiplier { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool CoinbaseIgnoreAuxFlags { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool CoinbaseIgnoreAuxFlags { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool IsPseudoPoS { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool IsPseudoPoS { get; set; }
 
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public JToken BlockTemplateRpcExtraParams { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public JToken BlockTemplateRpcExtraParams { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public Dictionary<string, ScashNetworkParams> Networks { get; set; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public Dictionary<string, ScashNetworkParams> Networks { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public int? CoinbaseMinConfimations { get; set; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int? CoinbaseMinConfimations { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string BlockSerializer { get; set; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string BlockSerializer { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public bool ForcePoolAddressDestinationWithPubKey { get; set; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public bool ForcePoolAddressDestinationWithPubKey { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public int? PayoutDecimalPlaces { get; set; } = 4;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int? PayoutDecimalPlaces { get; set; } = 4;
 
 
 
-        // Nested Bitcoin network parameters
-/*        public class ScashNetworkParams
-        {
-            [JsonExtensionData]
-            public IDictionary<string, object> Extra { get; set; }
-        }
-*/
-        public class ScashNetworkParams
-        {
+    // Nested Bitcoin network parameters
+    /*        public class ScashNetworkParams
+            {
+                [JsonExtensionData]
+                public IDictionary<string, object> Extra { get; set; }
+            }
+    */
+    public class ScashNetworkParams
+    {
         /// <summary>
         /// Nom du réseau (Mainnet, Testnet, Regtest)
         /// </summary>
@@ -517,7 +517,7 @@ public partial class ScashTemplate : CoinTemplate
     }
 
 
-    }
+}
 
 
 
@@ -698,8 +698,8 @@ public enum CryptonightHashType
 
 
 
-//elva ajout FortuneBlock
-        [EnumMember(Value = "mike")]
+    //elva ajout FortuneBlock
+    [EnumMember(Value = "mike")]
     Mike,
 
 
@@ -765,7 +765,7 @@ public partial class CryptonoteCoinTemplate : CoinTemplate
 }
 
 
-    public partial class EquihashCoinTemplate : CoinTemplate
+public partial class EquihashCoinTemplate : CoinTemplate
 {
     public partial class EquihashNetworkParams
     {
@@ -864,11 +864,11 @@ public partial class CryptonoteCoinTemplate : CoinTemplate
     public bool UseBitcoinPayoutHandler { get; set; }
 }
 
-    public enum EquihashSubfamily
-    {
-        [EnumMember(Value = "none")]
-        None,
-    }
+public enum EquihashSubfamily
+{
+    [EnumMember(Value = "none")]
+    None,
+}
 
 public partial class ErgoCoinTemplate : CoinTemplate
 {
@@ -934,14 +934,14 @@ public partial class HoosatCoinTemplate : CoinTemplate
     /// </summary>
     public override string GetAlgorithmName()
     {
-        switch(Symbol)
+        switch (Symbol)
         {
             case "HTN":
-            return "Hoohash";
+                return "Hoohash";
 
             default:
-            // TODO: return variant
-            return "Hoohash";
+                // TODO: return variant
+                return "Hoohash";
         }
     }
 }
@@ -1212,7 +1212,7 @@ public partial class ClusterPaymentProcessingConfig
     /// <summary>
     /// Indentifier used in coinbase transactions to identify the pool
     /// </summary>
-    public string CoinbaseString  { get; set; }
+    public string CoinbaseString { get; set; }
 }
 
 public partial class PersistenceConfig

@@ -14,7 +14,7 @@ public unsafe class YescryptR8 : IHashAlgorithm
         {
             fixed (byte* output = result)
             {
-                Multihash.yescryptR8(input, output, (uint) data.Length);
+                Multihash.yescryptR8(input, output, (uint)data.Length);
             }
         }
     }

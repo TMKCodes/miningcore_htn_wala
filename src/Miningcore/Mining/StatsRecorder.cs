@@ -53,7 +53,7 @@ public class StatsRecorder : BackgroundService
         updateInterval = TimeSpan.FromSeconds(clusterConfig.Statistics?.UpdateInterval ?? 120);
         gcInterval = TimeSpan.FromHours(clusterConfig.Statistics?.GcInterval ?? 4);
         hashrateCalculationWindow = TimeSpan.FromMinutes(clusterConfig.Statistics?.HashrateCalculationWindow ?? 10);
-        cleanupDays  = TimeSpan.FromDays(clusterConfig.Statistics?.CleanupDays ?? 180);
+        cleanupDays = TimeSpan.FromDays(clusterConfig.Statistics?.CleanupDays ?? 180);
 
         BuildFaultHandlingPolicy();
     }
@@ -83,7 +83,7 @@ public class StatsRecorder : BackgroundService
 
     private void OnPoolStatusNotification(PoolStatusNotification notification)
     {
-        if(notification.Status == PoolStatus.Online)
+        if (notification.Status == PoolStatus.Online)
             AttachPool(notification.Pool);
     }
 
@@ -97,9 +97,9 @@ public class StatsRecorder : BackgroundService
             Created = now
         };
 
-        foreach(var poolId in pools.Keys)
+        foreach (var poolId in pools.Keys)
         {
-            if(ct.IsCancellationRequested)
+            if (ct.IsCancellationRequested)
                 return;
 
             stats.PoolId = poolId;
@@ -121,8 +121,8 @@ public class StatsRecorder : BackgroundService
 
                 // Stats calc windows
                 var timeFrameBeforeFirstShare = ((result.Min(x => x.FirstShare) - timeFrom).TotalSeconds);
-                var timeFrameAfterLastShare   = ((now - result.Max(x => x.LastShare)).TotalSeconds);
-                var timeFrameFirstLastShare   = (hashrateCalculationWindow.TotalSeconds - timeFrameBeforeFirstShare - timeFrameAfterLastShare);
+                var timeFrameAfterLastShare = ((now - result.Max(x => x.LastShare)).TotalSeconds);
+                var timeFrameFirstLastShare = (hashrateCalculationWindow.TotalSeconds - timeFrameBeforeFirstShare - timeFrameAfterLastShare);
                 //var poolHashTimeFrame         = Math.Floor(TimeFrameFirstLastShare + (TimeFrameBeforeFirstShare / 3) + (TimeFrameAfterLastShare * 3)) ;
 
                 var poolHashTimeFrame = hashrateCalculationWindow.TotalSeconds;
@@ -131,11 +131,11 @@ public class StatsRecorder : BackgroundService
                 var poolHashesAccumulated = result.Sum(x => x.Sum);
                 var poolHashrate = pool.HashrateFromShares(poolHashesAccumulated, poolHashTimeFrame);
                 poolHashrate = Math.Floor(poolHashrate);
-                pool.PoolStats.PoolHashrate = (ulong) poolHashrate;
+                pool.PoolStats.PoolHashrate = (ulong)poolHashrate;
 
                 // pool shares
                 var poolHashesCountAccumulated = result.Sum(x => x.Count);
-                pool.PoolStats.SharesPerSecond = (int) (poolHashesCountAccumulated / poolHashTimeFrame);
+                pool.PoolStats.SharesPerSecond = (int)(poolHashesCountAccumulated / poolHashTimeFrame);
 
                 messageBus.NotifyHashrateUpdated(pool.Config.Id, poolHashrate);
             }
@@ -185,7 +185,7 @@ public class StatsRecorder : BackgroundService
 
             foreach (var minerHashes in byMiner)
             {
-                if(ct.IsCancellationRequested)
+                if (ct.IsCancellationRequested)
                     return;
 
                 double minerTotalHashrate = 0;
@@ -205,20 +205,20 @@ public class StatsRecorder : BackgroundService
 
                         // miner stats calculation windows
                         var timeFrameBeforeFirstShare = ((minerHashes.Min(x => x.FirstShare) - timeFrom).TotalSeconds);
-                        var timeFrameAfterLastShare   = ((now - minerHashes.Max(x => x.LastShare)).TotalSeconds);
+                        var timeFrameAfterLastShare = ((now - minerHashes.Max(x => x.LastShare)).TotalSeconds);
 
                         var minerHashTimeFrame = hashrateCalculationWindow.TotalSeconds;
 
-                        if(timeFrameBeforeFirstShare >= (hashrateCalculationWindow.TotalSeconds * 0.1) )
-                            minerHashTimeFrame = Math.Floor(hashrateCalculationWindow.TotalSeconds - timeFrameBeforeFirstShare );
+                        if (timeFrameBeforeFirstShare >= (hashrateCalculationWindow.TotalSeconds * 0.1))
+                            minerHashTimeFrame = Math.Floor(hashrateCalculationWindow.TotalSeconds - timeFrameBeforeFirstShare);
 
-                        if(timeFrameAfterLastShare   >= (hashrateCalculationWindow.TotalSeconds * 0.1) )
-                            minerHashTimeFrame = Math.Floor(hashrateCalculationWindow.TotalSeconds + timeFrameAfterLastShare   );
+                        if (timeFrameAfterLastShare >= (hashrateCalculationWindow.TotalSeconds * 0.1))
+                            minerHashTimeFrame = Math.Floor(hashrateCalculationWindow.TotalSeconds + timeFrameAfterLastShare);
 
-                        if( (timeFrameBeforeFirstShare >= (hashrateCalculationWindow.TotalSeconds * 0.1)) && (timeFrameAfterLastShare >= (hashrateCalculationWindow.TotalSeconds * 0.1)) )
+                        if ((timeFrameBeforeFirstShare >= (hashrateCalculationWindow.TotalSeconds * 0.1)) && (timeFrameAfterLastShare >= (hashrateCalculationWindow.TotalSeconds * 0.1)))
                             minerHashTimeFrame = (hashrateCalculationWindow.TotalSeconds - timeFrameBeforeFirstShare + timeFrameAfterLastShare);
 
-                        if(minerHashTimeFrame < 1)
+                        if (minerHashTimeFrame < 1)
                             minerHashTimeFrame = 1;
 
                         // calculate miner/worker stats
@@ -251,7 +251,7 @@ public class StatsRecorder : BackgroundService
             // identify and reset "orphaned" miner stats
             var orphanedHashrateForMinerWorker = previousNonZeroMinerWorkers.Except(currentNonZeroMinerWorkers).ToArray();
 
-            if(orphanedHashrateForMinerWorker.Any())
+            if (orphanedHashrateForMinerWorker.Any())
             {
                 async Task Action(IDbConnection con, IDbTransaction tx)
                 {
@@ -259,7 +259,7 @@ public class StatsRecorder : BackgroundService
                     stats.Hashrate = 0;
                     stats.SharesPerSecond = 0;
 
-                    foreach(var item in orphanedHashrateForMinerWorker)
+                    foreach (var item in orphanedHashrateForMinerWorker)
                     {
                         var parts = item.Split(keySeparator);
                         var miner = parts[0];
@@ -274,7 +274,7 @@ public class StatsRecorder : BackgroundService
                         // broadcast
                         messageBus.NotifyHashrateUpdated(pool.Config.Id, 0, stats.Miner, stats.Worker);
 
-                        if(string.IsNullOrEmpty(stats.Worker))
+                        if (string.IsNullOrEmpty(stats.Worker))
                             logger.Info(() => $"[{poolId}] Reset performance stats for miner {stats.Miner}");
                         else
                             logger.Info(() => $"[{poolId}] Reset performance stats for miner {stats.Miner}.{stats.Worker}");
@@ -295,11 +295,11 @@ public class StatsRecorder : BackgroundService
             var cutOff = clock.Now.Add(-cleanupDays);
 
             var rowCount = await statsRepo.DeletePoolStatsBeforeAsync(con, cutOff, ct);
-            if(rowCount > 0)
+            if (rowCount > 0)
                 logger.Info(() => $"Deleted {rowCount} old poolstats records");
 
             rowCount = await statsRepo.DeleteMinerStatsBeforeAsync(con, cutOff, ct);
-            if(rowCount > 0)
+            if (rowCount > 0)
                 logger.Info(() => $"Deleted {rowCount} old minerstats records");
         });
 
@@ -317,16 +317,16 @@ public class StatsRecorder : BackgroundService
                 await UpdatePoolHashratesAsync(ct);
             }
 
-            catch(OperationCanceledException)
+            catch (OperationCanceledException)
             {
                 // ignored
             }
 
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.Error(ex);
             }
-        } while(await timer.WaitForNextTickAsync(ct));
+        } while (await timer.WaitForNextTickAsync(ct));
     }
 
     private async Task GcAsync(CancellationToken ct)
@@ -340,16 +340,16 @@ public class StatsRecorder : BackgroundService
                 await StatsGcAsync(ct);
             }
 
-            catch(OperationCanceledException)
+            catch (OperationCanceledException)
             {
                 // ignored
             }
 
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.Error(ex);
             }
-        } while(await timer.WaitForNextTickAsync(ct));
+        } while (await timer.WaitForNextTickAsync(ct));
     }
 
     private void BuildFaultHandlingPolicy()

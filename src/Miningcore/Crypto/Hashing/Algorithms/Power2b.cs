@@ -14,7 +14,7 @@ public unsafe class Power2b : IHashAlgorithm
         {
             fixed (byte* output = result)
             {
-                Multihash.power2b(input, output, (uint) data.Length);
+                Multihash.power2b(input, output, (uint)data.Length);
             }
         }
     }

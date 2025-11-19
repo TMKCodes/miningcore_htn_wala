@@ -75,13 +75,13 @@ public class PayoutManager : BackgroundService
 
     private void OnPoolStatusNotification(PoolStatusNotification notification)
     {
-        if(notification.Status == PoolStatus.Online)
+        if (notification.Status == PoolStatus.Online)
             AttachPool(notification.Pool);
     }
 
     private async Task ProcessPoolsAsync(CancellationToken ct)
     {
-        foreach(var pool in pools.Values.ToArray().Where(x => x.Config.Enabled && x.Config.PaymentProcessing.Enabled))
+        foreach (var pool in pools.Values.ToArray().Where(x => x.Config.Enabled && x.Config.PaymentProcessing.Enabled))
         {
             var poolConfig = pool.Config;
 
@@ -105,14 +105,14 @@ public class PayoutManager : BackgroundService
                 await PayoutPoolBalancesAsync(pool, poolConfig, handler, ct);
             }
 
-            catch(InvalidOperationException ex)
+            catch (InvalidOperationException ex)
             {
                 logger.Error(ex.InnerException ?? ex, () => $"[{poolConfig.Id}] Payment processing failed");
             }
 
-            catch(AggregateException ex)
+            catch (AggregateException ex)
             {
-                switch(ex.InnerException)
+                switch (ex.InnerException)
                 {
                     case HttpRequestException httpEx:
                         logger.Error(() => $"[{poolConfig.Id}] Payment processing failed: {httpEx.Message}");
@@ -124,7 +124,7 @@ public class PayoutManager : BackgroundService
                 }
             }
 
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.Error(ex, () => $"[{poolConfig.Id}] Payment processing failed");
             }
@@ -133,12 +133,12 @@ public class PayoutManager : BackgroundService
 
     private static CoinFamily HandleFamilyOverride(CoinFamily family, PoolConfig pool)
     {
-        switch(family)
+        switch (family)
         {
             case CoinFamily.Equihash:
                 var equihashTemplate = pool.Template.As<EquihashCoinTemplate>();
 
-                if(equihashTemplate.UseBitcoinPayoutHandler)
+                if (equihashTemplate.UseBitcoinPayoutHandler)
                     return CoinFamily.Bitcoin;
 
                 break;
@@ -159,81 +159,81 @@ public class PayoutManager : BackgroundService
 
 
 
-private async Task UpdatePoolBalancesAsync(IMiningPool pool, PoolConfig poolConfig, IPayoutHandler handler, IPayoutScheme scheme, CancellationToken ct)
-{
-    // get pending blockRepo for pool
-    Console.WriteLine($"elva Debug HoosatJobManager -----> Retrieving pending blocks for pool {poolConfig.Id}");
-    var pendingBlocks = await cf.Run(con => blockRepo.GetPendingBlocksForPoolAsync(con, poolConfig.Id));
-
-    // classify
-    Console.WriteLine($"elva Debug HoosatJobManager -----> Classifying blocks for pool {poolConfig.Id}");
-    var updatedBlocks = await handler.ClassifyBlocksAsync(pool, pendingBlocks, ct);
-
-    if(updatedBlocks.Any())
+    private async Task UpdatePoolBalancesAsync(IMiningPool pool, PoolConfig poolConfig, IPayoutHandler handler, IPayoutScheme scheme, CancellationToken ct)
     {
-        foreach (var block in updatedBlocks.OrderBy(x => x.Created))
+        // get pending blockRepo for pool
+        Console.WriteLine($"elva Debug HoosatJobManager -----> Retrieving pending blocks for pool {poolConfig.Id}");
+        var pendingBlocks = await cf.Run(con => blockRepo.GetPendingBlocksForPoolAsync(con, poolConfig.Id));
+
+        // classify
+        Console.WriteLine($"elva Debug HoosatJobManager -----> Classifying blocks for pool {poolConfig.Id}");
+        var updatedBlocks = await handler.ClassifyBlocksAsync(pool, pendingBlocks, ct);
+
+        if (updatedBlocks.Any())
         {
-            Console.WriteLine($"elva Debug HoosatJobManager -----> Processing payments for pool {poolConfig.Id}, block {block.BlockHeight}");
-
-            await cf.RunTx(async (con, tx) =>
+            foreach (var block in updatedBlocks.OrderBy(x => x.Created))
             {
-                if (!block.Effort.HasValue)  // fill block effort if empty
-                {
-                    Console.WriteLine($"elva Debug HoosatJobManager -----> Calculating block effort for pool {poolConfig.Id}, block {block.BlockHeight}");
-                    await CalculateBlockEffortAsync(pool, poolConfig, block, handler, ct);
-                    Console.WriteLine($"elva Debug HoosatJobManager -----> Block effort calculated for block {block.BlockHeight}: {block.Effort}");
+                Console.WriteLine($"elva Debug HoosatJobManager -----> Processing payments for pool {poolConfig.Id}, block {block.BlockHeight}");
 
-                    if(!block.MinerEffort.HasValue)  // fill block miner effort if empty
+                await cf.RunTx(async (con, tx) =>
+                {
+                    if (!block.Effort.HasValue)  // fill block effort if empty
+                    {
+                        Console.WriteLine($"elva Debug HoosatJobManager -----> Calculating block effort for pool {poolConfig.Id}, block {block.BlockHeight}");
+                        await CalculateBlockEffortAsync(pool, poolConfig, block, handler, ct);
+                        Console.WriteLine($"elva Debug HoosatJobManager -----> Block effort calculated for block {block.BlockHeight}: {block.Effort}");
+
+                        if (!block.MinerEffort.HasValue)  // fill block miner effort if empty
+                            await CalculateMinerEffortAsync(pool, poolConfig, block, handler, ct);
+
+                    }
+
+                    if (!block.MinerEffort.HasValue)  // fill miner effort if empty
+                    {
+                        Console.WriteLine($"elva Debug HoosatJobManager -----> Calculating miner effort for pool {poolConfig.Id}, block {block.BlockHeight}");
                         await CalculateMinerEffortAsync(pool, poolConfig, block, handler, ct);
+                        Console.WriteLine($"elva Debug HoosatJobManager -----> Miner effort calculated for block {block.BlockHeight}: {block.MinerEffort}");
+                    }
 
-                }
+                    switch (block.Status)
+                    {
+                        case BlockStatus.Confirmed:
+                            Console.WriteLine($"elva Debug HoosatJobManager -----> Processing confirmed block {block.BlockHeight} for pool {poolConfig.Id}");
 
-                if (!block.MinerEffort.HasValue)  // fill miner effort if empty
-                {
-                    Console.WriteLine($"elva Debug HoosatJobManager -----> Calculating miner effort for pool {poolConfig.Id}, block {block.BlockHeight}");
-                    await CalculateMinerEffortAsync(pool, poolConfig, block, handler, ct);
-                    Console.WriteLine($"elva Debug HoosatJobManager -----> Miner effort calculated for block {block.BlockHeight}: {block.MinerEffort}");
-                }
+                            // Blockchains that do not support block-reward payments via coinbase Tx
+                            // must generate balance records for all reward recipients instead
+                            Console.WriteLine($"elva Debug HoosatJobManager -----> Block reward updated for block {block.BlockHeight}: {poolConfig.Id}");
 
-                switch (block.Status)
-                {
-                    case BlockStatus.Confirmed:
-                        Console.WriteLine($"elva Debug HoosatJobManager -----> Processing confirmed block {block.BlockHeight} for pool {poolConfig.Id}");
+                            var blockReward = await handler.UpdateBlockRewardBalancesAsync(con, tx, pool, block, ct);
+                            Console.WriteLine($"elva Debug HoosatJobManager -----> Block reward updated for block {block.BlockHeight}: {blockReward}");
 
-                        // Blockchains that do not support block-reward payments via coinbase Tx
-                        // must generate balance records for all reward recipients instead
-                        Console.WriteLine($"elva Debug HoosatJobManager -----> Block reward updated for block {block.BlockHeight}: {poolConfig.Id}");
+                            await scheme.UpdateBalancesAsync(con, tx, pool, handler, block, blockReward, ct);
+                            Console.WriteLine($"elva Debug HoosatJobManager -----> Balances updated for block {block.BlockHeight}");
 
-                        var blockReward = await handler.UpdateBlockRewardBalancesAsync(con, tx, pool, block, ct);
-                        Console.WriteLine($"elva Debug HoosatJobManager -----> Block reward updated for block {block.BlockHeight}: {blockReward}");
+                            await blockRepo.UpdateBlockAsync(con, tx, block);
+                            Console.WriteLine($"elva Debug HoosatJobManager -----> Block {block.BlockHeight} status updated to confirmed in database");
+                            break;
 
-                        await scheme.UpdateBalancesAsync(con, tx, pool, handler, block, blockReward, ct);
-                        Console.WriteLine($"elva Debug HoosatJobManager -----> Balances updated for block {block.BlockHeight}");
+                        case BlockStatus.Orphaned:
+                            Console.WriteLine($"elva Debug HoosatJobManager -----> Block {block.BlockHeight} is orphaned. Updating status in database for pool {poolConfig.Id}");
+                            await blockRepo.UpdateBlockAsync(con, tx, block);
+                            Console.WriteLine($"elva Debug HoosatJobManager -----> Block {block.BlockHeight} status updated to orphaned in database");
+                            break;
 
-                        await blockRepo.UpdateBlockAsync(con, tx, block);
-                        Console.WriteLine($"elva Debug HoosatJobManager -----> Block {block.BlockHeight} status updated to confirmed in database");
-                        break;
-
-                    case BlockStatus.Orphaned:
-                        Console.WriteLine($"elva Debug HoosatJobManager -----> Block {block.BlockHeight} is orphaned. Updating status in database for pool {poolConfig.Id}");
-                        await blockRepo.UpdateBlockAsync(con, tx, block);
-                        Console.WriteLine($"elva Debug HoosatJobManager -----> Block {block.BlockHeight} status updated to orphaned in database");
-                        break;
-
-                    case BlockStatus.Pending:
-                        Console.WriteLine($"elva Debug HoosatJobManager -----> Block {block.BlockHeight} is still pending. Updating status in database for pool {poolConfig.Id}");
-                        await blockRepo.UpdateBlockAsync(con, tx, block);
-                        Console.WriteLine($"elva Debug HoosatJobManager -----> Block {block.BlockHeight} status updated to pending in database");
-                        break;
-                }
-            });
+                        case BlockStatus.Pending:
+                            Console.WriteLine($"elva Debug HoosatJobManager -----> Block {block.BlockHeight} is still pending. Updating status in database for pool {poolConfig.Id}");
+                            await blockRepo.UpdateBlockAsync(con, tx, block);
+                            Console.WriteLine($"elva Debug HoosatJobManager -----> Block {block.BlockHeight} status updated to pending in database");
+                            break;
+                    }
+                });
+            }
+        }
+        else
+        {
+            Console.WriteLine($"elva Debug HoosatJobManager -----> No updated blocks to process for pool {poolConfig.Id}");
         }
     }
-    else
-    {
-        Console.WriteLine($"elva Debug HoosatJobManager -----> No updated blocks to process for pool {poolConfig.Id}");
-    }
-}
 
 
 
@@ -265,14 +265,14 @@ private async Task UpdatePoolBalancesAsync(IMiningPool pool, PoolConfig poolConf
         var poolBalancesOverMinimum = await cf.Run(con =>
             balanceRepo.GetPoolBalancesOverThresholdAsync(con, config.Id, config.PaymentProcessing.MinimumPayment));
 
-        if(poolBalancesOverMinimum.Length > 0)
+        if (poolBalancesOverMinimum.Length > 0)
         {
             try
             {
                 await handler.PayoutAsync(pool, poolBalancesOverMinimum, ct);
             }
 
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await NotifyPayoutFailureAsync(poolBalancesOverMinimum, config, ex);
                 throw;
@@ -304,53 +304,53 @@ private async Task UpdatePoolBalancesAsync(IMiningPool pool, PoolConfig poolConf
             BlockStatus.Pending,
         }, block.Created));
 
-        if(lastBlock != null)
+        if (lastBlock != null)
             from = lastBlock.Created;
 
         block.Effort = await cf.Run(con =>
             shareRepo.GetEffectiveAccumulatedShareDifficultyBetweenAsync(con, pool.Config.Id, from, to, ct));
 
-        if(block.Effort.HasValue)
+        if (block.Effort.HasValue)
             block.Effort = handler.AdjustBlockEffort(block.Effort.Value);
     }
 
 
 
-/*
-    private async Task CalculateMinerEffortAsync(IMiningPool pool, PoolConfig poolConfig, Block block, IPayoutHandler handler, CancellationToken ct)
-    {
-
-        // get share date-range
-        var from = DateTime.MinValue;
-        var to = block.Created;
-
-	var miner = block.Miner;
-
-        // get last block for pool
-        var lastBlock = await cf.Run(con => blockRepo.GetMinerBlockBeforeAsync(con, poolConfig.Id, miner, new[]
+    /*
+        private async Task CalculateMinerEffortAsync(IMiningPool pool, PoolConfig poolConfig, Block block, IPayoutHandler handler, CancellationToken ct)
         {
-            BlockStatus.Confirmed,
-            BlockStatus.Orphaned,
-            BlockStatus.Pending,
-        }, block.Created));
 
-        if(lastBlock != null)
-            from = lastBlock.Created;
+            // get share date-range
+            var from = DateTime.MinValue;
+            var to = block.Created;
 
-	block.MinerEffort = await cf.Run(con => shareRepo.GetMinerShareDifficultyBetweenAsync(con, pool.Config.Id, miner, from, to, ct));
+        var miner = block.Miner;
 
-        if(block.MinerEffort.HasValue)
-            block.MinerEffort = handler.AdjustBlockEffort(block.MinerEffort.Value);
+            // get last block for pool
+            var lastBlock = await cf.Run(con => blockRepo.GetMinerBlockBeforeAsync(con, poolConfig.Id, miner, new[]
+            {
+                BlockStatus.Confirmed,
+                BlockStatus.Orphaned,
+                BlockStatus.Pending,
+            }, block.Created));
+
+            if(lastBlock != null)
+                from = lastBlock.Created;
+
+        block.MinerEffort = await cf.Run(con => shareRepo.GetMinerShareDifficultyBetweenAsync(con, pool.Config.Id, miner, from, to, ct));
+
+            if(block.MinerEffort.HasValue)
+                block.MinerEffort = handler.AdjustBlockEffort(block.MinerEffort.Value);
 
 
-    }*/
+        }*/
 
     private async Task CalculateMinerEffortAsync(IMiningPool pool, PoolConfig poolConfig, Block block, IPayoutHandler handler, CancellationToken ct)
     {
         // get share date-range
         var from = DateTime.MinValue;
         var to = block.Created;
-	var miner = block.Miner;
+        var miner = block.Miner;
         // get last block for pool
         var lastBlock = await cf.Run(con => blockRepo.GetMinerBlockBeforeAsync(con, poolConfig.Id, miner, new[]
         {
@@ -358,14 +358,14 @@ private async Task UpdatePoolBalancesAsync(IMiningPool pool, PoolConfig poolConf
             BlockStatus.Orphaned,
             BlockStatus.Pending,
         }, block.Created, ct));
-        if(lastBlock != null)
+        if (lastBlock != null)
             from = lastBlock.Created;
-	block.MinerEffort = await cf.Run(con => shareRepo.GetMinerShareDifficultyBetweenAsync(con, pool.Config.Id, miner, from, to, ct));
-        if(block.MinerEffort.HasValue)
+        block.MinerEffort = await cf.Run(con => shareRepo.GetMinerShareDifficultyBetweenAsync(con, pool.Config.Id, miner, from, to, ct));
+        if (block.MinerEffort.HasValue)
             block.MinerEffort = handler.AdjustBlockEffort(block.MinerEffort.Value);
     }
 
-    
+
 
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
@@ -390,16 +390,16 @@ private async Task UpdatePoolBalancesAsync(IMiningPool pool, PoolConfig poolConf
                     await ProcessPoolsAsync(ct);
                 }
 
-                catch(OperationCanceledException)
+                catch (OperationCanceledException)
                 {
                     // ignored
                 }
 
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     logger.Error(ex);
                 }
-            } while(await timer.WaitForNextTickAsync(ct));
+            } while (await timer.WaitForNextTickAsync(ct));
 
             logger.Info(() => "Offline");
         }

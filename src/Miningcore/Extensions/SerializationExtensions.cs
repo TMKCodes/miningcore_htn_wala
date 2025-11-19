@@ -16,7 +16,7 @@ public static class SerializationExtensions
 
     public static T SafeExtensionDataAs<T>(this IDictionary<string, object> extra, params string[] wrappers)
     {
-        if(extra == null)
+        if (extra == null)
             return default;
 
         try
@@ -25,10 +25,10 @@ public static class SerializationExtensions
 
             foreach (var key in wrappers)
             {
-                if(o is IDictionary<string, object> dict)
+                if (o is IDictionary<string, object> dict)
                     o = dict[key];
 
-                else if(o is JObject jo)
+                else if (o is JObject jo)
                     o = jo[key];
 
                 else

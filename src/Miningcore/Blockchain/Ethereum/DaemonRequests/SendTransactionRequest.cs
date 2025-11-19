@@ -57,7 +57,7 @@ public class SendTransactionRequest
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public ulong? MaxFeePerGas { get; set; }
 
-///elva
+    ///elva
     public string chainID { get; set; }
 }
 
@@ -102,6 +102,6 @@ public class SendTransactionRequestPink
     public string Data { get; set; }
 
 
-///elva
+    ///elva
     public string chainID { get; set; }
 }

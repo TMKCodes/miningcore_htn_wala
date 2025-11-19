@@ -15,7 +15,7 @@ public static class ErgoClientFactory
         var epConfig = poolConfig.Daemons.First();
         var extra = epConfig.Extra.SafeExtensionDataAs<ErgoDaemonEndpointConfigExtra>();
 
-        if(logger != null && clusterConfig.PaymentProcessing?.Enabled == true &&
+        if (logger != null && clusterConfig.PaymentProcessing?.Enabled == true &&
            poolConfig.PaymentProcessing?.Enabled == true && string.IsNullOrEmpty(extra?.ApiKey))
             throw new PoolStartupException("Ergo daemon apiKey not provided", poolConfig.Id);
 
@@ -29,10 +29,10 @@ public static class ErgoClientFactory
             ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true,
         }));
 
-        if(!string.IsNullOrEmpty(extra?.ApiKey))
+        if (!string.IsNullOrEmpty(extra?.ApiKey))
             result.RequestHeaders["api_key"] = extra.ApiKey;
 
-        if(!string.IsNullOrEmpty(epConfig.User))
+        if (!string.IsNullOrEmpty(epConfig.User))
         {
             var auth = $"{epConfig.User}:{epConfig.Password}";
             result.RequestHeaders["Authorization"] = new AuthenticationHeaderValue("Basic", auth.ToByteArrayBase64()).ToString();

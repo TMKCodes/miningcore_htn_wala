@@ -64,11 +64,11 @@ public class PROPPaymentScheme : IPayoutScheme
         var shareCutOffDate = await CalculateRewardsAsync(pool, payoutHandler, block, blockReward, shares, rewards, ct);
 
         // update balances
-        foreach(var address in rewards.Keys)
+        foreach (var address in rewards.Keys)
         {
             var amount = rewards[address];
 
-            if(amount > 0)
+            if (amount > 0)
             {
                 logger.Info(() => $"elva PROP - Crediting {address} with {payoutHandler.FormatAmount(amount)} for {FormatUtil.FormatQuantity(shares[address])} ({shares[address]}) shares for block {block.BlockHeight}");
                 await balanceRepo.AddAmountAsync(con, tx, poolConfig.Id, address, amount, $"Reward for {FormatUtil.FormatQuantity(shares[address])} shares for block {block.BlockHeight}");
@@ -76,11 +76,11 @@ public class PROPPaymentScheme : IPayoutScheme
         }
 
         // delete discarded shares
-        if(shareCutOffDate.HasValue)
+        if (shareCutOffDate.HasValue)
         {
             var cutOffCount = await shareRepo.CountSharesBeforeAsync(con, tx, poolConfig.Id, shareCutOffDate.Value, ct);
 
-            if(cutOffCount > 0)
+            if (cutOffCount > 0)
             {
                 await LogDiscardedSharesAsync(ct, poolConfig, block, shareCutOffDate.Value);
 
@@ -93,8 +93,8 @@ public class PROPPaymentScheme : IPayoutScheme
         var totalShareCount = shares.Values.ToList().Sum(x => new decimal(x));
         var totalRewards = rewards.Values.ToList().Sum(x => x);
 
-        if(totalRewards > 0)
-            logger.Info(() => $"{FormatUtil.FormatQuantity((double) totalShareCount)} ({Math.Round(totalShareCount, 2)}) shares contributed to a total payout of {payoutHandler.FormatAmount(totalRewards)} ({totalRewards / blockReward * 100:0.00}% of block reward) to {rewards.Keys.Count} addresses");
+        if (totalRewards > 0)
+            logger.Info(() => $"{FormatUtil.FormatQuantity((double)totalShareCount)} ({Math.Round(totalShareCount, 2)}) shares contributed to a total payout of {payoutHandler.FormatAmount(totalRewards)} ({totalRewards / blockReward * 100:0.00}% of block reward) to {rewards.Keys.Count} addresses");
     }
 
     private async Task LogDiscardedSharesAsync(CancellationToken ct, PoolConfig poolConfig, Block block, DateTime value)
@@ -104,7 +104,7 @@ public class PROPPaymentScheme : IPayoutScheme
         var currentPage = 0;
         var shares = new Dictionary<string, double>();
 
-        while(true)
+        while (true)
         {
             logger.Info(() => $"Fetching page {currentPage} of discarded shares for pool {poolConfig.Id}, block {block.BlockHeight}");
 
@@ -113,32 +113,32 @@ public class PROPPaymentScheme : IPayoutScheme
 
             currentPage++;
 
-            for(var i = 0; i < page.Length; i++)
+            for (var i = 0; i < page.Length; i++)
             {
                 var share = page[i];
                 var address = share.Miner;
 
                 // record attributed shares for diagnostic purposes
-                if(!shares.ContainsKey(address))
+                if (!shares.ContainsKey(address))
                     shares[address] = share.Difficulty;
                 else
                     shares[address] += share.Difficulty;
             }
 
-            if(page.Length < pageSize)
+            if (page.Length < pageSize)
                 break;
 
             before = page[^1].Created;
         }
 
-        if(shares.Keys.Count > 0)
+        if (shares.Keys.Count > 0)
         {
             // sort addresses by shares
             var addressesByShares = shares.Keys.OrderByDescending(x => shares[x]);
 
             logger.Info(() => $"{FormatUtil.FormatQuantity(shares.Values.Sum())} ({shares.Values.Sum()}) total discarded shares, block {block.BlockHeight}");
 
-            foreach(var address in addressesByShares)
+            foreach (var address in addressesByShares)
                 logger.Info(() => $"{address} = {FormatUtil.FormatQuantity(shares[address])} ({shares[address]}) discarded shares, block {block.BlockHeight}");
         }
     }
@@ -159,7 +159,7 @@ public class PROPPaymentScheme : IPayoutScheme
         DateTime? shareCutOffDate = null;
         var scores = new Dictionary<string, decimal>();
 
-        while(!done && !ct.IsCancellationRequested)
+        while (!done && !ct.IsCancellationRequested)
         {
             logger.Info(() => $"Fetching page {currentPage} of shares for pool {poolConfig.Id}, block {block.BlockHeight}");
 
@@ -169,21 +169,21 @@ public class PROPPaymentScheme : IPayoutScheme
             inclusive = false;
             currentPage++;
 
-            for(var i = 0; i < page.Length; i++)
+            for (var i = 0; i < page.Length; i++)
             {
                 var share = page[i];
                 var address = share.Miner;
                 var shareDiffAdjusted = payoutHandler.AdjustShareDifficulty(share.Difficulty);
 
                 // record attributed shares for diagnostic purposes
-                if(!shares.ContainsKey(address))
+                if (!shares.ContainsKey(address))
                     shares[address] = shareDiffAdjusted;
                 else
                     shares[address] += shareDiffAdjusted;
 
-                var score = (decimal) (shareDiffAdjusted / share.NetworkDifficulty);
+                var score = (decimal)(shareDiffAdjusted / share.NetworkDifficulty);
 
-                if(!scores.ContainsKey(address))
+                if (!scores.ContainsKey(address))
                     scores[address] = score;
                 else
                     scores[address] += score;
@@ -191,11 +191,11 @@ public class PROPPaymentScheme : IPayoutScheme
                 accumulatedScore += score;
 
                 // set the cutoff date to clean up old shares after a successful payout
-                if(shareCutOffDate == null || share.Created > shareCutOffDate)
+                if (shareCutOffDate == null || share.Created > shareCutOffDate)
                     shareCutOffDate = share.Created;
             }
 
-            if(page.Length < pageSize)
+            if (page.Length < pageSize)
             {
                 done = true;
                 break;
@@ -205,22 +205,22 @@ public class PROPPaymentScheme : IPayoutScheme
             done = page.Length <= 0;
         }
 
-        if(accumulatedScore > 0)
+        if (accumulatedScore > 0)
         {
             var rewardPerScorePoint = blockReward / accumulatedScore;
 
             // build rewards for all addresses that contributed to the round
-            foreach(var address in scores.Select(x => x.Key).Distinct())
+            foreach (var address in scores.Select(x => x.Key).Distinct())
             {
                 // loop all scores for the current addres
-                foreach(var score in scores.Where(x => x.Key == address))
+                foreach (var score in scores.Where(x => x.Key == address))
                 {
                     var reward = score.Value * rewardPerScorePoint;
 
-                    if(reward > 0)
+                    if (reward > 0)
                     {
                         // accumulate miner reward
-                        if(!rewards.ContainsKey(address))
+                        if (!rewards.ContainsKey(address))
                             rewards[address] = reward;
                         else
                             rewards[address] += reward;
@@ -232,7 +232,7 @@ public class PROPPaymentScheme : IPayoutScheme
         }
 
         // this should never happen
-        if(blockRewardRemaining <= 0 && !done)
+        if (blockRewardRemaining <= 0 && !done)
             throw new OverflowException("blockRewardRemaining < 0");
 
         logger.Info(() => $"Balance-calculation for pool {poolConfig.Id}, block {block.BlockHeight} completed with accumulated score {accumulatedScore:0.####} ({accumulatedScore * 100:0.#}%)");

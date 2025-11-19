@@ -92,7 +92,7 @@ public unsafe class RandomX_Scash
 
         public void Dispose()
         {
-            if(dataset != IntPtr.Zero)
+            if (dataset != IntPtr.Zero)
             {
                 release_dataset(dataset);
                 dataset = IntPtr.Zero;
@@ -118,7 +118,7 @@ public unsafe class RandomX_Scash
 
         public void Dispose()
         {
-            if(vm != IntPtr.Zero)
+            if (vm != IntPtr.Zero)
             {
                 destroy_vm(vm);
                 vm = IntPtr.Zero;
@@ -126,7 +126,7 @@ public unsafe class RandomX_Scash
 
             ds?.Dispose();
 
-            if(cache != IntPtr.Zero)
+            if (cache != IntPtr.Zero)
             {
                 release_cache(cache);
                 cache = IntPtr.Zero;
@@ -141,13 +141,13 @@ public unsafe class RandomX_Scash
             cache = alloc_cache(flags);
 
             // init cache
-            fixed(byte* key_ptr = key)
+            fixed (byte* key_ptr = key)
             {
-                init_cache(cache, (IntPtr) key_ptr, key.Length);
+                init_cache(cache, (IntPtr)key_ptr, key.Length);
             }
 
             // Enable fast-mode? (requires 2GB+ memory per VM)
-            if((flags & randomx_flags.RANDOMX_FLAG_FULL_MEM) != 0)
+            if ((flags & randomx_flags.RANDOMX_FLAG_FULL_MEM) != 0)
             {
                 ds = new RxDataSet();
                 ds_ptr = ds.Init(flags, cache);
@@ -174,7 +174,7 @@ public unsafe class RandomX_Scash
 
     public static void WithLock(Action action)
     {
-        lock(realms)
+        lock (realms)
         {
             action();
         }
@@ -183,20 +183,20 @@ public unsafe class RandomX_Scash
     public static void CreateSeed(string realm, string seedHex,
         randomx_flags? flagsOverride = null, randomx_flags? flagsAdd = null, int vmCount = 1)
     {
-        lock(realms)
+        lock (realms)
         {
-            if(!realms.TryGetValue(realm, out var seeds))
+            if (!realms.TryGetValue(realm, out var seeds))
             {
                 seeds = new Dictionary<string, Tuple<GenContext, BlockingCollection<RxVm>>>();
 
                 realms[realm] = seeds;
             }
 
-            if(!seeds.TryGetValue(seedHex, out var seed))
+            if (!seeds.TryGetValue(seedHex, out var seed))
             {
                 var flags = flagsOverride ?? randomx_get_flags();
 
-                if(flagsAdd.HasValue)
+                if (flagsAdd.HasValue)
                     flags |= flagsAdd.Value;
 
                 if (vmCount == -1)
@@ -229,7 +229,8 @@ public unsafe class RandomX_Scash
             vms.Add(vm);
 
             logger.Info(() => $"Created VM {realm}@{index + 1} in {DateTime.Now - start}");
-        };
+        }
+        ;
 
         Parallel.For(0, vmCount, createVm);
 
@@ -240,12 +241,12 @@ public unsafe class RandomX_Scash
     {
         Tuple<GenContext, BlockingCollection<RxVm>> seed;
 
-        lock(realms)
+        lock (realms)
         {
-            if(!realms.TryGetValue(realm, out var seeds))
+            if (!realms.TryGetValue(realm, out var seeds))
                 return;
 
-            if(!seeds.Remove(seedHex, out seed))
+            if (!seeds.Remove(seedHex, out seed))
                 return;
         }
 
@@ -266,12 +267,12 @@ public unsafe class RandomX_Scash
 
     public static Tuple<GenContext, BlockingCollection<RxVm>> GetSeed(string realm, string seedHex)
     {
-        lock(realms)
+        lock (realms)
         {
-            if(!realms.TryGetValue(realm, out var seeds))
+            if (!realms.TryGetValue(realm, out var seeds))
                 return null;
 
-            if(!seeds.TryGetValue(seedHex, out var seed))
+            if (!seeds.TryGetValue(seedHex, out var seed))
                 return null;
 
             return seed;
@@ -287,7 +288,7 @@ public unsafe class RandomX_Scash
 
         var (ctx, seedVms) = GetSeed(realm, seedHex);
 
-        if(ctx != null)
+        if (ctx != null)
         {
             RxVm vm = null;
 
@@ -304,7 +305,7 @@ public unsafe class RandomX_Scash
                 messageBus?.SendTelemetry("RandomX", TelemetryCategory.Hash, sw.Elapsed, true);
             }
 
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.Error(() => ex.Message);
             }
@@ -312,12 +313,12 @@ public unsafe class RandomX_Scash
             finally
             {
                 // return it
-                if(vm != null)
+                if (vm != null)
                     seedVms.Add(vm);
             }
         }
 
-        if(!success)
+        if (!success)
         {
             // clear result on failure
             empty.CopyTo(result);
@@ -329,30 +330,30 @@ public unsafe class RandomX_Scash
 
 
 
-        public void Digest(ReadOnlySpan<byte> data, Span<byte> result)
+    public void Digest(ReadOnlySpan<byte> data, Span<byte> result)
+    {
+        // Implémentation Digest pour IHashAlgorithm
+        var sw = Stopwatch.StartNew();
+        var success = false;
+
+        try
         {
-            // Implémentation Digest pour IHashAlgorithm
-            var sw = Stopwatch.StartNew();
-            var success = false;
+            var vm = new RxVm();
+            vm.Init(data, randomx_flags.RANDOMX_FLAG_DEFAULT);
+            vm.CalculateHash(data, result);
+            success = true;
 
-            try
-            {
-                var vm = new RxVm();
-                vm.Init(data, randomx_flags.RANDOMX_FLAG_DEFAULT);
-                vm.CalculateHash(data, result);
-                success = true;
-
-                messageBus?.SendTelemetry("RandomX", TelemetryCategory.Hash, sw.Elapsed, true);
-            }
-            catch (Exception ex)
-            {
-                logger.Error(() => ex.Message);
-            }
-
-            if (!success)
-            {
-                empty.CopyTo(result);
-            }
+            messageBus?.SendTelemetry("RandomX", TelemetryCategory.Hash, sw.Elapsed, true);
         }
+        catch (Exception ex)
+        {
+            logger.Error(() => ex.Message);
+        }
+
+        if (!success)
+        {
+            empty.CopyTo(result);
+        }
+    }
 
 }

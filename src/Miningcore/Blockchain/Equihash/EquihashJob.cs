@@ -77,19 +77,19 @@ public class EquihashJob
         tx.Version = txVersion;
 
         // calculate outputs
-        if(networkParams.PayFundingStream)
+        if (networkParams.PayFundingStream)
         {
             rewardToPool = new Money(Math.Round(blockReward * (1m - (networkParams.PercentFoundersReward) / 100m)) + rewardFees, MoneyUnit.Satoshi);
             tx.Outputs.Add(rewardToPool, poolAddressDestination);
 
-            foreach(FundingStream fundingstream in BlockTemplate.Subsidy.FundingStreams)
+            foreach (FundingStream fundingstream in BlockTemplate.Subsidy.FundingStreams)
             {
                 var amount = new Money(Math.Round(fundingstream.ValueZat / 1m), MoneyUnit.Satoshi);
                 var destination = FoundersAddressToScriptDestination(fundingstream.Address);
                 tx.Outputs.Add(amount, destination);
             }
         }
-        else if(networkParams.vOuts)
+        else if (networkParams.vOuts)
         {
             rewardToPool = new Money(Math.Round(blockReward * (1m - (networkParams.vPercentFoundersReward) / 100m)) + rewardFees, MoneyUnit.Satoshi);
             tx.Outputs.Add(rewardToPool, poolAddressDestination);
@@ -103,12 +103,12 @@ public class EquihashJob
             amount = new Money(Math.Round(blockReward * (networkParams.percentSuperNodesReward / 100m)), MoneyUnit.Satoshi);
             tx.Outputs.Add(amount, destination);
         }
-        else if(networkParams.PayFoundersReward &&
+        else if (networkParams.PayFoundersReward &&
                 (networkParams.LastFoundersRewardBlockHeight >= BlockTemplate.Height ||
                     networkParams.TreasuryRewardStartBlockHeight > 0))
         {
             // founders or treasury reward?
-            if(networkParams.TreasuryRewardStartBlockHeight > 0 &&
+            if (networkParams.TreasuryRewardStartBlockHeight > 0 &&
                BlockTemplate.Height >= networkParams.TreasuryRewardStartBlockHeight)
             {
                 // pool reward (t-addr)
@@ -142,14 +142,14 @@ public class EquihashJob
             tx.Outputs.Add(rewardToPool, poolAddressDestination);
         }
 
-        tx.Inputs.Add(TxIn.CreateCoinbase((int) BlockTemplate.Height));
+        tx.Inputs.Add(TxIn.CreateCoinbase((int)BlockTemplate.Height));
 
         return tx;
     }
 
     protected virtual string GetTreasuryRewardAddress()
     {
-        var index = (int) Math.Floor((BlockTemplate.Height - networkParams.TreasuryRewardStartBlockHeight) /
+        var index = (int)Math.Floor((BlockTemplate.Height - networkParams.TreasuryRewardStartBlockHeight) /
             networkParams.TreasuryRewardAddressChangeInterval % networkParams.TreasuryRewardAddresses.Length);
 
         var address = networkParams.TreasuryRewardAddresses[index];
@@ -158,18 +158,18 @@ public class EquihashJob
 
     protected virtual void BuildCoinbase()
     {
-        var script = TxIn.CreateCoinbase((int) BlockTemplate.Height).ScriptSig;
+        var script = TxIn.CreateCoinbase((int)BlockTemplate.Height).ScriptSig;
 
         // output transaction
         txOut = CreateOutputTransaction();
 
-        using(var stream = new MemoryStream())
-        {   
+        using (var stream = new MemoryStream())
+        {
             var bs = new BitcoinStream(stream, true);
 
-            if(isOverwinterActive)
+            if (isOverwinterActive)
             {
-                uint mask = (isOverwinterActive ? 1u : 0u );
+                uint mask = (isOverwinterActive ? 1u : 0u);
                 uint shiftedMask = mask << 31;
                 uint versionWithOverwinter = txVersion | shiftedMask;
 
@@ -182,7 +182,7 @@ public class EquihashJob
                 bs.ReadWrite(ref txVersion);
             }
 
-            if(isOverwinterActive || isSaplingActive)
+            if (isOverwinterActive || isSaplingActive)
             {
                 bs.ReadWrite(ref txVersionGroupId);
             }
@@ -201,20 +201,20 @@ public class EquihashJob
             // misc
             bs.ReadWrite(ref txLockTime);
 
-            if(isOverwinterActive || isSaplingActive)
+            if (isOverwinterActive || isSaplingActive)
             {
-                txExpiryHeight = (uint) BlockTemplate.Height;
+                txExpiryHeight = (uint)BlockTemplate.Height;
                 bs.ReadWrite(ref txExpiryHeight);
             }
 
-            if(isSaplingActive)
+            if (isSaplingActive)
             {
                 bs.ReadWrite(ref txBalance);
                 bs.ReadWriteAsVarInt(ref txVShieldedSpend);
                 bs.ReadWriteAsVarInt(ref txVShieldedOutput);
             }
 
-            if(isOverwinterActive || isSaplingActive)
+            if (isOverwinterActive || isSaplingActive)
             {
                 bs.ReadWriteAsVarInt(ref txJoinSplits);
             }
@@ -231,11 +231,11 @@ public class EquihashJob
     {
         var withDefaultWitnessCommitment = !string.IsNullOrEmpty(BlockTemplate.DefaultWitnessCommitment);
 
-        var outputCount = (uint) tx.Outputs.Count;
-        if(withDefaultWitnessCommitment)
+        var outputCount = (uint)tx.Outputs.Count;
+        if (withDefaultWitnessCommitment)
             outputCount++;
 
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
             var bs = new BitcoinStream(stream, true);
 
@@ -245,14 +245,14 @@ public class EquihashJob
             long amount;
             byte[] raw;
             uint rawLength;
-            
+
             // serialize outputs
-            foreach(var output in tx.Outputs)
+            foreach (var output in tx.Outputs)
             {
                 amount = output.Value.Satoshi;
                 var outScript = output.ScriptPubKey;
                 raw = outScript.ToBytes(true);
-                rawLength = (uint) raw.Length;
+                rawLength = (uint)raw.Length;
 
                 bs.ReadWrite(ref amount);
                 bs.ReadWriteAsVarInt(ref rawLength);
@@ -260,11 +260,11 @@ public class EquihashJob
             }
 
             // serialize witness (segwit)
-            if(withDefaultWitnessCommitment)
+            if (withDefaultWitnessCommitment)
             {
                 amount = 0;
                 raw = BlockTemplate.DefaultWitnessCommitment.HexToByteArray();
-                rawLength = (uint) raw.Length;
+                rawLength = (uint)raw.Length;
 
                 bs.ReadWrite(ref amount);
                 bs.ReadWriteAsVarInt(ref rawLength);
@@ -279,7 +279,7 @@ public class EquihashJob
     {
         var blockHeader = new EquihashBlockHeader
         {
-            Version = (int) BlockTemplate.Version,
+            Version = (int)BlockTemplate.Version,
             Bits = new Target(Encoders.Hex.DecodeData(BlockTemplate.Bits)),
             HashPrevBlock = uint256.Parse(BlockTemplate.PreviousBlockhash),
             HashMerkleRoot = new uint256(merkleRoot),
@@ -287,7 +287,7 @@ public class EquihashJob
             Nonce = nonce
         };
 
-        if(isSaplingActive && !string.IsNullOrEmpty(BlockTemplate.FinalSaplingRootHash))
+        if (isSaplingActive && !string.IsNullOrEmpty(BlockTemplate.FinalSaplingRootHash))
             blockHeader.HashReserved = BlockTemplate.FinalSaplingRootHash.HexToReverseByteArray();
 
         return blockHeader.ToBytes();
@@ -295,9 +295,9 @@ public class EquihashJob
 
     protected virtual byte[] BuildRawTransactionBuffer()
     {
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
-            foreach(var tx in BlockTemplate.Transactions)
+            foreach (var tx in BlockTemplate.Transactions)
             {
                 var txRaw = tx.Data.HexToByteArray();
                 stream.Write(txRaw);
@@ -309,10 +309,10 @@ public class EquihashJob
 
     protected virtual byte[] SerializeBlock(Span<byte> header, Span<byte> coinbase, Span<byte> solution)
     {
-        var transactionCount = (uint) BlockTemplate.Transactions.Length + 1; // +1 for prepended coinbase tx
+        var transactionCount = (uint)BlockTemplate.Transactions.Length + 1; // +1 for prepended coinbase tx
         var rawTransactionBuffer = BuildRawTransactionBuffer();
 
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
             var bs = new BitcoinStream(stream, true);
 
@@ -325,7 +325,7 @@ public class EquihashJob
 
             if (transactionCount <= 0xfc)
             {
-                var simpleVarIntBytes = (Span<byte>) txCount.HexToByteArray();
+                var simpleVarIntBytes = (Span<byte>)txCount.HexToByteArray();
 
                 bs.ReadWrite(simpleVarIntBytes);
             }
@@ -334,8 +334,8 @@ public class EquihashJob
                 if (txCount.Length == 2)
                     txCount = "00" + txCount;
 
-                var complexHeader = (Span<byte>) new byte[] { 0xFD };
-                var complexVarIntBytes = (Span<byte>) txCount.HexToReverseByteArray();
+                var complexHeader = (Span<byte>)new byte[] { 0xFD };
+                var complexVarIntBytes = (Span<byte>)txCount.HexToReverseByteArray();
 
                 // concat header and varInt
                 Span<byte> complexHeaderVarIntBytes = stackalloc byte[complexHeader.Length + complexVarIntBytes.Length];
@@ -356,13 +356,13 @@ public class EquihashJob
         uint nTime, string solution)
     {
         var context = worker.ContextAs<BitcoinWorkerContext>();
-        var solutionBytes = (Span<byte>) solution.HexToByteArray();
+        var solutionBytes = (Span<byte>)solution.HexToByteArray();
 
         // serialize block-header
         var headerBytes = SerializeHeader(nTime, nonce);
 
         // verify solution
-        if(!solver.Verify(headerBytes, solutionBytes[networkParams.SolutionPreambleSize..]))
+        if (!solver.Verify(headerBytes, solutionBytes[networkParams.SolutionPreambleSize..]))
             throw new StratumException(StratumError.Other, "invalid solution");
 
         // concat header and solution
@@ -372,11 +372,11 @@ public class EquihashJob
 
         // hash block-header
         Span<byte> headerHash = stackalloc byte[32];
-        headerHasher.Digest(headerSolutionBytes, headerHash, (ulong) nTime);
+        headerHasher.Digest(headerSolutionBytes, headerHash, (ulong)nTime);
         var headerValue = new uint256(headerHash);
 
         // calc share-diff
-        var shareDiff = (double) new BigRational(networkParams.Diff1BValue, headerHash.ToBigInteger());
+        var shareDiff = (double)new BigRational(networkParams.Diff1BValue, headerHash.ToBigInteger());
         var stratumDifficulty = context.Difficulty;
         var ratio = shareDiff / stratumDifficulty;
 
@@ -384,14 +384,14 @@ public class EquihashJob
         var isBlockCandidate = headerValue <= blockTargetValue;
 
         // test if share meets at least workers current difficulty
-        if(!isBlockCandidate && ratio < 0.99)
+        if (!isBlockCandidate && ratio < 0.99)
         {
             // check if share matched the previous difficulty from before a vardiff retarget
-            if(context.VarDiff?.LastUpdate != null && context.PreviousDifficulty.HasValue)
+            if (context.VarDiff?.LastUpdate != null && context.PreviousDifficulty.HasValue)
             {
                 ratio = shareDiff / context.PreviousDifficulty.Value;
 
-                if(ratio < 0.99)
+                if (ratio < 0.99)
                     throw new StratumException(StratumError.LowDifficultyShare, $"low difficulty share ({shareDiff})");
 
                 // use previous difficulty
@@ -409,7 +409,7 @@ public class EquihashJob
             Difficulty = stratumDifficulty,
         };
 
-        if(isBlockCandidate)
+        if (isBlockCandidate)
         {
             var headerHashReversed = headerHash.ToNewReverseArray();
 
@@ -455,7 +455,7 @@ public class EquihashJob
         this.network = network;
         BlockTemplate = blockTemplate;
         JobId = jobId;
-        Difficulty = (double) new BigRational(networkParams.Diff1BValue, BlockTemplate.Target.HexToReverseByteArray().AsSpan().ToBigInteger());
+        Difficulty = (double)new BigRational(networkParams.Diff1BValue, BlockTemplate.Target.HexToReverseByteArray().AsSpan().ToBigInteger());
 
         // ZCash Sapling & Overwinter support
         isSaplingActive = networkParams.SaplingActivationHeight.HasValue &&
@@ -471,13 +471,13 @@ public class EquihashJob
             networkParams.OverwinterActivationHeight.Value > 0 &&
             blockTemplate.Height >= networkParams.OverwinterActivationHeight.Value;
 
-        if(isSaplingActive)
+        if (isSaplingActive)
         {
             txVersion = networkParams.SaplingTxVersion.Value;
             txVersionGroupId = networkParams.SaplingTxVersionGroupId.Value;
         }
 
-        else if(isOverwinterActive)
+        else if (isOverwinterActive)
         {
             txVersion = networkParams.OverwinterTxVersion.Value;
             txVersionGroupId = networkParams.OverwinterTxVersionGroupId.Value;
@@ -486,7 +486,7 @@ public class EquihashJob
         // Misc
         this.solver = solver;
 
-        if(!string.IsNullOrEmpty(BlockTemplate.Target))
+        if (!string.IsNullOrEmpty(BlockTemplate.Target))
             blockTargetValue = new uint256(BlockTemplate.Target);
         else
         {
@@ -499,26 +499,26 @@ public class EquihashJob
             .ReverseInPlace()
             .ToHexString();
 
-        if(blockTemplate.Subsidy != null)
+        if (blockTemplate.Subsidy != null)
             blockReward = blockTemplate.Subsidy.Miner * BitcoinConstants.SatoshisPerBitcoin;
         else
             blockReward = BlockTemplate.CoinbaseValue;
 
-        if(networkParams?.PayFundingStream == true)
+        if (networkParams?.PayFundingStream == true)
         {
             decimal fundingstreamTotal = 0;
             fundingstreamTotal = blockTemplate.Subsidy.FundingStreams.Sum(x => x.Value);
             blockReward = (blockTemplate.Subsidy.Miner + fundingstreamTotal) * BitcoinConstants.SatoshisPerBitcoin;
         }
-        else if(networkParams?.vOuts == true)
+        else if (networkParams?.vOuts == true)
         {
-            blockReward = (decimal) ((blockTemplate.Subsidy.Miner + blockTemplate.Subsidy.Community + blockTemplate.Subsidy.Securenodes + blockTemplate.Subsidy.Supernodes) * BitcoinConstants.SatoshisPerBitcoin);
+            blockReward = (decimal)((blockTemplate.Subsidy.Miner + blockTemplate.Subsidy.Community + blockTemplate.Subsidy.Securenodes + blockTemplate.Subsidy.Supernodes) * BitcoinConstants.SatoshisPerBitcoin);
         }
-        else if(networkParams?.PayFoundersReward == true)
+        else if (networkParams?.PayFoundersReward == true)
         {
             var founders = blockTemplate.Subsidy.Founders ?? blockTemplate.Subsidy.Community;
 
-            if(!founders.HasValue)
+            if (!founders.HasValue)
                 throw new Exception("Error, founders reward missing for block template");
 
             blockReward = (blockTemplate.Subsidy.Miner + founders.Value) * BitcoinConstants.SatoshisPerBitcoin;
@@ -570,25 +570,25 @@ public class EquihashJob
         var context = worker.ContextAs<BitcoinWorkerContext>();
 
         // validate nTime
-        if(nTime.Length != 8)
+        if (nTime.Length != 8)
             throw new StratumException(StratumError.Other, "incorrect size of ntime");
 
         var nTimeInt = uint.Parse(nTime.HexToReverseByteArray().ToHexString(), NumberStyles.HexNumber);
-        if(nTimeInt < BlockTemplate.CurTime || nTimeInt > ((DateTimeOffset) clock.Now).ToUnixTimeSeconds() + 7200)
+        if (nTimeInt < BlockTemplate.CurTime || nTimeInt > ((DateTimeOffset)clock.Now).ToUnixTimeSeconds() + 7200)
             throw new StratumException(StratumError.Other, "ntime out of range");
 
         var nonce = context.ExtraNonce1 + extraNonce2;
 
         // validate nonce
-        if(nonce.Length != 64)
+        if (nonce.Length != 64)
             throw new StratumException(StratumError.Other, "incorrect size of extraNonce2");
 
         // validate solution
-        if(solution.Length != (networkParams.SolutionSize + networkParams.SolutionPreambleSize) * 2)
+        if (solution.Length != (networkParams.SolutionSize + networkParams.SolutionPreambleSize) * 2)
             throw new StratumException(StratumError.Other, "incorrect size of solution");
 
         // dupe check
-        if(!RegisterSubmit(nonce, solution))
+        if (!RegisterSubmit(nonce, solution))
             throw new StratumException(StratumError.DuplicateShare, "duplicate share");
 
         return ProcessShareInternal(worker, nonce, nTimeInt, solution);
@@ -604,7 +604,7 @@ public class EquihashJob
     {
         var maxHeight = networkParams.LastFoundersRewardBlockHeight;
 
-        var addressChangeInterval = (maxHeight + (ulong) networkParams.FoundersRewardAddresses.Length) / (ulong) networkParams.FoundersRewardAddresses.Length;
+        var addressChangeInterval = (maxHeight + (ulong)networkParams.FoundersRewardAddresses.Length) / (ulong)networkParams.FoundersRewardAddresses.Length;
         var index = BlockTemplate.Height / addressChangeInterval;
 
         var address = networkParams.FoundersRewardAddresses[index];

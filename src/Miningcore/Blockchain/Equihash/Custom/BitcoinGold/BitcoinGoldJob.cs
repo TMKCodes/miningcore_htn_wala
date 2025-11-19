@@ -26,19 +26,19 @@ public class BitcoinGoldJob : EquihashJob
         // pool reward (t-addr)
         tx.Outputs.Add(rewardToPool, poolAddressDestination);
 
-        tx.Inputs.Add(TxIn.CreateCoinbase((int) BlockTemplate.Height));
+        tx.Inputs.Add(TxIn.CreateCoinbase((int)BlockTemplate.Height));
 
         return tx;
     }
 
     protected override void BuildCoinbase()
     {
-        var script = TxIn.CreateCoinbase((int) BlockTemplate.Height).ScriptSig;
+        var script = TxIn.CreateCoinbase((int)BlockTemplate.Height).ScriptSig;
 
         // output transaction
         txOut = CreateOutputTransaction();
 
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
             var bs = new BitcoinStream(stream, true);
 
@@ -70,11 +70,11 @@ public class BitcoinGoldJob : EquihashJob
     {
         var withDefaultWitnessCommitment = !string.IsNullOrEmpty(BlockTemplate.DefaultWitnessCommitment);
 
-        var outputCount = (uint) tx.Outputs.Count;
-        if(withDefaultWitnessCommitment)
+        var outputCount = (uint)tx.Outputs.Count;
+        if (withDefaultWitnessCommitment)
             outputCount++;
 
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
             var bs = new BitcoinStream(stream, true);
 
@@ -86,11 +86,11 @@ public class BitcoinGoldJob : EquihashJob
             uint rawLength;
 
             // serialize witness (segwit)
-            if(withDefaultWitnessCommitment)
+            if (withDefaultWitnessCommitment)
             {
                 amount = 0;
                 raw = BlockTemplate.DefaultWitnessCommitment.HexToByteArray();
-                rawLength = (uint) raw.Length;
+                rawLength = (uint)raw.Length;
 
                 bs.ReadWrite(ref amount);
                 bs.ReadWriteAsVarInt(ref rawLength);
@@ -98,12 +98,12 @@ public class BitcoinGoldJob : EquihashJob
             }
 
             // serialize outputs
-            foreach(var output in tx.Outputs)
+            foreach (var output in tx.Outputs)
             {
                 amount = output.Value.Satoshi;
                 var outScript = output.ScriptPubKey;
                 raw = outScript.ToBytes(true);
-                rawLength = (uint) raw.Length;
+                rawLength = (uint)raw.Length;
 
                 bs.ReadWrite(ref amount);
                 bs.ReadWriteAsVarInt(ref rawLength);
@@ -122,7 +122,7 @@ public class BitcoinGoldJob : EquihashJob
 
         var blockHeader = new EquihashBlockHeader
         {
-            Version = (int) BlockTemplate.Version,
+            Version = (int)BlockTemplate.Version,
             Bits = new Target(Encoders.Hex.DecodeData(BlockTemplate.Bits)),
             HashPrevBlock = uint256.Parse(BlockTemplate.PreviousBlockhash),
             HashMerkleRoot = new uint256(merkleRoot),
@@ -136,10 +136,10 @@ public class BitcoinGoldJob : EquihashJob
 
     protected override byte[] SerializeBlock(Span<byte> header, Span<byte> coinbase, Span<byte> solution)
     {
-        var transactionCount = (uint) BlockTemplate.Transactions.Length + 1; // +1 for prepended coinbase tx
+        var transactionCount = (uint)BlockTemplate.Transactions.Length + 1; // +1 for prepended coinbase tx
         var rawTransactionBuffer = BuildRawTransactionBuffer();
 
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
             var bs = new BitcoinStream(stream, true);
 
@@ -173,11 +173,11 @@ public class BitcoinGoldJob : EquihashJob
         networkParams = coin.GetNetwork(network.ChainName);
         BlockTemplate = blockTemplate;
         JobId = jobId;
-        Difficulty = (double) new BigRational(networkParams.Diff1BValue, BlockTemplate.Target.HexToReverseByteArray().AsSpan().ToBigInteger());
+        Difficulty = (double)new BigRational(networkParams.Diff1BValue, BlockTemplate.Target.HexToReverseByteArray().AsSpan().ToBigInteger());
 
         this.solver = solver;
 
-        if(!string.IsNullOrEmpty(BlockTemplate.Target))
+        if (!string.IsNullOrEmpty(BlockTemplate.Target))
             blockTargetValue = new uint256(BlockTemplate.Target);
         else
         {

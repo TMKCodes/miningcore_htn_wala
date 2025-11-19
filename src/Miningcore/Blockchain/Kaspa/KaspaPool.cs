@@ -51,7 +51,7 @@ public class KaspaPool : PoolBase
         var request = tsRequest.Value;
         var context = connection.ContextAs<KaspaWorkerContext>();
 
-        if(request.Id == null)
+        if (request.Id == null)
             throw new StratumException(StratumError.MinusOne, "missing request id");
 
         // setup worker context
@@ -65,7 +65,8 @@ public class KaspaPool : PoolBase
         string coinAlgoName = coin.GetAlgorithmName();
         TimeSpan IceRiverBanTimeout = TimeSpan.FromSeconds(600);
         //if (Regex.IsMatch(userAgentBan, banPattern) && !string.Equals(coinAlgoName, "kHeavyHash", StringComparison.OrdinalIgnoreCase))       {
-        if (Regex.IsMatch(userAgentBan, banPattern, RegexOptions.IgnoreCase) && !string.Equals(coinAlgoName, "kHeavyHash", StringComparison.OrdinalIgnoreCase))       {
+        if (Regex.IsMatch(userAgentBan, banPattern, RegexOptions.IgnoreCase) && !string.Equals(coinAlgoName, "kHeavyHash", StringComparison.OrdinalIgnoreCase))
+        {
             // issue short-time ban if unauthorized to prevent DDos on daemon (validateaddress RPC)
             logger.Info(() => $"[{connection.ConnectionId}] Banning unauthorized useragent {userAgentBan} for {IceRiverBanTimeout.TotalSeconds} sec");
 
@@ -75,7 +76,7 @@ public class KaspaPool : PoolBase
             return; // Exit from the method if iceriver
         }
 
-        if(manager.ValidateIsGodMiner(context.UserAgent))
+        if (manager.ValidateIsGodMiner(context.UserAgent))
         {
             var data = new object[]
             {
@@ -95,12 +96,12 @@ public class KaspaPool : PoolBase
                 "KaspaStratum/1.0.0",
             };
 
-        //    await connection.RespondAsync(data, request.Id);
+            //    await connection.RespondAsync(data, request.Id);
             // Nicehash's stupid validator insists on "error" property present
             // in successful responses which is a violation of the JSON-RPC spec
             // [Respect the goddamn standards Nicehach :(]
             var response = new JsonRpcResponse<object[]>(data, request.Id);
-            if(context.IsNicehash || manager.ValidateIsGoldShell(context.UserAgent))
+            if (context.IsNicehash || manager.ValidateIsGoldShell(context.UserAgent))
             {
                 response.Extra = new Dictionary<string, object>();
                 response.Extra["error"] = null;
@@ -116,12 +117,12 @@ public class KaspaPool : PoolBase
     {
         var request = tsRequest.Value;
 
-        if(request.Id == null)
+        if (request.Id == null)
             throw new StratumException(StratumError.MinusOne, "missing request id");
 
         var context = connection.ContextAs<KaspaWorkerContext>();
 
-        if(!context.IsSubscribed)
+        if (!context.IsSubscribed)
             throw new StratumException(StratumError.NotSubscribed, "subscribe first please, we aren't savages");
 
         var requestParams = request.ParamsAs<string[]>();
@@ -153,13 +154,13 @@ public class KaspaPool : PoolBase
         context.Miner = minerName;
         context.Worker = workerName;
 
-        if(context.IsAuthorized)
+        if (context.IsAuthorized)
         {
             // Nicehash's stupid validator insists on "error" property present
             // in successful responses which is a violation of the JSON-RPC spec
             // [Respect the goddamn standards Nicehack :(]
             var response = new JsonRpcResponse<object>(context.IsAuthorized, request.Id);
-            if(context.IsNicehash || manager.ValidateIsGoldShell(context.UserAgent))
+            if (context.IsNicehash || manager.ValidateIsGoldShell(context.UserAgent))
             {
                 response.Extra = new Dictionary<string, object>();
                 response.Extra["error"] = null;
@@ -178,9 +179,9 @@ public class KaspaPool : PoolBase
             // Nicehash support
             var nicehashDiff = await GetNicehashStaticMinDiff(context, coin.Name, coin.GetAlgorithmName());
 
-            if(nicehashDiff.HasValue)
+            if (nicehashDiff.HasValue)
             {
-                if(!staticDiff.HasValue || nicehashDiff > staticDiff)
+                if (!staticDiff.HasValue || nicehashDiff > staticDiff)
                 {
                     logger.Info(() => $"[{connection.ConnectionId}] Nicehash detected. Using API supplied difficulty of {nicehashDiff.Value}");
 
@@ -192,20 +193,20 @@ public class KaspaPool : PoolBase
             }
 
             // Static diff
-            if(staticDiff.HasValue &&
+            if (staticDiff.HasValue &&
                (context.VarDiff != null && staticDiff.Value >= context.VarDiff.Config.MinDiff ||
                    context.VarDiff == null && staticDiff.Value > context.Difficulty))
             {
-            //    context.VarDiff = null; // disable vardiff
+                //    context.VarDiff = null; // disable vardiff
                 // There are several reports of IDIOTS mining with ridiculous amount of hashrate and maliciously using a very low staticDiff in order to attack mining pools.
                 // StaticDiff is now disabled by default for the KASPA family. Use it at your own risks.
-                if(extraPoolConfig.EnableStaticDifficulty)
+                if (extraPoolConfig.EnableStaticDifficulty)
                     context.VarDiff = null; // disable vardiff
 
                 context.SetDifficulty(staticDiff.Value);
 
-            //    logger.Info(() => $"[{connection.ConnectionId}] Setting static difficulty of {staticDiff.Value}");
-                if(extraPoolConfig.EnableStaticDifficulty)
+                //    logger.Info(() => $"[{connection.ConnectionId}] Setting static difficulty of {staticDiff.Value}");
+                if (extraPoolConfig.EnableStaticDifficulty)
                     logger.Info(() => $"[{connection.ConnectionId}] Setting static difficulty of {staticDiff.Value}");
                 else
                     logger.Warn(() => $"[{connection.ConnectionId}] Requesting static difficulty of {staticDiff.Value} (Request has been ignored and instead used as 'initial difficulty' for varDiff)");
@@ -222,7 +223,7 @@ public class KaspaPool : PoolBase
         {
             await connection.RespondErrorAsync(StratumError.UnauthorizedWorker, "Authorization failed", request.Id, context.IsAuthorized);
 
-            if(clusterConfig?.Banning?.BanOnLoginFailure is null or true)
+            if (clusterConfig?.Banning?.BanOnLoginFailure is null or true)
             {
                 // issue short-time ban if unauthorized to prevent DDos on daemon (validateaddress RPC)
                 logger.Info(() => $"[{connection.ConnectionId}] Banning unauthorized worker {minerName} for {loginFailureBanTimeout.TotalSeconds} sec");
@@ -241,13 +242,13 @@ public class KaspaPool : PoolBase
 
         try
         {
-            if(request.Id == null)
+            if (request.Id == null)
                 throw new StratumException(StratumError.MinusOne, "missing request id");
 
             // check age of submission (aged submissions are usually caused by high server load)
             var requestAge = clock.Now - tsRequest.Timestamp.UtcDateTime;
 
-            if(requestAge > maxShareAge)
+            if (requestAge > maxShareAge)
             {
                 logger.Warn(() => $"[{connection.ConnectionId}] Dropping stale share submission request (server overloaded?)");
                 return;
@@ -257,37 +258,37 @@ public class KaspaPool : PoolBase
             context.LastActivity = clock.Now;
 
             // validate worker
-            if(!context.IsAuthorized)
+            if (!context.IsAuthorized)
                 throw new StratumException(StratumError.UnauthorizedWorker, "Unauthorized worker");
-            else if(!context.IsSubscribed)
+            else if (!context.IsSubscribed)
                 throw new StratumException(StratumError.NotSubscribed, "Not subscribed");
 
             var requestParams = request.ParamsAs<string[]>();
 
 
-   // logger.Warn(() => $"elva --- > Param Taille [{requestParams.Length}] Dropping stale share submission request (server overloaded?)");
+            // logger.Warn(() => $"elva --- > Param Taille [{requestParams.Length}] Dropping stale share submission request (server overloaded?)");
 
 
-// elva Utilisation du logger pour afficher le contenu
+            // elva Utilisation du logger pour afficher le contenu
 
-        foreach (var param in requestParams)
-        {
-     //       _logger.LogInformation($"Param√®tre re√ßu : {param}");
-         //   logger.Warn(() => $"elva --- > Param [{param}] Dropping stale share submission request (server overloaded?)");
+            foreach (var param in requestParams)
+            {
+                //       _logger.LogInformation($"Param√®tre re√ßu : {param}");
+                //   logger.Warn(() => $"elva --- > Param [{param}] Dropping stale share submission request (server overloaded?)");
 
-        }
+            }
 
             // submit
-CancellationToken cancellationToken = CancellationToken.None;; // Si `ct` est d√©j√† d√©fini quelque part
+            CancellationToken cancellationToken = CancellationToken.None; ; // Si `ct` est d√©j√† d√©fini quelque part
 
             var share = await manager.SubmitShareAsync(connection, requestParams, cancellationToken);
-    //        await connection.RespondAsync(true, request.Id);
+            //        await connection.RespondAsync(true, request.Id);
 
             // Nicehash's stupid validator insists on "error" property present
             // in successful responses which is a violation of the JSON-RPC spec
             // [Respect the goddamn standards Nicehack :(]
             var response = new JsonRpcResponse<object>(true, request.Id);
-            if(context.IsNicehash || manager.ValidateIsGoldShell(context.UserAgent))
+            if (context.IsNicehash || manager.ValidateIsGoldShell(context.UserAgent))
             {
                 response.Extra = new Dictionary<string, object>();
                 response.Extra["error"] = null;
@@ -302,12 +303,12 @@ CancellationToken cancellationToken = CancellationToken.None;; // Si `ct` est d√
             // telemetry
             PublishTelemetry(TelemetryCategory.Share, clock.Now - tsRequest.Timestamp.UtcDateTime, true);
 
-// elva - suppression de la ligne en dessous pour diminuer la quantit√© de log
-     ////       logger.Info(() => $"[{connection.ConnectionId}] Share accepted: D={Math.Round(share.Difficulty * KaspaConstants.ShareMultiplier, 3)}");
-        logger.Info(() => $"[{connection.ConnectionId}] Share accepted: D={Math.Round(share.Difficulty * coin.ShareMultiplier, 3)}");
+            // elva - suppression de la ligne en dessous pour diminuer la quantit√© de log
+            ////       logger.Info(() => $"[{connection.ConnectionId}] Share accepted: D={Math.Round(share.Difficulty * KaspaConstants.ShareMultiplier, 3)}");
+            logger.Info(() => $"[{connection.ConnectionId}] Share accepted: D={Math.Round(share.Difficulty * coin.ShareMultiplier, 3)}");
 
             // update pool stats
-            if(share.IsBlockCandidate)
+            if (share.IsBlockCandidate)
                 poolStats.LastPoolBlockTime = clock.Now;
 
             // update client stats
@@ -316,7 +317,7 @@ CancellationToken cancellationToken = CancellationToken.None;; // Si `ct` est d√
             await UpdateVarDiffAsync(connection, false, ct);
         }
 
-        catch(StratumException ex)
+        catch (StratumException ex)
         {
             // telemetry
             PublishTelemetry(TelemetryCategory.Share, clock.Now - tsRequest.Timestamp.UtcDateTime, false);
@@ -325,7 +326,7 @@ CancellationToken cancellationToken = CancellationToken.None;; // Si `ct` est d√
             context.Stats.InvalidShares++;
 
             // elva - suppression de la ligne en dessous pour diminuer la quantit√© de log
-      ///      logger.Info(() => $"[{connection.ConnectionId}] Share rejected: {ex.Message} [{context.UserAgent}]");
+            ///      logger.Info(() => $"[{connection.ConnectionId}] Share rejected: {ex.Message} [{context.UserAgent}]");
 
             // banning
             ConsiderBan(connection, context, poolConfig.Banning);
@@ -338,15 +339,15 @@ CancellationToken cancellationToken = CancellationToken.None;; // Si `ct` est d√
     {
         currentJobParams = jobParams;
 
-// elva - suppression de la ligne en dessous
-  //      logger.Info(() => $"Broadcasting job {jobParams[0]}");
+        // elva - suppression de la ligne en dessous
+        //      logger.Info(() => $"Broadcasting job {jobParams[0]}");
 
         await Guard(() => ForEachMinerAsync(async (connection, ct) =>
         {
             var context = connection.ContextAs<KaspaWorkerContext>();
 
             // varDiff: if the client has a pending difficulty change, apply it now
-            if(context.ApplyPendingDifficulty())
+            if (context.ApplyPendingDifficulty())
                 await connection.NotifyAsync(KaspaStratumMethods.SetDifficulty, new object[] { context.Difficulty });
 
 
@@ -357,7 +358,7 @@ CancellationToken cancellationToken = CancellationToken.None;; // Si `ct` est d√
     private async Task SendJob(StratumConnection connection, KaspaWorkerContext context, object[] jobParams)
     {
         object[] jobParamsActual;
-        if(context.IsLargeJob)
+        if (context.IsLargeJob)
         {
             jobParamsActual = new object[] {
                 jobParams[0],
@@ -374,7 +375,7 @@ CancellationToken cancellationToken = CancellationToken.None;; // Si `ct` est d√
         }
 
         // send difficulty
-      //  await connection.NotifyAsync(KaspaStratumMethods.SetDifficulty, new object[] { context.Difficulty });
+        //  await connection.NotifyAsync(KaspaStratumMethods.SetDifficulty, new object[] { context.Difficulty });
 
         // send job
         await connection.NotifyAsync(KaspaStratumMethods.MiningNotify, jobParamsActual);
@@ -382,14 +383,14 @@ CancellationToken cancellationToken = CancellationToken.None;; // Si `ct` est d√
 
     public override double HashrateFromShares(double shares, double interval)
     {
-     //   var multiplier = KaspaConstants.Pow2xDiff1TargetNumZero * (double) KaspaConstants.MinHash;
-     var multiplier = coin.HashrateMultiplier;
+        //   var multiplier = KaspaConstants.Pow2xDiff1TargetNumZero * (double) KaspaConstants.MinHash;
+        var multiplier = coin.HashrateMultiplier;
         var result = shares * multiplier / interval;
 
         return result;
     }
 
-   // public override double ShareMultiplier => KaspaConstants.ShareMultiplier;
+    // public override double ShareMultiplier => KaspaConstants.ShareMultiplier;
     public override double ShareMultiplier => coin.ShareMultiplier;
 
     #region Overrides
@@ -404,8 +405,8 @@ CancellationToken cancellationToken = CancellationToken.None;; // Si `ct` est d√
 
     protected override async Task SetupJobManager(CancellationToken ct)
     {
-       // var extraNonce1Size = extraPoolConfig?.ExtraNonce1Size ?? 0;
-                var extraNonce1Size = extraPoolConfig?.ExtraNonce1Size ?? 2;
+        // var extraNonce1Size = extraPoolConfig?.ExtraNonce1Size ?? 0;
+        var extraNonce1Size = extraPoolConfig?.ExtraNonce1Size ?? 2;
 
 
         manager = ctx.Resolve<KaspaJobManager>(
@@ -415,12 +416,12 @@ CancellationToken cancellationToken = CancellationToken.None;; // Si `ct` est d√
 
         await manager.StartAsync(ct);
 
-        if(poolConfig.EnableInternalStratum == true)
+        if (poolConfig.EnableInternalStratum == true)
         {
             disposables.Add(manager.Jobs
                 .Select(job => Observable.FromAsync(() =>
-                    Guard(()=> OnNewJobAsync(job),
-                        ex=> logger.Debug(() => $"{nameof(OnNewJobAsync)}: {ex.Message}"))))
+                    Guard(() => OnNewJobAsync(job),
+                        ex => logger.Debug(() => $"{nameof(OnNewJobAsync)}: {ex.Message}"))))
                 .Concat()
                 .Subscribe(_ => { }, ex =>
                 {
@@ -457,7 +458,7 @@ CancellationToken cancellationToken = CancellationToken.None;; // Si `ct` est d√
 
         try
         {
-            switch(request.Method)
+            switch (request.Method)
             {
                 case KaspaStratumMethods.Subscribe:
                     await OnSubscribeAsync(connection, tsRequest, ct);
@@ -491,7 +492,7 @@ CancellationToken cancellationToken = CancellationToken.None;; // Si `ct` est d√
             }
         }
 
-        catch(StratumException ex)
+        catch (StratumException ex)
         {
             await connection.RespondErrorAsync(ex.Code, ex.Message, request.Id, false);
         }
@@ -502,7 +503,7 @@ CancellationToken cancellationToken = CancellationToken.None;; // Si `ct` est d√
         var result = await base.GetNicehashStaticMinDiff(context, coinName, algoName);
 
         // adjust value to fit with our target value calculation
-        if(result.HasValue)
+        if (result.HasValue)
             result = result.Value / uint.MaxValue;
 
         return result;
@@ -514,7 +515,7 @@ CancellationToken cancellationToken = CancellationToken.None;; // Si `ct` est d√
 
         var context = connection.ContextAs<KaspaWorkerContext>();
 
-        if(context.ApplyPendingDifficulty())
+        if (context.ApplyPendingDifficulty())
         {
             // send difficulty
             await connection.NotifyAsync(KaspaStratumMethods.SetDifficulty, new object[] { context.Difficulty });

@@ -14,7 +14,7 @@ public unsafe class Yespower : IHashAlgorithm
         {
             fixed (byte* output = result)
             {
-                Multihash.yespower(input, output, (uint) data.Length);
+                Multihash.yespower(input, output, (uint)data.Length);
             }
         }
     }

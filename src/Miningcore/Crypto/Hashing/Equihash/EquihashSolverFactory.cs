@@ -14,14 +14,14 @@ public static class EquihashSolverFactory
     {
         var hash = definition["hash"]?.Value<string>().ToLower();
 
-        if(string.IsNullOrEmpty(hash) || hash != HashName)
+        if (string.IsNullOrEmpty(hash) || hash != HashName)
             throw new NotSupportedException($"Invalid hash value '{hash}'. Expected '{HashName}'");
 
         var args = definition["args"]?
             .Select(token => token.Value<object>())
             .ToArray();
 
-        if(args?.Length != 3)
+        if (args?.Length != 3)
             throw new NotSupportedException($"Invalid hash arguments '{string.Join(", ", args)}'");
 
         return InstantiateSolver(ctx, args);
@@ -30,11 +30,11 @@ public static class EquihashSolverFactory
     private static EquihashSolver InstantiateSolver(IComponentContext ctx, object[] args)
     {
         var key = string.Join("-", args);
-        if(cache.TryGetValue(key, out var result))
+        if (cache.TryGetValue(key, out var result))
             return result;
 
-        var n = (int) Convert.ChangeType(args[0], typeof(int));
-        var k = (int) Convert.ChangeType(args[1], typeof(int));
+        var n = (int)Convert.ChangeType(args[0], typeof(int));
+        var k = (int)Convert.ChangeType(args[1], typeof(int));
         var personalization = args[2].ToString();
 
         // Lookup type
@@ -44,10 +44,10 @@ public static class EquihashSolverFactory
         try
         {
             // create it (we'll let Autofac do the heavy lifting)
-            result = (EquihashSolver) ctx.Resolve(hashType, new PositionalParameter(0, personalization));
+            result = (EquihashSolver)ctx.Resolve(hashType, new PositionalParameter(0, personalization));
         }
 
-        catch(ComponentNotRegisteredException)
+        catch (ComponentNotRegisteredException)
         {
             throw new NotSupportedException($"Equihash variant {n}_{k} is currently not implemented");
         }

@@ -18,7 +18,7 @@ public static class ZmqExtensions
 
     private static readonly Lazy<KeyData> ownKey = new(() =>
     {
-        if(!ZContext.Has("curve"))
+        if (!ZContext.Has("curve"))
             throw new NotSupportedException("ZMQ library does not support curve");
 
         Z85.CurveKeypair(out var pubKey, out var secretKey);
@@ -31,7 +31,7 @@ public static class ZmqExtensions
 
     private static byte[] DeriveKey(string password, int length = 32)
     {
-        using(var kbd = new Rfc2898DeriveBytes(Encoding.UTF8.GetBytes(password), noSalt, PasswordIterations))
+        using (var kbd = new Rfc2898DeriveBytes(Encoding.UTF8.GetBytes(password), noSalt, PasswordIterations))
         {
             var block = kbd.GetBytes(length);
             return block;
@@ -60,7 +60,7 @@ public static class ZmqExtensions
 
             return Disposable.Create(() =>
             {
-                using(new CompositeDisposable(monitor, cts))
+                using (new CompositeDisposable(monitor, cts))
                 {
                     monitor.AllEvents -= OnEvent;
                     monitor.Stop();
@@ -81,17 +81,17 @@ public static class ZmqExtensions
     {
         keyPlain = keyPlain?.Trim();
 
-        if(string.IsNullOrEmpty(keyPlain))
+        if (string.IsNullOrEmpty(keyPlain))
             return;
 
-        if(!ZContext.Has("curve"))
+        if (!ZContext.Has("curve"))
             throw new PoolStartupException("Unable to initialize ZMQ Curve Transport-Layer-Security. Your ZMQ library was compiled without Curve support!");
 
         // Get server's public key
         byte[] keyBytes = null;
         byte[] serverPubKey = null;
 
-        if(!knownKeys.TryGetValue(keyPlain, out var serverKeys))
+        if (!knownKeys.TryGetValue(keyPlain, out var serverKeys))
         {
             keyBytes = DeriveKey(keyPlain, 32);
 
@@ -119,16 +119,16 @@ public static class ZmqExtensions
     {
         keyPlain = keyPlain?.Trim();
 
-        if(string.IsNullOrEmpty(keyPlain))
+        if (string.IsNullOrEmpty(keyPlain))
             return;
 
-        if(!ZContext.Has("curve"))
+        if (!ZContext.Has("curve"))
             throw new PoolStartupException("Unable to initialize ZMQ Curve Transport-Layer-Security. Your ZMQ library was compiled without Curve support!");
 
         // Get server's public key
         byte[] serverPubKey = null;
 
-        if(!knownKeys.TryGetValue(keyPlain, out var serverKeys))
+        if (!knownKeys.TryGetValue(keyPlain, out var serverKeys))
         {
             var keyBytes = DeriveKey(keyPlain, 32);
 

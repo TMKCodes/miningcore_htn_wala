@@ -6,7 +6,7 @@ public class KaspaStratumMethods
     /// Used to subscribe to work from a server, required before all other communication.
     /// </summary>
     public const string Subscribe = "mining.subscribe";
-    
+
     /// <summary>
     /// Used to authorize a worker, required before any shares can be submitted.
     /// </summary>
@@ -26,7 +26,7 @@ public class KaspaStratumMethods
     /// Used to signal the miner to stop submitting shares under the new difficulty.
     /// </summary>
     public const string SetDifficulty = "mining.set_difficulty";
-    
+
     /// <summary>
     /// Used to subscribe to work from a server, required before all other communication.
     /// </summary>

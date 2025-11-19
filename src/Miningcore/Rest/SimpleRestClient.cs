@@ -77,7 +77,7 @@ public class SimpleRestClient
         {
             sb.Append('?');
 
-            for(var i=0;i<qp.Length;i++)
+            for (var i = 0; i < qp.Length; i++)
             {
                 var pair = qp[i];
                 var isLast = i == qp.Length - 1;
@@ -86,7 +86,7 @@ public class SimpleRestClient
                 sb.Append('=');
                 sb.Append(HttpUtility.UrlEncode(pair.Value));
 
-                if(!isLast)
+                if (!isLast)
                     sb.Append('&');
             }
         }
@@ -120,7 +120,7 @@ public class SimpleRestClient
         using var response = await httpClient.SendAsync(request, ct);
         var msg = await response.Content.ReadAsStringAsync(ct);
 
-        if(!response.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
             throw new HttpRequestException(msg, null, response.StatusCode);
 
         return Deserialize<T>(msg);
@@ -135,7 +135,7 @@ public class SimpleRestClient
         using var response = await httpClient.SendAsync(request, ct);
         var msg = await response.Content.ReadAsStringAsync(ct);
 
-        if(!response.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
             throw new HttpRequestException(msg, null, response.StatusCode);
 
         return new ResponseContent<T>(response, Deserialize<T>(msg));
@@ -153,7 +153,7 @@ public class SimpleRestClient
         using var response = await httpClient.SendAsync(request, ct);
         var msg = await response.Content.ReadAsStringAsync(ct);
 
-        if(!response.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
             throw new HttpRequestException(msg, null, response.StatusCode);
 
         return Deserialize<T>(msg);
@@ -179,7 +179,7 @@ public class SimpleRestClient
 
     public async Task<T> Post<T>(string path, object data, CancellationToken ct,
         IEnumerable<KeyValuePair<string, string>> queryParams = null,
-        IEnumerable<KeyValuePair<string, string>> headers = null) where T: class
+        IEnumerable<KeyValuePair<string, string>> headers = null) where T : class
     {
         Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(path));
 
@@ -195,7 +195,7 @@ public class SimpleRestClient
         using var response = await httpClient.SendAsync(request, ct);
         var msg = await response.Content.ReadAsStringAsync(ct);
 
-        if(!response.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
             throw new HttpRequestException(msg, null, response.StatusCode);
 
         return Deserialize<T>(msg);
@@ -250,7 +250,7 @@ public class SimpleRestClient
         using var response = await httpClient.SendAsync(request, ct);
         var msg = await response.Content.ReadAsStringAsync(ct);
 
-        if(!response.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
             throw new HttpRequestException(msg, null, response.StatusCode);
 
         return Deserialize<T>(msg);

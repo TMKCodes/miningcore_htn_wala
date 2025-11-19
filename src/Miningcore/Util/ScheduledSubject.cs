@@ -13,7 +13,7 @@ public class ScheduledSubject<T> : ISubject<T>
         _defaultObserver = defaultObserver;
         _subject = defaultSubject ?? new Subject<T>();
 
-        if(defaultObserver != null)
+        if (defaultObserver != null)
             _defaultObserverSub = _subject.ObserveOn(_scheduler).Subscribe(_defaultObserver);
     }
 
@@ -49,14 +49,14 @@ public class ScheduledSubject<T> : ISubject<T>
             _subject.ObserveOn(_scheduler).Subscribe(observer),
             Disposable.Create(() =>
             {
-                if(Interlocked.Decrement(ref _observerRefCount) <= 0 && _defaultObserver != null)
+                if (Interlocked.Decrement(ref _observerRefCount) <= 0 && _defaultObserver != null)
                     _defaultObserverSub = _subject.ObserveOn(_scheduler).Subscribe(_defaultObserver);
             }));
     }
 
     public void Dispose()
     {
-        if(_subject is IDisposable disposable)
+        if (_subject is IDisposable disposable)
             disposable.Dispose();
     }
 }

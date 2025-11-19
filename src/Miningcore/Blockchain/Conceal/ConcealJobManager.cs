@@ -67,7 +67,7 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
             var response = string.IsNullOrEmpty(json) ? await GetBlockTemplateAsync(ct) : GetBlockTemplateFromJson(json);
 
             // may happen if daemon is currently not connected to peers
-            if(response.Error != null)
+            if (response.Error != null)
             {
                 logger.Warn(() => $"Unable to update job. Daemon responded with: {response.Error.Message} Code {response.Error.Code}");
                 return false;
@@ -79,11 +79,11 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
 
             var isNew = job == null || newHash != job.PrevHash;
 
-            if(isNew)
+            if (isNew)
             {
                 messageBus.NotifyChainHeight(poolConfig.Id, blockTemplate.Height, poolConfig.Template);
 
-                if(via != null)
+                if (via != null)
                     logger.Info(() => $"Detected new block {blockTemplate.Height} [{via}]");
                 else
                     logger.Info(() => $"Detected new block {blockTemplate.Height}");
@@ -102,7 +102,7 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
 
             else
             {
-                if(via != null)
+                if (via != null)
                     logger.Debug(() => $"Template update {blockTemplate.Height} [{via}]");
                 else
                     logger.Debug(() => $"Template update {blockTemplate.Height}");
@@ -111,12 +111,12 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
             return isNew;
         }
 
-        catch(OperationCanceledException)
+        catch (OperationCanceledException)
         {
             // ignored
         }
 
-        catch(Exception ex)
+        catch (Exception ex)
         {
             logger.Error(ex, () => $"Error during {nameof(UpdateJob)}");
         }
@@ -146,9 +146,9 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
     {
         var info = await restClient.Get<GetInfoResponse>(ConcealConstants.DaemonRpcGetInfoLocation, ct);
 
-        if(info.Status == "OK")
+        if (info.Status == "OK")
         {
-            var percent = (double) info.TargetHeight / info.Height * 100;
+            var percent = (double)info.TargetHeight / info.Height * 100;
 
             logger.Info(() => $"Daemon has downloaded {percent:0.00}% of blockchain from {info.OutgoingConnectionsCount} peers");
         }
@@ -161,17 +161,17 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
             var coin = poolConfig.Template.As<ConcealCoinTemplate>();
             var info = await restClient.Get<GetInfoResponse>(ConcealConstants.DaemonRpcGetInfoLocation, ct);
 
-            if(info.Status != "OK")
+            if (info.Status != "OK")
                 logger.Warn(() => $"Error(s) refreshing network stats...");
 
-            if(info.Status == "OK")
+            if (info.Status == "OK")
             {
-                BlockchainStats.NetworkHashrate = info.TargetHeight > 0 ? (double) info.Difficulty / coin.DifficultyTarget : 0;
+                BlockchainStats.NetworkHashrate = info.TargetHeight > 0 ? (double)info.Difficulty / coin.DifficultyTarget : 0;
                 BlockchainStats.ConnectedPeers = info.OutgoingConnectionsCount + info.IncomingConnectionsCount;
             }
         }
 
-        catch(Exception e)
+        catch (Exception e)
         {
             logger.Error(e);
         }
@@ -181,7 +181,7 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
     {
         var response = await rpc.ExecuteAsync<SubmitResponse>(logger, ConcealCommands.SubmitBlock, CancellationToken.None, new[] { blobHex });
 
-        if(response.Error != null || response?.Response?.Status != "OK")
+        if (response.Error != null || response?.Response?.Status != "OK")
         {
             var error = response.Error?.Message ?? response.Response?.Status;
 
@@ -212,7 +212,7 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
 
         var NetworkTypeOverride = !string.IsNullOrEmpty(extraPoolConfig?.NetworkTypeOverride) ? extraPoolConfig.NetworkTypeOverride : "testnet";
 
-        switch(NetworkTypeOverride.ToLower())
+        switch (NetworkTypeOverride.ToLower())
         {
             case "mainnet":
                 networkType = ConcealNetworkType.Main;
@@ -229,28 +229,28 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
             .Where(x => string.IsNullOrEmpty(x.Category))
             .Select(x =>
             {
-                if(string.IsNullOrEmpty(x.HttpPath))
+                if (string.IsNullOrEmpty(x.HttpPath))
                     x.HttpPath = ConcealConstants.DaemonRpcLocation;
 
                 return x;
             })
             .ToArray();
 
-        if(cc.PaymentProcessing?.Enabled == true && pc.PaymentProcessing?.Enabled == true)
+        if (cc.PaymentProcessing?.Enabled == true && pc.PaymentProcessing?.Enabled == true)
         {
             // extract wallet daemon endpoints
             walletDaemonEndpoints = pc.Daemons
                 .Where(x => x.Category?.ToLower() == ConcealConstants.WalletDaemonCategory)
                 .Select(x =>
                 {
-                    if(string.IsNullOrEmpty(x.HttpPath))
+                    if (string.IsNullOrEmpty(x.HttpPath))
                         x.HttpPath = ConcealConstants.DaemonRpcLocation;
 
                     return x;
                 })
                 .ToArray();
 
-            if(walletDaemonEndpoints.Length == 0)
+            if (walletDaemonEndpoints.Length == 0)
                 throw new PoolStartupException("Wallet-RPC daemon is not configured (Daemon configuration for conceal-pools require an additional entry of category 'wallet' pointing to the wallet daemon)", pc.Id);
         }
 
@@ -259,22 +259,22 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
 
     public bool ValidateAddress(string address)
     {
-        if(string.IsNullOrEmpty(address))
+        if (string.IsNullOrEmpty(address))
             return false;
 
         var addressPrefix = CryptonoteBindings.DecodeAddress(address);
         var addressIntegratedPrefix = CryptonoteBindings.DecodeIntegratedAddress(address);
         var coin = poolConfig.Template.As<ConcealCoinTemplate>();
 
-        switch(networkType)
+        switch (networkType)
         {
             case ConcealNetworkType.Main:
-                if(addressPrefix != coin.AddressPrefix)
+                if (addressPrefix != coin.AddressPrefix)
                     return false;
                 break;
 
             case ConcealNetworkType.Test:
-                if(addressPrefix != coin.AddressPrefixTestnet)
+                if (addressPrefix != coin.AddressPrefixTestnet)
                     return false;
                 break;
         }
@@ -291,9 +291,9 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
 
         var job = currentJob;
 
-        if(job != null)
+        if (job != null)
         {
-            lock(job)
+            lock (job)
             {
                 job.PrepareWorkerJob(workerJob, out blob, out target);
             }
@@ -309,7 +309,7 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
         var context = worker.ContextAs<ConcealWorkerContext>();
 
         var job = currentJob;
-        if(workerJob.Height != job?.BlockTemplate.Height)
+        if (workerJob.Height != job?.BlockTemplate.Height)
             throw new StratumException(StratumError.MinusOne, "block expired");
 
         // validate & process
@@ -326,13 +326,13 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
         share.Created = clock.Now;
 
         // if block candidate, submit & check if accepted by network
-        if(share.IsBlockCandidate)
+        if (share.IsBlockCandidate)
         {
             logger.Info(() => $"Submitting block {share.BlockHeight} [{share.BlockHash[..6]}]");
 
             share.IsBlockCandidate = await SubmitBlockAsync(share, blobHex, share.BlockHash);
 
-            if(share.IsBlockCandidate)
+            if (share.IsBlockCandidate)
             {
                 logger.Info(() => $"Daemon accepted block {share.BlockHeight} block [{share.BlockHash[..6]}] submitted by {context.Miner}");
 
@@ -377,7 +377,7 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
         restClient = new SimpleRestClient(httpClientFactory, "http://" + daemonEndpoints.First().Host.ToString() + ":" + daemonEndpoints.First().Port.ToString() + "/");
         rpc = new RpcClient(daemonEndpoints.First(), jsonSerializerSettings, messageBus, poolConfig.Id);
 
-        if(clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
+        if (clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
         {
             // also setup wallet daemon
             walletRpc = new RpcClient(walletDaemonEndpoints.First(), jsonSerializerSettings, messageBus, poolConfig.Id);
@@ -395,29 +395,29 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
             //if(response?.Status != "OK")
             var request = new GetBlockTemplateRequest
             {
-           //     logger.Debug(() => $"conceald daemon did not responded...");
-           //     return false;
-           // }
+                //     logger.Debug(() => $"conceald daemon did not responded...");
+                //     return false;
+                // }
                 WalletAddress = poolConfig.Address,
                 ReserveSize = ConcealConstants.ReserveSize
             };
 
-        //    logger.Debug(() => $"{response?.Status} - Incoming: {response?.IncomingConnectionsCount} - Outgoing: {response?.OutgoingConnectionsCount})");
+            //    logger.Debug(() => $"{response?.Status} - Incoming: {response?.IncomingConnectionsCount} - Outgoing: {response?.OutgoingConnectionsCount})");
             var response = await rpc.ExecuteAsync<GetBlockTemplateResponse>(logger,
                 ConcealCommands.GetBlockTemplate, ct, request);
-            if(response.Error != null)
+            if (response.Error != null)
                 logger.Debug(() => $"conceald daemon response: {response.Error.Message} (Code {response.Error.Code})");
-            if(response.Error is {Code: -9})
-            return false;
+            if (response.Error is { Code: -9 })
+                return false;
         }
 
-        catch(Exception)
+        catch (Exception)
         {
             logger.Debug(() => $"conceald daemon does not seem to be running...");
             return false;
         }
 
-        if(clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
+        if (clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
         {
             logger.Debug(() => "Checking if walletd daemon is healthy...");
 
@@ -429,7 +429,7 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
 
             var response2 = await walletRpc.ExecuteAsync<GetBalanceResponse>(logger, ConcealWalletCommands.GetBalance, ct, request2);
 
-            if(response2.Error != null)
+            if (response2.Error != null)
                 logger.Debug(() => $"walletd daemon response: {response2.Error.Message} (Code {response2.Error.Code})");
 
             return response2.Error == null;
@@ -446,21 +446,21 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
         {
             var response = await restClient.Get<GetInfoResponse>(ConcealConstants.DaemonRpcGetInfoLocation, ct);
 
-            if(response?.Status != "OK")
+            if (response?.Status != "OK")
                 logger.Debug(() => $"conceald daemon is not connected...");
 
-            if(response?.Status == "OK")
+            if (response?.Status == "OK")
                 logger.Debug(() => $"Peers connected - Incoming: {response?.IncomingConnectionsCount} - Outgoing: {response?.OutgoingConnectionsCount}");
 
             // update stats
-            if(!string.IsNullOrEmpty(response?.Version))
+            if (!string.IsNullOrEmpty(response?.Version))
                 BlockchainStats.NodeVersion = response?.Version;
 
             return response?.Status == "OK" &&
                 (response?.OutgoingConnectionsCount + response?.IncomingConnectionsCount) > 0;
         }
 
-        catch(Exception)
+        catch (Exception)
         {
             logger.Debug(() => $"conceald daemon does not seem to be running...");
             return false;
@@ -486,31 +486,31 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
             var response = await rpc.ExecuteAsync<GetBlockTemplateResponse>(logger,
                 ConcealCommands.GetBlockTemplate, ct, request);
 
-            if(response.Error != null)
+            if (response.Error != null)
                 logger.Debug(() => $"conceald daemon response: {response.Error.Message} (Code {response.Error.Code})");
 
             var info = await walletRpc.ExecuteAsync<GetStatusResponse>(logger,
-                ConcealWalletCommands.GetStatus, ct, new {});
+                ConcealWalletCommands.GetStatus, ct, new { });
 
-            if(info.Error != null)
+            if (info.Error != null)
                 logger.Debug(() => $"walletd daemon response: {info.Error.Message} (Code {info.Error.Code})");
 
-            var isSynched = ((response.Error is not {Code: -9}) && (info.Response?.BlockCount >= info.Response?.KnownBlockCount));
+            var isSynched = ((response.Error is not { Code: -9 }) && (info.Response?.BlockCount >= info.Response?.KnownBlockCount));
 
-            if(isSynched)
+            if (isSynched)
             {
                 logger.Info(() => "All daemons synched with blockchain");
                 break;
             }
 
-            if(!syncPendingNotificationShown)
+            if (!syncPendingNotificationShown)
             {
                 logger.Info(() => "Daemon is still syncing with network. Manager will be started once synced.");
                 syncPendingNotificationShown = true;
             }
 
             await ShowDaemonSyncProgressAsync(ct);
-        } while(await timer.WaitForNextTickAsync(ct));
+        } while (await timer.WaitForNextTickAsync(ct));
     }
 
     protected override async Task PostStartInitAsync(CancellationToken ct)
@@ -524,11 +524,11 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
         {
             var infoResponse = await restClient.Get<GetInfoResponse>(ConcealConstants.DaemonRpcGetInfoLocation, ct);
 
-            if(infoResponse?.Status != "OK")
+            if (infoResponse?.Status != "OK")
                 throw new PoolStartupException($"Init RPC failed...", poolConfig.Id);
         }
 
-        catch(Exception)
+        catch (Exception)
         {
             logger.Debug(() => $"conceald daemon does not seem to be running...");
             throw new PoolStartupException($"Init RPC failed...", poolConfig.Id);
@@ -536,28 +536,28 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
 
         // address validation
         poolAddressBase58Prefix = CryptonoteBindings.DecodeAddress(poolConfig.Address);
-        if(poolAddressBase58Prefix == 0)
+        if (poolAddressBase58Prefix == 0)
             throw new PoolStartupException("Unable to decode pool-address", poolConfig.Id);
 
-        if(clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
+        if (clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
         {
-            var addressResponse = await walletRpc.ExecuteAsync<GetAddressResponse>(logger, ConcealWalletCommands.GetAddress, ct, new {});
+            var addressResponse = await walletRpc.ExecuteAsync<GetAddressResponse>(logger, ConcealWalletCommands.GetAddress, ct, new { });
 
             // ensure pool owns wallet
             //if(clusterConfig.PaymentProcessing?.Enabled == true && addressResponse.Response?.Address != poolConfig.Address)
-            if(clusterConfig.PaymentProcessing?.Enabled == true && Exists(addressResponse.Response?.Address, element => element == poolConfig.Address) == false)
+            if (clusterConfig.PaymentProcessing?.Enabled == true && Exists(addressResponse.Response?.Address, element => element == poolConfig.Address) == false)
                 throw new PoolStartupException($"Wallet-Daemon does not own pool-address '{poolConfig.Address}'", poolConfig.Id);
         }
 
-        switch(networkType)
+        switch (networkType)
         {
             case ConcealNetworkType.Main:
-                if(poolAddressBase58Prefix != coin.AddressPrefix)
+                if (poolAddressBase58Prefix != coin.AddressPrefix)
                     throw new PoolStartupException($"Invalid pool address prefix. Expected {coin.AddressPrefix}, got {poolAddressBase58Prefix}", poolConfig.Id);
                 break;
 
             case ConcealNetworkType.Test:
-                if(poolAddressBase58Prefix != coin.AddressPrefixTestnet)
+                if (poolAddressBase58Prefix != coin.AddressPrefixTestnet)
                     throw new PoolStartupException($"Invalid pool address prefix. Expected {coin.AddressPrefixTestnet}, got {poolAddressBase58Prefix}", poolConfig.Id);
                 break;
         }
@@ -571,8 +571,8 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
         // Periodically update network stats
         Observable.Interval(TimeSpan.FromMinutes(1))
             .Select(via => Observable.FromAsync(() =>
-                Guard(()=> UpdateNetworkStatsAsync(ct),
-                    ex=> logger.Error(ex))))
+                Guard(() => UpdateNetworkStatsAsync(ct),
+                    ex => logger.Error(ex))))
             .Concat()
             .Subscribe();
 
@@ -583,12 +583,12 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
     {
         instanceId = new byte[ConcealConstants.InstanceIdSize];
 
-        using(var rng = RandomNumberGenerator.Create())
+        using (var rng = RandomNumberGenerator.Create())
         {
             rng.GetNonZeroBytes(instanceId);
         }
 
-        if(clusterConfig.InstanceId.HasValue)
+        if (clusterConfig.InstanceId.HasValue)
             instanceId[0] = clusterConfig.InstanceId.Value;
     }
 
@@ -602,7 +602,7 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
             blockSubmission.Select(x => (JobRefreshBy.BlockFound, (string) null))
         };
 
-        if(extraPoolConfig?.BtStream == null)
+        if (extraPoolConfig?.BtStream == null)
         {
             // collect ports
             var zmq = poolConfig.Daemons
@@ -615,14 +615,14 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
                     return (Socket: extra.ZmqBlockNotifySocket, Topic: topic);
                 });
 
-            if(zmq.Count > 0)
+            if (zmq.Count > 0)
             {
                 logger.Info(() => $"Subscribing to ZMQ push-updates from {string.Join(", ", zmq.Values)}");
 
                 var blockNotify = rpc.ZmqSubscribe(logger, ct, zmq)
                     .Select(msg =>
                     {
-                        using(msg)
+                        using (msg)
                         {
                             // We just take the second frame's raw data and turn it into a hex string.
                             // If that string changes, we got an update (DistinctUntilChanged)
@@ -631,7 +631,7 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
                         }
                     })
                     .DistinctUntilChanged()
-                    .Select(_ => (JobRefreshBy.PubSub, (string) null))
+                    .Select(_ => (JobRefreshBy.PubSub, (string)null))
                     .Publish()
                     .RefCount();
 
@@ -644,14 +644,14 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
                 triggers.Add(blockNotify);
             }
 
-            if(poolConfig.BlockRefreshInterval > 0)
+            if (poolConfig.BlockRefreshInterval > 0)
             {
                 // periodically update block-template
                 var pollingInterval = poolConfig.BlockRefreshInterval > 0 ? poolConfig.BlockRefreshInterval : 1000;
 
                 triggers.Add(Observable.Timer(TimeSpan.FromMilliseconds(pollingInterval))
                     .TakeUntil(pollTimerRestart)
-                    .Select(_ => (JobRefreshBy.Poll, (string) null))
+                    .Select(_ => (JobRefreshBy.Poll, (string)null))
                     .Repeat());
             }
 
@@ -659,7 +659,7 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
             {
                 // get initial blocktemplate
                 triggers.Add(Observable.Interval(TimeSpan.FromMilliseconds(1000))
-                    .Select(_ => (JobRefreshBy.Initial, (string) null))
+                    .Select(_ => (JobRefreshBy.Initial, (string)null))
                     .TakeWhile(_ => !hasInitialBlockTemplate));
             }
         }
@@ -673,7 +673,7 @@ public class ConcealJobManager : JobManagerBase<ConcealJob>
 
             // get initial blocktemplate
             triggers.Add(Observable.Interval(TimeSpan.FromMilliseconds(1000))
-                .Select(_ => (JobRefreshBy.Initial, (string) null))
+                .Select(_ => (JobRefreshBy.Initial, (string)null))
                 .TakeWhile(_ => !hasInitialBlockTemplate));
         }
 

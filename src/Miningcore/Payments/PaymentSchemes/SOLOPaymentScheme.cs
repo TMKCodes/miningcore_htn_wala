@@ -40,11 +40,11 @@ public class SOLOPaymentScheme : IPayoutScheme
         var shareCutOffDate = CalculateRewards(block, blockReward, rewards, ct);
 
         // update balances
-        foreach(var address in rewards.Keys)
+        foreach (var address in rewards.Keys)
         {
             var amount = rewards[address];
 
-            if(amount > 0)
+            if (amount > 0)
             {
                 logger.Info(() => $"elva SOLO - Crediting {address} with {payoutHandler.FormatAmount(amount)} for block {block.BlockHeight}");
 
@@ -53,11 +53,11 @@ public class SOLOPaymentScheme : IPayoutScheme
         }
 
         // delete discarded shares
-        if(shareCutOffDate.HasValue)
+        if (shareCutOffDate.HasValue)
         {
             var cutOffCount = await shareRepo.CountSharesByMinerAsync(con, tx, poolConfig.Id, block.Miner, ct);
 
-            if(cutOffCount > 0)
+            if (cutOffCount > 0)
             {
                 logger.Info(() => $"Deleting {cutOffCount} discarded shares for {block.Miner}");
 

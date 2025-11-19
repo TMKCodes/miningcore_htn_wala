@@ -50,11 +50,11 @@ public class NotificationService : BackgroundService
 
     private async Task OnAdminNotificationAsync(AdminNotification notification, CancellationToken ct)
     {
-        if(!string.IsNullOrEmpty(adminEmail))
-            await Guard(()=> SendEmailAsync(adminEmail, notification.Subject, notification.Message, ct), LogGuarded);
+        if (!string.IsNullOrEmpty(adminEmail))
+            await Guard(() => SendEmailAsync(adminEmail, notification.Subject, notification.Message, ct), LogGuarded);
 
-        if(clusterConfig.Notifications?.Pushover?.Enabled == true)
-            await Guard(()=> pushoverClient.PushMessage(notification.Subject, notification.Message, PushoverMessagePriority.None, ct), LogGuarded);
+        if (clusterConfig.Notifications?.Pushover?.Enabled == true)
+            await Guard(() => pushoverClient.PushMessage(notification.Subject, notification.Message, PushoverMessagePriority.None, ct), LogGuarded);
     }
 
     private async Task OnBlockFoundNotificationAsync(BlockFoundNotification notification, CancellationToken ct)
@@ -62,35 +62,35 @@ public class NotificationService : BackgroundService
         const string subject = "Block Notification";
         var message = $"Pool {notification.PoolId} found block candidate {notification.BlockHeight}";
 
-        if(clusterConfig.Notifications?.Admin?.NotifyBlockFound == true)
+        if (clusterConfig.Notifications?.Admin?.NotifyBlockFound == true)
         {
             await Guard(() => SendEmailAsync(adminEmail, subject, message, ct), LogGuarded);
 
-            if(clusterConfig.Notifications?.Pushover?.Enabled == true)
+            if (clusterConfig.Notifications?.Pushover?.Enabled == true)
                 await Guard(() => pushoverClient.PushMessage(subject, message, PushoverMessagePriority.None, ct), LogGuarded);
         }
     }
 
     private async Task OnPaymentNotificationAsync(PaymentNotification notification, CancellationToken ct)
     {
-        if(string.IsNullOrEmpty(notification.Error))
+        if (string.IsNullOrEmpty(notification.Error))
         {
             var coin = poolConfigs[notification.PoolId].Template;
 
             // prepare tx links
             var txLinks = Array.Empty<string>();
 
-            if(!string.IsNullOrEmpty(coin.ExplorerTxLink))
+            if (!string.IsNullOrEmpty(coin.ExplorerTxLink))
                 txLinks = notification.TxIds.Select(txHash => string.Format(coin.ExplorerTxLink, txHash)).ToArray();
 
             const string subject = "Payout Success Notification";
             var message = $"Paid {FormatAmount(notification.Amount, notification.PoolId)} from pool {notification.PoolId} to {notification.RecipientsCount} recipients in transaction(s) {(string.Join(", ", txLinks))}";
 
-            if(clusterConfig.Notifications?.Admin?.NotifyPaymentSuccess == true)
+            if (clusterConfig.Notifications?.Admin?.NotifyPaymentSuccess == true)
             {
                 await Guard(() => SendEmailAsync(adminEmail, subject, message, ct), LogGuarded);
 
-                if(clusterConfig.Notifications?.Pushover?.Enabled == true)
+                if (clusterConfig.Notifications?.Pushover?.Enabled == true)
                     await Guard(() => pushoverClient.PushMessage(subject, message, PushoverMessagePriority.None, ct), LogGuarded);
             }
         }
@@ -100,10 +100,10 @@ public class NotificationService : BackgroundService
             const string subject = "Payout Failure Notification";
             var message = $"Failed to pay out {notification.Amount} {poolConfigs[notification.PoolId].Template.Symbol} from pool {notification.PoolId}: {notification.Error}";
 
-            await Guard(()=> SendEmailAsync(adminEmail, subject, message, ct), LogGuarded);
+            await Guard(() => SendEmailAsync(adminEmail, subject, message, ct), LogGuarded);
 
-            if(clusterConfig.Notifications?.Pushover?.Enabled == true)
-                await Guard(()=> pushoverClient.PushMessage(subject, message, PushoverMessagePriority.None, ct), LogGuarded);
+            if (clusterConfig.Notifications?.Pushover?.Enabled == true)
+                await Guard(() => pushoverClient.PushMessage(subject, message, PushoverMessagePriority.None, ct), LogGuarded);
         }
     }
 
@@ -117,7 +117,7 @@ public class NotificationService : BackgroundService
         message.Subject = subject;
         message.Body = new TextPart("html") { Text = body };
 
-        using(var client = new SmtpClient())
+        using (var client = new SmtpClient())
         {
             await client.ConnectAsync(emailSenderConfig.Host, emailSenderConfig.Port, cancellationToken: ct);
             await client.AuthenticateAsync(emailSenderConfig.User, emailSenderConfig.Password, ct);
@@ -137,21 +137,21 @@ public class NotificationService : BackgroundService
     {
         return messageBus.Listen<T>()
             .Select(msg => Observable.FromAsync(() =>
-                Guard(()=> handler(msg, ct), LogGuarded)));
+                Guard(() => handler(msg, ct), LogGuarded)));
     }
 
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
         var obs = new List<IObservable<IObservable<Unit>>>();
 
-        if(clusterConfig.Notifications?.Admin?.Enabled == true)
+        if (clusterConfig.Notifications?.Admin?.Enabled == true)
         {
             obs.Add(Subscribe<AdminNotification>(OnAdminNotificationAsync, ct));
             obs.Add(Subscribe<BlockFoundNotification>(OnBlockFoundNotificationAsync, ct));
             obs.Add(Subscribe<PaymentNotification>(OnPaymentNotificationAsync, ct));
         }
 
-        if(obs.Count > 0)
+        if (obs.Count > 0)
         {
             await obs
                 .Merge()

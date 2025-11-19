@@ -14,7 +14,7 @@ public unsafe class Skydoge : IHashAlgorithm
         {
             fixed (byte* output = result)
             {
-                Multihash.skydoge(input, output, (uint) data.Length);
+                Multihash.skydoge(input, output, (uint)data.Length);
             }
         }
     }

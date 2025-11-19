@@ -113,34 +113,34 @@ public class WarthogExponential
     {
         negExp += 1; // we are considering hashes as number in (0,1), padded with infinite amount of trailing 1's
         int i = 0;
-        for(; i < hash.Length; ++i)
+        for (; i < hash.Length; ++i)
         {
-            if(hash[i] != 0)
+            if (hash[i] != 0)
                 break;
             negExp += 8;
         }
 
         ulong tmpData = 0;
-        for(int j = 0; ; ++j)
+        for (int j = 0; ; ++j)
         {
-            if(i < hash.Length)
+            if (i < hash.Length)
                 tmpData |= hash[i++];
             else
                 tmpData |= 0xFFu; // "infinite amount of trailing 1's"
 
-            if(j >= 3)
+            if (j >= 3)
                 break;
             tmpData <<= 8;
         }
 
-        while((tmpData & 0x80000000ul) == 0)
+        while ((tmpData & 0x80000000ul) == 0)
         {
             negExp += 1;
             tmpData <<= 1;
         }
 
         tmpData *= (ulong)data;
-        if(tmpData >= (ulong)(1ul << 63))
+        if (tmpData >= (ulong)(1ul << 63))
         {
             tmpData >>= 1;
             negExp -= 1;
@@ -153,7 +153,7 @@ public class WarthogExponential
 }
 
 public class WarthogTarget
-{    
+{
     public bool IsJanusHash { get; private set; } = true;
     public uint data { get; private set; } = 0u;
 
@@ -171,7 +171,7 @@ public class WarthogTarget
 
     public WarthogTarget(double difficulty, bool isJanusHash = true)
     {
-        if(difficulty < 1.0)
+        if (difficulty < 1.0)
             difficulty = 1.0;
 
         this.IsJanusHash = isJanusHash;
@@ -181,25 +181,25 @@ public class WarthogTarget
         uint zeros;
         uint digits;
 
-        if(!this.IsJanusHash)
+        if (!this.IsJanusHash)
         {
-            if(exp - 1 >= 256 - 24)
+            if (exp - 1 >= 256 - 24)
             {
                 data = WarthogConstants.HardestTargetHost;
                 return;
             }
 
             zeros = (uint)(exp - 1);
-            if(inv == 2.0)
+            if (inv == 2.0)
             {
                 Set(zeros, 0x00FFFFFF);
             }
             else
             {
                 digits = (uint)Math.Floor(Math.ScaleB(inv, 23));
-                if(digits < 0x00800000)
+                if (digits < 0x00800000)
                     Set(zeros, 0x00800000);
-                else if(digits > 0x00FFFFFF)
+                else if (digits > 0x00FFFFFF)
                     Set(zeros, 0x00FFFFFF);
                 else
                     Set(zeros, digits);
@@ -208,21 +208,21 @@ public class WarthogTarget
         else
         {
             zeros = (uint)(exp - 1);
-            if(zeros >= 3 * 256)
+            if (zeros >= 3 * 256)
             {
                 data = WarthogConstants.JanusHashMaxTargetHost;
                 return;
             }
-            if(inv == 2.0)
+            if (inv == 2.0)
             {
                 Set(zeros, 0x003fffff);
             }
             else
             {
                 digits = (uint)Math.Floor(Math.ScaleB(inv, 21));
-                if(digits < 0x00200000)
+                if (digits < 0x00200000)
                     Set(zeros, 0x00200000);
-                else if(digits > 0x003fffff)
+                else if (digits > 0x003fffff)
                     Set(zeros, 0x003fffff);
                 else
                     Set(zeros, digits);
@@ -260,7 +260,7 @@ public class WarthogTarget
         int zeros;
         double dbits;
 
-        if(!IsJanusHash)
+        if (!IsJanusHash)
         {
             zeros = (int)Zeros8();
             dbits = Bits24();
@@ -276,20 +276,20 @@ public class WarthogTarget
 
     public static bool operator <(WarthogCustomFloat wcf, WarthogTarget wt)
     {
-        if(!wt.IsJanusHash)
+        if (!wt.IsJanusHash)
             return false;
         else
         {
             uint zerosTarget = wt.Zeros10();
             int exp = wcf._exponent;
-            if(exp < 0)
+            if (exp < 0)
                 exp = -exp;
             uint zerosHashProduct = (uint)exp;
 
-            if(zerosTarget > zerosHashProduct)
+            if (zerosTarget > zerosHashProduct)
                 return false;
 
-            if(zerosTarget < zerosHashProduct)
+            if (zerosTarget < zerosHashProduct)
                 return true;
 
             ulong bits32 = wt.Bits22() << 10;
@@ -299,20 +299,20 @@ public class WarthogTarget
 
     public static bool operator >(WarthogCustomFloat wcf, WarthogTarget wt)
     {
-        if(!wt.IsJanusHash)
+        if (!wt.IsJanusHash)
             return false;
         else
         {
             uint zerosTarget = wt.Zeros10();
             int exp = wcf._exponent;
-            if(exp < 0)
+            if (exp < 0)
                 exp = -exp;
             uint zerosHashProduct = (uint)exp;
 
-            if(zerosTarget > zerosHashProduct)
+            if (zerosTarget > zerosHashProduct)
                 return true;
 
-            if(zerosTarget < zerosHashProduct)
+            if (zerosTarget < zerosHashProduct)
                 return false;
 
             ulong bits32 = wt.Bits22() << 10;
@@ -322,34 +322,34 @@ public class WarthogTarget
 
     public static bool operator <(ReadOnlySpan<byte> hash, WarthogTarget wt)
     {
-        if(!wt.IsJanusHash)
+        if (!wt.IsJanusHash)
         {
             uint zeros = wt.Zeros8();
-            if(zeros > (256 - 4 * 8))
+            if (zeros > (256 - 4 * 8))
                 return false;
             uint bits = wt.Bits24();
-            if((bits & 0x00800000) == 0)
+            if ((bits & 0x00800000) == 0)
                 return false; // first digit must be 1
             int zeroBytes = (int)(zeros / 8); // number of complete zero bytes
             int shift = (int)(zeros & 0x07);
 
-            for(int i = 0; i < zeroBytes; ++i)
-                if(hash[31 - i] != 0)
+            for (int i = 0; i < zeroBytes; ++i)
+                if (hash[31 - i] != 0)
                     return false; // here we need zeros
 
             uint threshold = bits << (8 - shift);
             byte[] dst = hash.ToArray().Skip(28 - zeroBytes).Take(4).ToArray();
             uint candidate = uint.Parse(dst.ToHexString(), NumberStyles.HexNumber);
-            if(candidate > threshold)
+            if (candidate > threshold)
             {
                 return false;
             }
-            if(candidate < threshold)
+            if (candidate < threshold)
             {
                 return true;
             }
-            for(int i = 0; i < 28 - zeroBytes; ++i)
-                if(hash[i] != 0)
+            for (int i = 0; i < 28 - zeroBytes; ++i)
+                if (hash[i] != 0)
                     return false;
             return true;
         }
@@ -359,10 +359,10 @@ public class WarthogTarget
             uint zerosTarget = wt.Zeros10();
             uint zerosHashProduct = (uint)(we.negExp - 1);
 
-            if(zerosTarget > zerosHashProduct)
+            if (zerosTarget > zerosHashProduct)
                 return false;
 
-            if(zerosTarget < zerosHashProduct)
+            if (zerosTarget < zerosHashProduct)
                 return true;
 
             uint bits32 = wt.Bits22() << 10;
@@ -372,34 +372,34 @@ public class WarthogTarget
 
     public static bool operator >(ReadOnlySpan<byte> hash, WarthogTarget wt)
     {
-        if(!wt.IsJanusHash)
+        if (!wt.IsJanusHash)
         {
             uint zeros = wt.Zeros8();
-            if(zeros < (256 - 4 * 8))
+            if (zeros < (256 - 4 * 8))
                 return false;
             uint bits = wt.Bits24();
-            if((bits & 0x00800000) != 0)
+            if ((bits & 0x00800000) != 0)
                 return false; // first digit must be 1
             int zeroBytes = (int)(zeros / 8); // number of complete zero bytes
             int shift = (int)(zeros & 0x07);
 
-            for(int i = 0; i < zeroBytes; ++i)
-                if(hash[31 - i] == 0)
+            for (int i = 0; i < zeroBytes; ++i)
+                if (hash[31 - i] == 0)
                     return false; // here we need zeros
 
             uint threshold = bits << (8 - shift);
             byte[] dst = hash.ToArray().Skip(28 - zeroBytes).Take(4).ToArray();
             uint candidate = uint.Parse(dst.ToHexString(), NumberStyles.HexNumber);
-            if(candidate < threshold)
+            if (candidate < threshold)
             {
                 return false;
             }
-            if(candidate > threshold)
+            if (candidate > threshold)
             {
                 return true;
             }
-            for(int i = 0; i < 28 - zeroBytes; ++i)
-                if(hash[i] == 0)
+            for (int i = 0; i < 28 - zeroBytes; ++i)
+                if (hash[i] == 0)
                     return false;
             return true;
         }
@@ -409,10 +409,10 @@ public class WarthogTarget
             uint zerosTarget = wt.Zeros10();
             uint zerosHashProduct = (uint)(we.negExp - 1);
 
-            if(zerosTarget > zerosHashProduct)
+            if (zerosTarget > zerosHashProduct)
                 return true;
 
-            if(zerosTarget < zerosHashProduct)
+            if (zerosTarget < zerosHashProduct)
                 return false;
 
             uint bits32 = wt.Bits22() << 10;
@@ -440,7 +440,7 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
         get => (long)this._exponent;
         set
         {
-            if(!(value < int.MaxValue && value > int.MinValue))
+            if (!(value < int.MaxValue && value > int.MinValue))
                 throw new Exception($"Invalid value for Exponent: {value} < {int.MaxValue} && {value} > {int.MinValue}");
 
             this._exponent = (int)value;
@@ -452,7 +452,7 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
         get => (ulong)this._mantissa;
         set
         {
-            if(!(value < (ulong)(1ul << 32) && value != 0))
+            if (!(value < (ulong)(1ul << 32) && value != 0))
                 throw new Exception($"Invalid value for Mantissa: {value} < {(ulong)(1ul << 32)} && {value} != 0");
 
             this._mantissa = (uint)value;
@@ -478,7 +478,7 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
     {
         this.Exponent = exponent;
 
-        if(mantissa == 0)
+        if (mantissa == 0)
             this._mantissa = 0;
         else
             this.Mantissa = mantissa;
@@ -486,7 +486,7 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
 
     public void ShiftLeft(long exponent, ulong mantissa)
     {
-        while(mantissa < 0x80000000ul)
+        while (mantissa < 0x80000000ul)
         {
             mantissa <<= 1;
             exponent -= 1;
@@ -497,7 +497,7 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
 
     public void ShiftRight(long exponent, ulong mantissa)
     {
-        while(mantissa >= (1ul << 32))
+        while (mantissa >= (1ul << 32))
         {
             mantissa >>= 1;
             exponent += 1;
@@ -519,9 +519,9 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
     // IComparable
     int IComparable.CompareTo(object obj)
     {
-        if(obj == null)
+        if (obj == null)
             return 1;
-        if(obj is not WarthogCustomFloat customfloat)
+        if (obj is not WarthogCustomFloat customfloat)
             throw new ArgumentException("Argument must be of type WarthogCustomFloat", "obj");
         return Compare(this, customfloat);
     }
@@ -537,7 +537,7 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
     {
         double r = (double)this._mantissa / (ulong)(1ul << 32);
 
-        if(!this._isPositive)
+        if (!this._isPositive)
             r = -r;
 
         var ret = new StringBuilder();
@@ -551,14 +551,14 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
     // a/b = c/d, if ad = bc
     public bool Equals(WarthogCustomFloat other)
     {
-        if(this._exponent == other._exponent && this._mantissa == other._mantissa)
+        if (this._exponent == other._exponent && this._mantissa == other._mantissa)
             return this._isPositive == other._isPositive;
 
         long xMantissa = (long)this._mantissa;
-        if(!this._isPositive)
+        if (!this._isPositive)
             xMantissa = -xMantissa;
         long yMantissa = other._mantissa;
-        if(!other._isPositive)
+        if (!other._isPositive)
             yMantissa = -yMantissa;
 
         return xMantissa * other._exponent == this._exponent * yMantissa;
@@ -582,23 +582,23 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
         this._isPositive = true;
         int exponent = 0;
         int i = 0;
-        for(; i < hash.Length; ++i)
+        for (; i < hash.Length; ++i)
         {
-            if(hash[i] != 0)
+            if (hash[i] != 0)
                 break;
             exponent -= 8;
         }
 
         ulong tmpData = 0;
 
-        for(int j = 0; ; ++j)
+        for (int j = 0; ; ++j)
         {
-            if(i < hash.Length)
+            if (i < hash.Length)
                 tmpData |= hash[i++];
             else
                 tmpData |= 0xFFu; // "infinite amount of trailing 1's"
 
-            if(j >= 3)
+            if (j >= 3)
                 break;
 
             tmpData <<= 8;
@@ -609,7 +609,7 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
 
     public WarthogCustomFloat(double d)
     {
-        if(d == 0)
+        if (d == 0)
         {
             this._exponent = 0;
             this._mantissa = 0;
@@ -620,7 +620,7 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
             WarthogUtils.Frexp(d, out var r, out var e);
 
             bool isPositive = r >= 0;
-            if(r < 0)
+            if (r < 0)
                 r = -r;
 
             r *= (ulong)(1ul << 32);
@@ -634,7 +634,7 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
 
     public WarthogCustomFloat(int mantissa)
     {
-        if(mantissa == 0)
+        if (mantissa == 0)
         {
             this._exponent = 0;
             this._mantissa = 0;
@@ -643,8 +643,8 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
         else
         {
             this.IsPositive = mantissa >= 0;
-            
-            if(mantissa < 0)
+
+            if (mantissa < 0)
                 mantissa = -mantissa;
 
             ulong tmpData = (ulong)mantissa;
@@ -655,7 +655,7 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
 
     public WarthogCustomFloat(long exponent, bool isPositive)
     {
-        if(exponent >= int.MaxValue || exponent <= int.MinValue)
+        if (exponent >= int.MaxValue || exponent <= int.MinValue)
             throw new ArgumentException($"Invalid value for exponent: {exponent} < {int.MaxValue} && {exponent} > {int.MinValue}");
 
         this.Exponent = exponent + 1;
@@ -731,19 +731,19 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
     public static bool operator <(WarthogCustomFloat wcf1, WarthogCustomFloat wcf2)
     {
         int expWcf2 = wcf2._exponent;
-        if(expWcf2 < 0)
+        if (expWcf2 < 0)
             expWcf2 = -expWcf2;
         uint zerosWcf2 = (uint)expWcf2;
 
         int expWcf1 = wcf1._exponent;
-        if(expWcf1 < 0)
+        if (expWcf1 < 0)
             expWcf1 = -expWcf1;
         uint zerosWcf1 = (uint)expWcf1;
 
-        if(zerosWcf1 < zerosWcf2)
+        if (zerosWcf1 < zerosWcf2)
             return false;
 
-        if(zerosWcf1 > zerosWcf2)
+        if (zerosWcf1 > zerosWcf2)
             return true;
 
         return wcf1._mantissa < wcf2._mantissa;
@@ -752,19 +752,19 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
     public static bool operator <=(WarthogCustomFloat wcf1, WarthogCustomFloat wcf2)
     {
         int expWcf2 = wcf2._exponent;
-        if(expWcf2 < 0)
+        if (expWcf2 < 0)
             expWcf2 = -expWcf2;
         uint zerosWcf2 = (uint)expWcf2;
 
         int expWcf1 = wcf1._exponent;
-        if(expWcf1 < 0)
+        if (expWcf1 < 0)
             expWcf1 = -expWcf1;
         uint zerosWcf1 = (uint)expWcf1;
 
-        if(zerosWcf1 < zerosWcf2)
+        if (zerosWcf1 < zerosWcf2)
             return false;
-    
-        if(zerosWcf1 >= zerosWcf2)
+
+        if (zerosWcf1 >= zerosWcf2)
             return true;
 
         return wcf1._mantissa <= wcf2._mantissa;
@@ -806,7 +806,7 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
         int e1 = wcf1._exponent;
         int e2 = wcf2._exponent;
 
-        if(wcf1._mantissa == 0)
+        if (wcf1._mantissa == 0)
         {
             wcf3._exponent = wcf2._exponent;
             wcf3._mantissa = wcf2._mantissa;
@@ -815,29 +815,29 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
             return wcf3;
         }
 
-        if(wcf2._mantissa == 0)
+        if (wcf2._mantissa == 0)
             return wcf3;
 
-        if(e1 < e2)
+        if (e1 < e2)
             return wcf2 + wcf1;
 
-        if(e1 - e2 >= 64)
+        if (e1 - e2 >= 64)
             return wcf3;
 
         ulong tmp = wcf1._mantissa;
         ulong operand = (ulong)wcf2._mantissa >> (e1 - e2);
 
-        if(wcf1._isPositive == wcf2._isPositive)
+        if (wcf1._isPositive == wcf2._isPositive)
         {
             tmp += operand;
-            
+
             wcf3.ShiftRight(e1, tmp);
         }
         else
         {
-            if(operand == tmp)
+            if (operand == tmp)
                 wcf3._mantissa = 0;
-            else if(operand > tmp)
+            else if (operand > tmp)
             {
                 wcf3._isPositive = wcf2._isPositive; // change sign
                 wcf3.ShiftLeft(e2, operand - tmp);
@@ -859,7 +859,7 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
     public static WarthogCustomFloat operator *(WarthogCustomFloat wcf1, WarthogCustomFloat wcf2)
     {
         WarthogCustomFloat wcf3 = new(wcf1._exponent, wcf1._mantissa, wcf1._isPositive);
-        if(wcf1._mantissa == 0 || wcf2._mantissa == 0)
+        if (wcf1._mantissa == 0 || wcf2._mantissa == 0)
         {
             wcf3._mantissa = 0;
             return wcf3;
@@ -871,7 +871,7 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
         long e = (long)(e1 + e2);
         ulong tmp = (ulong)wcf1._mantissa * wcf2._mantissa;
 
-        if(tmp < (1ul << 63))
+        if (tmp < (1ul << 63))
         {
             e -= 1;
             tmp <<= 1;
@@ -918,12 +918,12 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
 
     public static explicit operator double(WarthogCustomFloat value)
     {
-        if(value._mantissa == 0)
+        if (value._mantissa == 0)
             return 0;
 
         double r = (double)value._mantissa / (ulong)(1ul << 32);
 
-        if(!value._isPositive)
+        if (!value._isPositive)
             r = -r;
 
         // return Math.Pow(2, value._exponent) * r;
@@ -949,7 +949,7 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
             // verify that the deserialized number is well formed
             SetAssert(this._exponent, this._mantissa);
         }
-        catch(ArgumentException e)
+        catch (ArgumentException e)
         {
             throw new SerializationException("invalid serialization data", e);
         }
@@ -957,7 +957,7 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
 
     void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
     {
-        if(info == null)
+        if (info == null)
             throw new ArgumentNullException(nameof(info));
 
         info.AddValue("Exponent", this._exponent);
@@ -967,12 +967,12 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
 
     private WarthogCustomFloat(SerializationInfo info, StreamingContext context)
     {
-        if(info == null)
+        if (info == null)
             throw new ArgumentNullException(nameof(info));
 
-        this._exponent = (int) info.GetValue("Exponent", typeof(int));
-        this._mantissa = (uint) info.GetValue("Mantissa", typeof(uint));
-        this._isPositive = (bool) info.GetValue("IsPositive", typeof(bool));
+        this._exponent = (int)info.GetValue("Exponent", typeof(int));
+        this._mantissa = (uint)info.GetValue("Mantissa", typeof(uint));
+        this._isPositive = (bool)info.GetValue("IsPositive", typeof(bool));
     }
 
     #endregion serialization
@@ -991,7 +991,7 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
     {
         WarthogCustomFloat wcf1;
 
-        if(wcf._mantissa == 0)
+        if (wcf._mantissa == 0)
         {
             wcf1 = new(1);
             return wcf1;
@@ -1000,9 +1000,9 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
         int e_x = wcf._exponent;
         uint m = wcf._mantissa;
 
-        if(e_x == 32)
+        if (e_x == 32)
         {
-            if(wcf._isPositive)
+            if (wcf._isPositive)
             {
                 wcf1 = new((long)m, true);
                 return wcf1;
@@ -1013,13 +1013,13 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
         }
         else
         {
-            if(e_x > 0)
+            if (e_x > 0)
             {
                 long e = (long)(m >> (32 - e_x));
                 uint m_frac = (uint)(m << e_x);
-                if(m_frac == 0)
+                if (m_frac == 0)
                 {
-                    if(wcf._isPositive)
+                    if (wcf._isPositive)
                     {
                         wcf1 = new(e, true);
                         return wcf1;
@@ -1035,7 +1035,7 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
                 WarthogCustomFloat frac = Zero();
                 frac.ShiftLeft(0, m_frac);
 
-                if(wcf._isPositive)
+                if (wcf._isPositive)
                 {
                     wcf1 = Pow2Fraction(frac);
                     wcf1.Exponent += e;
@@ -1051,7 +1051,7 @@ public class WarthogCustomFloat : IComparable, IComparable<WarthogCustomFloat>, 
             }
             else
             {
-                if(wcf._isPositive)
+                if (wcf._isPositive)
                     return Pow2Fraction(wcf);
 
                 wcf1 = Pow2Fraction(new WarthogCustomFloat(1) + wcf);

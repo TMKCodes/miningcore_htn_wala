@@ -49,14 +49,14 @@ public class WarthogPool : PoolBase
     {
         var request = tsRequest.Value;
 
-        if(request.Id == null)
+        if (request.Id == null)
             throw new StratumException(StratumError.MinusOne, "missing request id");
 
         var context = connection.ContextAs<WarthogWorkerContext>();
-        
+
         var requestParams = request.ParamsAs<string[]>();
 
-        if(requestParams?.Length < 1)
+        if (requestParams?.Length < 1)
             throw new StratumException(StratumError.Other, "invalid params");
 
         context.UserAgent = requestParams.FirstOrDefault()?.Trim();
@@ -77,7 +77,7 @@ public class WarthogPool : PoolBase
         // [Respect the goddamn standards Nicehack :(]
         var response = new JsonRpcResponse<object[]>(data, request.Id);
 
-        if(context.IsNicehash || context.UserAgent.Contains(WarthogConstants.JanusMiner))
+        if (context.IsNicehash || context.UserAgent.Contains(WarthogConstants.JanusMiner))
         {
             response.Extra = new Dictionary<string, object>();
             response.Extra["error"] = null;
@@ -91,7 +91,7 @@ public class WarthogPool : PoolBase
         // Nicehash support
         var nicehashDiff = await GetNicehashStaticMinDiff(context, coin.Name, coin.GetAlgorithmName());
 
-        if(nicehashDiff.HasValue)
+        if (nicehashDiff.HasValue)
         {
             logger.Info(() => $"[{connection.ConnectionId}] Nicehash detected. Using API supplied difficulty of {nicehashDiff.Value}");
 
@@ -99,21 +99,21 @@ public class WarthogPool : PoolBase
             context.SetDifficulty(nicehashDiff.Value);
         }
     }
-    
+
     protected virtual async Task OnAuthorizeAsync(StratumConnection connection, Timestamped<JsonRpcRequest> tsRequest, CancellationToken ct)
     {
         var request = tsRequest.Value;
 
-        if(request.Id == null)
+        if (request.Id == null)
             throw new StratumException(StratumError.MinusOne, "missing request id");
 
         var context = connection.ContextAs<WarthogWorkerContext>();
-        if(!context.IsSubscribed)
+        if (!context.IsSubscribed)
             throw new StratumException(StratumError.NotSubscribed, "subscribe first please, we aren't savages");
 
         var requestParams = request.ParamsAs<string[]>();
 
-        if(requestParams?.Length < 1)
+        if (requestParams?.Length < 1)
             throw new StratumException(StratumError.Other, "invalid params");
 
         var workerValue = requestParams?.Length > 0 ? requestParams[0] : null;
@@ -130,14 +130,14 @@ public class WarthogPool : PoolBase
         context.Miner = minerName;
         context.Worker = workerName;
 
-        if(context.IsAuthorized)
+        if (context.IsAuthorized)
         {
             // Nicehash's stupid validator insists on "error" property present
             // in successful responses which is a violation of the JSON-RPC spec
             // [Respect the goddamn standards Nicehack :(]
             var response = new JsonRpcResponse<object>(context.IsAuthorized, request.Id);
 
-            if(context.IsNicehash || context.UserAgent.Contains(WarthogConstants.JanusMiner))
+            if (context.IsNicehash || context.UserAgent.Contains(WarthogConstants.JanusMiner))
             {
                 response.Extra = new Dictionary<string, object>();
                 response.Extra["error"] = null;
@@ -153,7 +153,7 @@ public class WarthogPool : PoolBase
             var staticDiff = GetStaticDiffFromPassparts(passParts);
 
             // Static diff
-            if(staticDiff.HasValue &&
+            if (staticDiff.HasValue &&
                (context.VarDiff != null && staticDiff.Value >= context.VarDiff.Config.MinDiff ||
                    context.VarDiff == null && staticDiff.Value > context.Difficulty))
             {
@@ -172,7 +172,7 @@ public class WarthogPool : PoolBase
         {
             await connection.RespondErrorAsync(StratumError.UnauthorizedWorker, "Authorization failed", request.Id, context.IsAuthorized);
 
-            if(clusterConfig?.Banning?.BanOnLoginFailure is null or true)
+            if (clusterConfig?.Banning?.BanOnLoginFailure is null or true)
             {
                 // issue short-time ban if unauthorized to prevent DDos on daemon (validateaddress RPC)
                 logger.Info(() => $"[{connection.ConnectionId}] Banning unauthorized worker {minerName} for {loginFailureBanTimeout.TotalSeconds} sec");
@@ -191,13 +191,13 @@ public class WarthogPool : PoolBase
 
         try
         {
-            if(request.Id == null)
+            if (request.Id == null)
                 throw new StratumException(StratumError.MinusOne, "missing request id");
 
             // check age of submission (aged submissions are usually caused by high server load)
             var requestAge = clock.Now - tsRequest.Timestamp.UtcDateTime;
 
-            if(requestAge > maxShareAge)
+            if (requestAge > maxShareAge)
             {
                 logger.Warn(() => $"[{connection.ConnectionId}] Dropping stale share submission request (server overloaded?)");
                 return;
@@ -207,9 +207,9 @@ public class WarthogPool : PoolBase
             context.LastActivity = clock.Now;
 
             // validate worker
-            if(!context.IsAuthorized)
+            if (!context.IsAuthorized)
                 throw new StratumException(StratumError.UnauthorizedWorker, "unauthorized worker");
-            else if(!context.IsSubscribed)
+            else if (!context.IsSubscribed)
                 throw new StratumException(StratumError.NotSubscribed, "not subscribed");
 
             var requestParams = request.ParamsAs<string[]>();
@@ -222,7 +222,7 @@ public class WarthogPool : PoolBase
             // [Respect the goddamn standards Nicehack :(]
             var response = new JsonRpcResponse<object>(true, request.Id);
 
-            if(context.IsNicehash || context.UserAgent.Contains(WarthogConstants.JanusMiner))
+            if (context.IsNicehash || context.UserAgent.Contains(WarthogConstants.JanusMiner))
             {
                 response.Extra = new Dictionary<string, object>();
                 response.Extra["error"] = null;
@@ -240,7 +240,7 @@ public class WarthogPool : PoolBase
             logger.Info(() => $"[{connection.ConnectionId}] Share accepted: D={Math.Round(share.Difficulty, 3)}");
 
             // update pool stats
-            if(share.IsBlockCandidate)
+            if (share.IsBlockCandidate)
                 poolStats.LastPoolBlockTime = clock.Now;
 
             // update client stats
@@ -249,7 +249,7 @@ public class WarthogPool : PoolBase
             await UpdateVarDiffAsync(connection, false, ct);
         }
 
-        catch(StratumException ex)
+        catch (StratumException ex)
         {
             // telemetry
             PublishTelemetry(TelemetryCategory.Share, clock.Now - tsRequest.Timestamp.UtcDateTime, false);
@@ -261,14 +261,14 @@ public class WarthogPool : PoolBase
             // banning
             ConsiderBan(connection, context, poolConfig.Banning);
 
-            if(context.UserAgent.Contains(WarthogConstants.JanusMiner))
+            if (context.UserAgent.Contains(WarthogConstants.JanusMiner))
             {
                 // Little hack to allow JanusMiner to mine on our stratum without interruptions even though we should still be able to ban it just in case
                 // [Respect the goddamn standards though :(]
                 var response = new JsonRpcResponse<object>(true, request.Id);
                 response.Extra = new Dictionary<string, object>();
                 response.Extra["error"] = null;
-                
+
                 // respond
                 await connection.RespondAsync(response);
             }
@@ -281,14 +281,14 @@ public class WarthogPool : PoolBase
     {
         currentJobParams = jobParams;
 
-        logger.Info(() => $"Broadcasting job {((object[]) jobParams)[0]}");
+        logger.Info(() => $"Broadcasting job {((object[])jobParams)[0]}");
 
         await Guard(() => ForEachMinerAsync(async (connection, ct) =>
         {
             var context = connection.ContextAs<WarthogWorkerContext>();
 
             // varDiff: if the client has a pending difficulty change, apply it now
-            if(context.ApplyPendingDifficulty())
+            if (context.ApplyPendingDifficulty())
                 await connection.NotifyAsync(BitcoinStratumMethods.SetDifficulty, new object[] { context.Difficulty });
 
             // send job
@@ -326,12 +326,12 @@ public class WarthogPool : PoolBase
 
         await manager.StartAsync(ct);
 
-        if(poolConfig.EnableInternalStratum == true)
+        if (poolConfig.EnableInternalStratum == true)
         {
             disposables.Add(manager.Jobs
                 .Select(job => Observable.FromAsync(() =>
-                    Guard(()=> OnNewJobAsync(job),
-                        ex=> logger.Debug(() => $"{nameof(OnNewJobAsync)}: {ex.Message}"))))
+                    Guard(() => OnNewJobAsync(job),
+                        ex => logger.Debug(() => $"{nameof(OnNewJobAsync)}: {ex.Message}"))))
                 .Concat()
                 .Subscribe(_ => { }, ex =>
                 {
@@ -368,7 +368,7 @@ public class WarthogPool : PoolBase
 
         try
         {
-            switch(request.Method)
+            switch (request.Method)
             {
                 case BitcoinStratumMethods.Authorize:
                     await OnAuthorizeAsync(connection, tsRequest, ct);
@@ -390,7 +390,7 @@ public class WarthogPool : PoolBase
             }
         }
 
-        catch(StratumException ex)
+        catch (StratumException ex)
         {
             await connection.RespondErrorAsync(ex.Code, ex.Message, request.Id, false);
         }
@@ -400,7 +400,7 @@ public class WarthogPool : PoolBase
     {
         await base.OnVarDiffUpdateAsync(connection, newDiff, ct);
 
-        if(connection.Context.ApplyPendingDifficulty())
+        if (connection.Context.ApplyPendingDifficulty())
         {
             await connection.NotifyAsync(BitcoinStratumMethods.SetDifficulty, new object[] { connection.Context.Difficulty });
             await connection.NotifyAsync(BitcoinStratumMethods.MiningNotify, currentJobParams);

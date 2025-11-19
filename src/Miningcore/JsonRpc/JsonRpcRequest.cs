@@ -46,9 +46,9 @@ public class JsonRpcRequest<T>
 
     public TParam ParamsAs<TParam>() where TParam : class
     {
-        if(Params is JToken token)
+        if (Params is JToken token)
             return token.ToObject<TParam>();
 
-        return (TParam) Params;
+        return (TParam)Params;
     }
 }

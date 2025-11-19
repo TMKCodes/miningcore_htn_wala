@@ -27,19 +27,19 @@ public class Cache : IEthashCache
     public ulong Epoch { get; }
     private string dagDir;
     public DateTime LastUsed { get; set; }
-    
+
     public static unsafe string GetDefaultdagDirectory()
     {
         var chars = new byte[512];
 
         fixed (byte* data = chars)
         {
-            if(EthHashB3.ethash_get_default_dirname(data, chars.Length))
+            if (EthHashB3.ethash_get_default_dirname(data, chars.Length))
             {
                 int length;
-                for(length = 0; length < chars.Length; length++)
+                for (length = 0; length < chars.Length; length++)
                 {
-                    if(data[length] == 0)
+                    if (data[length] == 0)
                         break;
                 }
 
@@ -52,10 +52,10 @@ public class Cache : IEthashCache
 
     public void Dispose()
     {
-        if(handle != IntPtr.Zero)
+        if (handle != IntPtr.Zero)
         {
             // Full DAG
-            if(!string.IsNullOrEmpty(dagDir))
+            if (!string.IsNullOrEmpty(dagDir))
             {
                 EthHashB3.ethash_full_delete(handle);
             }
@@ -64,30 +64,30 @@ public class Cache : IEthashCache
             {
                 EthHashB3.ethash_light_delete(handle);
             }
-            
+
             handle = IntPtr.Zero;
         }
     }
 
     public async Task GenerateAsync(ILogger logger, CancellationToken ct)
     {
-        if(handle == IntPtr.Zero)
+        if (handle == IntPtr.Zero)
         {
             await Task.Run(() =>
             {
-                lock(genLock)
+                lock (genLock)
                 {
-                    if(!isGenerated)
+                    if (!isGenerated)
                     {
                         // re-check after obtaining lock
-                        if(handle != IntPtr.Zero)
+                        if (handle != IntPtr.Zero)
                             return;
-                        
+
                         var started = DateTime.Now;
                         var block = Epoch * HypraConstants.EpochLength;
 
                         // Full DAG
-                        if(!string.IsNullOrEmpty(dagDir))
+                        if (!string.IsNullOrEmpty(dagDir))
                         {
                             logger.Debug(() => $"Generating DAG for epoch {Epoch}");
                             logger.Debug(() => $"Epoch length used: {HypraConstants.EpochLength}");
@@ -103,10 +103,10 @@ public class Cache : IEthashCache
                                 return !ct.IsCancellationRequested ? 0 : 1;
                             });
 
-                            if(handle == IntPtr.Zero)
+                            if (handle == IntPtr.Zero)
                                 throw new OutOfMemoryException("ethash_full_new IO or memory error");
 
-                            if(light != IntPtr.Zero)
+                            if (light != IntPtr.Zero)
                                 EthHashB3.ethash_light_delete(light);
 
                             logger.Info(() => $"Done generating DAG for epoch {Epoch} after {DateTime.Now - started}");
@@ -138,9 +138,9 @@ public class Cache : IEthashCache
         result = null;
 
         var value = new EthHashB3.ethash_return_value();
-        
+
         // Full DAG
-        if(!string.IsNullOrEmpty(dagDir))
+        if (!string.IsNullOrEmpty(dagDir))
         {
             fixed (byte* input = hash)
             {
@@ -150,13 +150,13 @@ public class Cache : IEthashCache
         // Light Cache
         else
         {
-            fixed(byte* input = hash)
+            fixed (byte* input = hash)
             {
                 EthHashB3.ethash_light_compute(handle, input, nonce, ref value);
             }
         }
 
-        if(value.success)
+        if (value.success)
         {
             mixDigest = value.mix_hash.value;
             result = value.result.value;

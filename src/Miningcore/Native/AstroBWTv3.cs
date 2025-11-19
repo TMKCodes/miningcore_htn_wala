@@ -7,6 +7,7 @@ using Miningcore.Native;
 using Miningcore.Notifications.Messages;
 // ReSharper disable InconsistentNaming
 namespace Miningcore.Native;
+
 public unsafe class AstroBWTv3
 {
     internal static IMessageBus messageBus;

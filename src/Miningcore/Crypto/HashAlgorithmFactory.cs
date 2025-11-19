@@ -10,16 +10,16 @@ public static class HashAlgorithmFactory
 
     public static IHashAlgorithm GetHash(IComponentContext ctx, JObject definition)
     {
-        if(definition == null)
+        if (definition == null)
             return null;
 
         var hash = definition["hash"]?.Value<string>()?.ToLower();
 
-        if(string.IsNullOrEmpty(hash))
+        if (string.IsNullOrEmpty(hash))
             throw new NotSupportedException("$Invalid or empty hash value {hash}");
 
         var parameters = definition["args"]?
-            .Select(token => token.Type == JTokenType.Object ? GetHash(ctx, (JObject) token) : token.Value<object>())
+            .Select(token => token.Type == JTokenType.Object ? GetHash(ctx, (JObject)token) : token.Value<object>())
             .ToArray();
 
         return InstantiateHash(ctx, hash, parameters);
@@ -30,10 +30,10 @@ public static class HashAlgorithmFactory
         var isParameterized = parameters is { Length: > 0 };
 
         // check cache
-        if(!isParameterized && cache.TryGetValue(name, out var result))
+        if (!isParameterized && cache.TryGetValue(name, out var result))
             return result;
 
-        if(!isParameterized)
+        if (!isParameterized)
         {
             result = ctx.ResolveNamed<IHashAlgorithm>(name);
 

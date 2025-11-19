@@ -1,6 +1,7 @@
 using Miningcore.Contracts;
 using Miningcore.Native;
 namespace Miningcore.Crypto.Hashing.Algorithms;
+
 [Identifier("flex")]
 public unsafe class Flex : IHashAlgorithm
 {

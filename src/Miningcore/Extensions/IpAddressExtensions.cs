@@ -10,16 +10,16 @@ public static class IpAddressExtensions
         Contract.RequiresNonNull(address);
         Contract.RequiresNonNull(other);
 
-        if(address.Equals(other))
+        if (address.Equals(other))
             return true;
 
-        if(address.IsIPv4MappedToIPv6 && !other.IsIPv4MappedToIPv6 && address.MapToIPv4().Equals(other))
+        if (address.IsIPv4MappedToIPv6 && !other.IsIPv4MappedToIPv6 && address.MapToIPv4().Equals(other))
             return true;
 
-        if(address.IsIPv4MappedToIPv6 && other.IsIPv4MappedToIPv6 && address.MapToIPv4().Equals(other.MapToIPv4()))
+        if (address.IsIPv4MappedToIPv6 && other.IsIPv4MappedToIPv6 && address.MapToIPv4().Equals(other.MapToIPv4()))
             return true;
 
-        if(!address.IsIPv4MappedToIPv6 && other.IsIPv4MappedToIPv6 && address.Equals(other.MapToIPv4()))
+        if (!address.IsIPv4MappedToIPv6 && other.IsIPv4MappedToIPv6 && address.Equals(other.MapToIPv4()))
             return true;
 
         return false;
@@ -29,15 +29,15 @@ public static class IpAddressExtensions
     {
         Contract.RequiresNonNull(address);
 
-        if(!censor)
+        if (!censor)
             return address;
 
-        if(address.IsIPv4MappedToIPv6)
+        if (address.IsIPv4MappedToIPv6)
             address = address.MapToIPv4();
 
         var ipBytes = address.GetAddressBytes();
 
-        if(ipBytes.Length == 4)
+        if (ipBytes.Length == 4)
         {
             // IPv4
             // keep the first and last part
@@ -45,11 +45,11 @@ public static class IpAddressExtensions
             ipBytes[3] = 0;
         }
 
-        else if(ipBytes.Length == 16)
+        else if (ipBytes.Length == 16)
         {
             // IPv6
             // keep the first 2 and last 2 parts
-            for(var i = 4; i < 12; i++)
+            for (var i = 4; i < 12; i++)
                 ipBytes[i] = 0;
         }
 

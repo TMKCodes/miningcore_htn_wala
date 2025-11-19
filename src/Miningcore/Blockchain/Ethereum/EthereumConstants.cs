@@ -183,7 +183,7 @@ public static class EthCommands
     public const string Subscribe = "eth_subscribe";
     public const string MaxPriorityFeePerGas = "eth_maxPriorityFeePerGas";
 
-        // Ajout de la constante GasPrice
+    // Ajout de la constante GasPrice
     public const string GasPrice = "eth_gasPrice";
 }
 

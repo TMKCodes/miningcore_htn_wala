@@ -63,12 +63,12 @@ public class AdminApiController : ApiControllerBase
     {
         var pool = GetPool(poolId);
 
-        if(string.IsNullOrEmpty(address))
+        if (string.IsNullOrEmpty(address))
             throw new ApiException("Invalid or missing miner address", HttpStatusCode.NotFound);
 
-        var result = await cf.Run(con=> minerRepo.GetSettingsAsync(con, null, pool.Id, address));
+        var result = await cf.Run(con => minerRepo.GetSettingsAsync(con, null, pool.Id, address));
 
-        if(result == null)
+        if (result == null)
             throw new ApiException("No settings found", HttpStatusCode.NotFound);
 
         return mapper.Map<Responses.MinerSettings>(result);
@@ -80,17 +80,17 @@ public class AdminApiController : ApiControllerBase
     {
         var pool = GetPool(poolId);
 
-        if(string.IsNullOrEmpty(address))
+        if (string.IsNullOrEmpty(address))
             throw new ApiException("Invalid or missing miner address", HttpStatusCode.NotFound);
 
-        if(settings == null)
+        if (settings == null)
             throw new ApiException("Invalid or missing settings", HttpStatusCode.BadRequest);
 
         // map settings
         var mapped = mapper.Map<Persistence.Model.MinerSettings>(settings);
 
         // clamp limit
-        if(pool.PaymentProcessing != null)
+        if (pool.PaymentProcessing != null)
             mapped.PaymentThreshold = Math.Max(mapped.PaymentThreshold, pool.PaymentProcessing.MinimumPayment);
 
         mapped.PoolId = pool.Id;
@@ -103,7 +103,7 @@ public class AdminApiController : ApiControllerBase
             return await minerRepo.GetSettingsAsync(con, tx, mapped.PoolId, mapped.Address);
         });
 
-        logger.Info(()=> $"Updated settings for pool {pool.Id}, miner {address}");
+        logger.Info(() => $"Updated settings for pool {pool.Id}, miner {address}");
 
         return mapper.Map<Responses.MinerSettings>(result);
     }

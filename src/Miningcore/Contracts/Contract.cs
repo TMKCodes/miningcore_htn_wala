@@ -12,7 +12,7 @@ public class Contract
     public static void Requires<TException>(bool predicate, [CallerArgumentExpression("predicate")] string message = "")
         where TException : Exception, new()
     {
-        if(!predicate)
+        if (!predicate)
         {
             var constructor = constructors.GetOrAdd(typeof(TException), CreateConstructor);
             throw constructor(new object[] { message });
@@ -22,7 +22,7 @@ public class Contract
     [ContractAnnotation("parameter:null => halt")]
     public static void RequiresNonNull(object parameter, [CallerArgumentExpression("parameter")] string message = "")
     {
-        if(parameter == null)
+        if (parameter == null)
             throw new ArgumentNullException($"{message} must not be null");
     }
 

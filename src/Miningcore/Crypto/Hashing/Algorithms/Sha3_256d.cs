@@ -13,13 +13,13 @@ public unsafe class Sha3_256d : IHashAlgorithm
 
         Span<byte> tmp = stackalloc byte[32];
 
-        fixed(byte* input = data)
+        fixed (byte* input = data)
         {
-            fixed(byte* _tmp = tmp)
+            fixed (byte* _tmp = tmp)
             {
-                fixed(byte* output = result)
+                fixed (byte* output = result)
                 {
-                    Multihash.sha3_256(input, _tmp, (uint) data.Length);
+                    Multihash.sha3_256(input, _tmp, (uint)data.Length);
                     Multihash.sha3_256(_tmp, output, 32);
                 }
             }

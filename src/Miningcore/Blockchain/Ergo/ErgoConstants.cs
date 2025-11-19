@@ -11,7 +11,7 @@ public static class ErgoConstants
     public static readonly Regex RegexChain = new("ergo-([^-]+)-.+", RegexOptions.Compiled);
 
     public static readonly byte[] M = Enumerable.Range(0, 1024)
-        .Select(x => BitConverter.GetBytes((ulong) x).Reverse())
+        .Select(x => BitConverter.GetBytes((ulong)x).Reverse())
         .SelectMany(byteArr => byteArr)
         .ToArray();
 }

@@ -15,7 +15,7 @@ public unsafe class Geek : IHashAlgorithm
         {
             fixed (byte* output = result)
             {
-                Multihash.geek(input, output, (uint) data.Length);
+                Multihash.geek(input, output, (uint)data.Length);
             }
         }
     }

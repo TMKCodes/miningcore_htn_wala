@@ -25,7 +25,7 @@ public class HoosatPoolConfigExtra
     /// </summary>
     public string ProtobufDaemonRpcServiceName { get; set; }
 
-        /// <summary>
+    /// <summary>
     /// Optional: Wallet RPC service name override
     /// Should match the value of .proto file
     /// Default: "kaspawalletd.kaspawalletd"

@@ -35,32 +35,32 @@ public unsafe class NexaPow :
 
         // Calculate h1, the sha256(miningHash)
         Span<byte> h1 = stackalloc byte[32];
-        using(var hasher = SHA256.Create())
+        using (var hasher = SHA256.Create())
         {
             hasher.TryComputeHash(miningHash, h1, out _);
         }
 
         Span<byte> signature = stackalloc byte[64];
-        fixed(byte* input = h1)
+        fixed (byte* input = h1)
         {
-            fixed(byte* output = signature)
+            fixed (byte* output = signature)
             {
                 // Use miningHash as a private key (POW fails if it is invalid)
-                fixed(byte* key = miningHash)
+                fixed (byte* key = miningHash)
                 {
                     // Sign h1 resulting in sig
-                    success = Native.NexaPow.schnorr_sign(ctx, input, output, key, (uint) h1.Length);
+                    success = Native.NexaPow.schnorr_sign(ctx, input, output, key, (uint)h1.Length);
                 }
             }
         }
 
         // powhash = sha256(sig)
-        using(var hasher = SHA256.Create())
+        using (var hasher = SHA256.Create())
         {
             hasher.TryComputeHash(signature, result, out _);
         }
 
-        if(success == 0)
+        if (success == 0)
         {
             Logger.Error(() => "Failed to sign hash");
         }
@@ -73,7 +73,7 @@ public unsafe class NexaPow :
     public bool DigestInit(PoolConfig poolConfig)
     {
         ctx = Native.NexaPow.schnorr_init();
-        if(ctx == IntPtr.Zero)
+        if (ctx == IntPtr.Zero)
         {
             Logger.Error(() => "Failed to initialize schnorr context");
             return false;

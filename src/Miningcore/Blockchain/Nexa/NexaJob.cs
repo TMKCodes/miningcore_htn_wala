@@ -39,7 +39,7 @@ public class NexaJob
         var nonceBytes = nonce.HexToByteArray();
 
         Span<byte> nonceFinal = stackalloc byte[12]; // 4 bytes extra nonce + 8 bytes nonce
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
             stream.Write(extraNonce1Bytes);
             stream.Write(nonceBytes);
@@ -48,10 +48,10 @@ public class NexaJob
         }
 
         Span<byte> miningHashBytes = stackalloc byte[44]; // 32 bytes commitment + 4 bytes extra nonce + 8 bytes nonce
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
             stream.Write(headerCommitmentRev);
-            stream.Write(new byte[] {0x0c}); // nonceFinal.Length
+            stream.Write(new byte[] { 0x0c }); // nonceFinal.Length
             stream.Write(nonceFinal);
 
             miningHashBytes = stream.ToArray();
@@ -61,7 +61,7 @@ public class NexaJob
         headerHasher.Digest(miningHashBytes, powHash);
         var miningValue = new uint256(powHash);
 
-        var shareDiff = (double) new BigRational(BitcoinConstants.Diff1, powHash.ToBigInteger()) * shareMultiplier;
+        var shareDiff = (double)new BigRational(BitcoinConstants.Diff1, powHash.ToBigInteger()) * shareMultiplier;
         var stratumDifficulty = context.Difficulty;
         var ratio = shareDiff / stratumDifficulty;
 
@@ -69,14 +69,14 @@ public class NexaJob
         var isBlockCandidate = miningValue <= blockTargetValue;
 
         // test if share meets at least workers current difficulty
-        if(!isBlockCandidate && ratio < 0.99)
+        if (!isBlockCandidate && ratio < 0.99)
         {
             // check if share matched the previous difficulty from before a vardiff retarget
-            if(context.VarDiff?.LastUpdate != null && context.PreviousDifficulty.HasValue)
+            if (context.VarDiff?.LastUpdate != null && context.PreviousDifficulty.HasValue)
             {
                 ratio = shareDiff / context.PreviousDifficulty.Value;
 
-                if(ratio < 0.99)
+                if (ratio < 0.99)
                     throw new StratumException(StratumError.LowDifficultyShare, $"low difficulty share ({shareDiff})");
 
                 // use previous difficulty
@@ -127,7 +127,7 @@ public class NexaJob
         Difficulty = new Target(System.Numerics.BigInteger.Parse(BlockTemplate.Target, NumberStyles.HexNumber)).Difficulty;
         headerCommitmentRev = miningCandidate.HeaderCommitment.HexToReverseByteArray();
 
-        if(!string.IsNullOrEmpty(BlockTemplate.Target))
+        if (!string.IsNullOrEmpty(BlockTemplate.Target))
             blockTargetValue = new uint256(BlockTemplate.Target);
         else
         {
@@ -166,11 +166,11 @@ public class NexaJob
         Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(extraNonce1));
 
         // validate nonce. must be 8 bytes (16 hex chars without prefix)
-        if(nonce.Length != 16)
+        if (nonce.Length != 16)
             throw new StratumException(StratumError.Other, "incorrect size of nonce");
 
         // dupe check
-        if(!RegisterSubmit(this.MiningCandidate.HeaderCommitment, extraNonce1, nonce))
+        if (!RegisterSubmit(this.MiningCandidate.HeaderCommitment, extraNonce1, nonce))
             throw new StratumException(StratumError.DuplicateShare, "duplicate share");
 
         return ProcessShareInternal(worker, nonce, extraNonce1);

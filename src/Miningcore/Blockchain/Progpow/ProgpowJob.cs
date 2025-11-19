@@ -41,7 +41,7 @@ public class ProgpowJob : BitcoinJob
         var blockHeader = new BlockHeader
 #pragma warning restore 618
         {
-            Version = unchecked((int) version),
+            Version = unchecked((int)version),
             Bits = new Target(Encoders.Hex.DecodeData(BlockTemplate.Bits)),
             HashPrevBlock = uint256.Parse(BlockTemplate.PreviousBlockhash),
             HashMerkleRoot = new uint256(merkleRoot),
@@ -52,130 +52,130 @@ public class ProgpowJob : BitcoinJob
         return blockHeader.ToBytes();
     }
 
-   public virtual (Share Share, string BlockHex) ProcessShareInternal(ILogger logger,
-    StratumConnection worker, ulong nonce, string inputHeaderHash, string mixHash)
-{
-    Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Début du traitement pour le worker: {worker.ConnectionId}");
-
-    var context = worker.ContextAs<ProgpowWorkerContext>();
-    var extraNonce1 = context.ExtraNonce1;
-    Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- ExtraNonce1: {extraNonce1}");
-
-
-    // ✅ Vérification explicite de la plage du nonce
-    const ulong NONCE_MIN = 0x00000000;
-    const ulong NONCE_MAX = 0xFFFFFFFF;
-
-    if (nonce < NONCE_MIN || nonce > NONCE_MAX)
+    public virtual (Share Share, string BlockHex) ProcessShareInternal(ILogger logger,
+     StratumConnection worker, ulong nonce, string inputHeaderHash, string mixHash)
     {
-        Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- ERREUR: Nonce en dehors de la plage valide ({NONCE_MIN:X} - {NONCE_MAX:X}). Nonce reçu: {nonce:X}");
-    //    throw new StratumException(StratumError.MinusOne, $"Nonce en dehors de la plage valide ({NONCE_MIN:X} - {NONCE_MAX:X}): {nonce:X}");
-    }
-    Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Nonce valide: {nonce:X}");
+        Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Début du traitement pour le worker: {worker.ConnectionId}");
+
+        var context = worker.ContextAs<ProgpowWorkerContext>();
+        var extraNonce1 = context.ExtraNonce1;
+        Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- ExtraNonce1: {extraNonce1}");
 
 
-    // Build coinbase
-    var coinbase = SerializeCoinbase(extraNonce1);
-    Span<byte> coinbaseHash = stackalloc byte[32];
-    coinbaseHasher.Digest(coinbase, coinbaseHash);
-    Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- CoinbaseHash: {coinbaseHash.ToHexString()}");
+        // ✅ Vérification explicite de la plage du nonce
+        const ulong NONCE_MIN = 0x00000000;
+        const ulong NONCE_MAX = 0xFFFFFFFF;
 
-    // Hash block-header
-    var headerBytes = SerializeHeader(coinbaseHash);
-    Span<byte> headerHash = stackalloc byte[32];
-    headerHasher.Digest(headerBytes, headerHash);
-    headerHash.Reverse();
-
-    var headerHashHex = headerHash.ToHexString();
-    Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- HeaderHash: {headerHashHex}");
-
-    if (headerHashHex != inputHeaderHash)
-    {
-        Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Erreur: bad header-hash attendu: {inputHeaderHash}, reçu: {headerHashHex}");
-        throw new StratumException(StratumError.MinusOne, $"bad header-hash");
-    }
-
-    if (!progpowHasher.Compute(logger, (int)BlockTemplate.Height, headerHash.ToArray(), nonce, out var mixHashOut, out var resultBytes))
-    {
-        Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Erreur: bad hash");
-        throw new StratumException(StratumError.MinusOne, "bad hash");
-    }
-
-    if (mixHash != mixHashOut.ToHexString())
-    {
-        Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Erreur: bad mix-hash attendu: {mixHash}, reçu: {mixHashOut.ToHexString()}");
-        throw new StratumException(StratumError.MinusOne, $"bad mix-hash");
-    }
-
-    Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- MixHash validé: {mixHashOut.ToHexString()}");
-
-    resultBytes.ReverseInPlace();
-    mixHashOut.ReverseInPlace();
-
-    var resultValue = new uint256(resultBytes);
-    var resultValueBig = resultBytes.AsSpan().ToBigInteger();
-
-    // Calcul du share-diff
-    var shareDiff = (double)new BigRational(RavencoinConstants.Diff1, resultValueBig) * shareMultiplier;
-    var stratumDifficulty = context.Difficulty;
-    var ratio = shareDiff / stratumDifficulty;
-
-    Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- ShareDiff: {shareDiff}, StratumDifficulty: {stratumDifficulty}, Ratio: {ratio}");
-
-    // Vérification de la difficulté du bloc
-    var isBlockCandidate = resultValue <= blockTargetValue;
-    Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- resultValue {resultValue} / blockTargetValue {blockTargetValue} isBlockCandidate: {isBlockCandidate}");
-    Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- isBlockCandidate: {isBlockCandidate}");
-
-    if (!isBlockCandidate && ratio < 0.99)
-    {
-        if (context.VarDiff?.LastUpdate != null && context.PreviousDifficulty.HasValue)
+        if (nonce < NONCE_MIN || nonce > NONCE_MAX)
         {
-            ratio = shareDiff / context.PreviousDifficulty.Value;
+            Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- ERREUR: Nonce en dehors de la plage valide ({NONCE_MIN:X} - {NONCE_MAX:X}). Nonce reçu: {nonce:X}");
+            //    throw new StratumException(StratumError.MinusOne, $"Nonce en dehors de la plage valide ({NONCE_MIN:X} - {NONCE_MAX:X}): {nonce:X}");
+        }
+        Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Nonce valide: {nonce:X}");
 
-            if (ratio < 0.99)
+
+        // Build coinbase
+        var coinbase = SerializeCoinbase(extraNonce1);
+        Span<byte> coinbaseHash = stackalloc byte[32];
+        coinbaseHasher.Digest(coinbase, coinbaseHash);
+        Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- CoinbaseHash: {coinbaseHash.ToHexString()}");
+
+        // Hash block-header
+        var headerBytes = SerializeHeader(coinbaseHash);
+        Span<byte> headerHash = stackalloc byte[32];
+        headerHasher.Digest(headerBytes, headerHash);
+        headerHash.Reverse();
+
+        var headerHashHex = headerHash.ToHexString();
+        Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- HeaderHash: {headerHashHex}");
+
+        if (headerHashHex != inputHeaderHash)
+        {
+            Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Erreur: bad header-hash attendu: {inputHeaderHash}, reçu: {headerHashHex}");
+            throw new StratumException(StratumError.MinusOne, $"bad header-hash");
+        }
+
+        if (!progpowHasher.Compute(logger, (int)BlockTemplate.Height, headerHash.ToArray(), nonce, out var mixHashOut, out var resultBytes))
+        {
+            Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Erreur: bad hash");
+            throw new StratumException(StratumError.MinusOne, "bad hash");
+        }
+
+        if (mixHash != mixHashOut.ToHexString())
+        {
+            Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Erreur: bad mix-hash attendu: {mixHash}, reçu: {mixHashOut.ToHexString()}");
+            throw new StratumException(StratumError.MinusOne, $"bad mix-hash");
+        }
+
+        Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- MixHash validé: {mixHashOut.ToHexString()}");
+
+        resultBytes.ReverseInPlace();
+        mixHashOut.ReverseInPlace();
+
+        var resultValue = new uint256(resultBytes);
+        var resultValueBig = resultBytes.AsSpan().ToBigInteger();
+
+        // Calcul du share-diff
+        var shareDiff = (double)new BigRational(RavencoinConstants.Diff1, resultValueBig) * shareMultiplier;
+        var stratumDifficulty = context.Difficulty;
+        var ratio = shareDiff / stratumDifficulty;
+
+        Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- ShareDiff: {shareDiff}, StratumDifficulty: {stratumDifficulty}, Ratio: {ratio}");
+
+        // Vérification de la difficulté du bloc
+        var isBlockCandidate = resultValue <= blockTargetValue;
+        Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- resultValue {resultValue} / blockTargetValue {blockTargetValue} isBlockCandidate: {isBlockCandidate}");
+        Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- isBlockCandidate: {isBlockCandidate}");
+
+        if (!isBlockCandidate && ratio < 0.99)
+        {
+            if (context.VarDiff?.LastUpdate != null && context.PreviousDifficulty.HasValue)
+            {
+                ratio = shareDiff / context.PreviousDifficulty.Value;
+
+                if (ratio < 0.99)
+                {
+                    Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Erreur: low difficulty share ({shareDiff})");
+                    throw new StratumException(StratumError.LowDifficultyShare, $"low difficulty share ({shareDiff})");
+                }
+
+                stratumDifficulty = context.PreviousDifficulty.Value;
+                Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Ratio ajusté après VarDiff: {ratio}");
+            }
+            else
             {
                 Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Erreur: low difficulty share ({shareDiff})");
                 throw new StratumException(StratumError.LowDifficultyShare, $"low difficulty share ({shareDiff})");
             }
-
-            stratumDifficulty = context.PreviousDifficulty.Value;
-            Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Ratio ajusté après VarDiff: {ratio}");
         }
-        else
+
+        var result = new Share
         {
-            Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Erreur: low difficulty share ({shareDiff})");
-            throw new StratumException(StratumError.LowDifficultyShare, $"low difficulty share ({shareDiff})");
+            BlockHeight = BlockTemplate.Height,
+            NetworkDifficulty = Difficulty,
+            Difficulty = stratumDifficulty / shareMultiplier,
+        };
+
+        Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Share créé, BlockHeight: {BlockTemplate.Height}, NetworkDifficulty: {Difficulty}");
+
+        if (!isBlockCandidate)
+        {
+            Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Partage validé mais non candidat pour un bloc.");
+            return (result, null);
         }
+
+        result.IsBlockCandidate = true;
+        result.BlockHash = resultBytes.ReverseInPlace().ToHexString();
+        Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Bloc validé, BlockHash: {result.BlockHash}");
+
+        var blockBytes = SerializeBlock(headerBytes, coinbase, nonce, mixHashOut);
+        var blockHex = blockBytes.ToHexString();
+        Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Bloc sérialisé, BlockHex: {blockHex}");
+
+        Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Fin du traitement pour le worker: {worker.ConnectionId}");
+
+        return (result, blockHex);
     }
-
-    var result = new Share
-    {
-        BlockHeight = BlockTemplate.Height,
-        NetworkDifficulty = Difficulty,
-        Difficulty = stratumDifficulty / shareMultiplier,
-    };
-
-    Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Share créé, BlockHeight: {BlockTemplate.Height}, NetworkDifficulty: {Difficulty}");
-
-    if (!isBlockCandidate)
-    {
-        Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Partage validé mais non candidat pour un bloc.");
-        return (result, null);
-    }
-
-    result.IsBlockCandidate = true;
-    result.BlockHash = resultBytes.ReverseInPlace().ToHexString();
-    Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Bloc validé, BlockHash: {result.BlockHash}");
-
-    var blockBytes = SerializeBlock(headerBytes, coinbase, nonce, mixHashOut);
-    var blockHex = blockBytes.ToHexString();
-    Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Bloc sérialisé, BlockHex: {blockHex}");
-
-    Console.WriteLine($"elva Debug KaspaJob -----> ProcessShareInternal --- Fin du traitement pour le worker: {worker.ConnectionId}");
-
-    return (result, blockHex);
-}
 
 
     protected virtual byte[] SerializeCoinbase(string extraNonce1)
@@ -192,67 +192,67 @@ public class ProgpowJob : BitcoinJob
         }
     }
 
-/*
+    /*
+        protected virtual byte[] SerializeBlock(byte[] header, byte[] coinbase, ulong nonce, byte[] mixHash)
+        {
+            var rawTransactionBuffer = BuildRawTransactionBuffer();
+            var transactionCount = (uint) BlockTemplate.Transactions.Length + 1; // +1 for prepended coinbase tx
+
+            using var stream = new MemoryStream();
+            {
+                var bs = new BitcoinStream(stream, true);
+
+                bs.ReadWrite(header);
+                bs.ReadWrite(ref nonce);
+                bs.ReadWrite(mixHash);
+                bs.ReadWriteAsVarInt(ref transactionCount);
+
+                bs.ReadWrite(coinbase);
+                bs.ReadWrite(rawTransactionBuffer);
+
+                return stream.ToArray();
+            }
+        }
+    */
+
+
+
+
     protected virtual byte[] SerializeBlock(byte[] header, byte[] coinbase, ulong nonce, byte[] mixHash)
     {
+        if (nonce > 0xFFFFFFFF)
+        {
+            Console.WriteLine($"elva Debug SerializeBlock -----> ERREUR: Nonce hors plage valide (0x00000000 - 0xFFFFFFFF), reçu: {nonce:X16}");
+            //    throw new InvalidOperationException($"Nonce hors plage valide : {nonce:X16}");
+        }
+
         var rawTransactionBuffer = BuildRawTransactionBuffer();
-        var transactionCount = (uint) BlockTemplate.Transactions.Length + 1; // +1 for prepended coinbase tx
+        var transactionCount = (uint)BlockTemplate.Transactions.Length + 1; // +1 pour la coinbase
 
         using var stream = new MemoryStream();
-        {
-            var bs = new BitcoinStream(stream, true);
+        var bs = new BitcoinStream(stream, true);
 
-            bs.ReadWrite(header);
-            bs.ReadWrite(ref nonce);
-            bs.ReadWrite(mixHash);
-            bs.ReadWriteAsVarInt(ref transactionCount);
+        Console.WriteLine($"elva Debug SerializeBlock -----> Sérialisation du header");
+        bs.ReadWrite(header);
 
-            bs.ReadWrite(coinbase);
-            bs.ReadWrite(rawTransactionBuffer);
+        Console.WriteLine($"elva Debug SerializeBlock -----> Sérialisation du nonce : {nonce:X16}");
+        bs.ReadWrite(ref nonce);
 
-            return stream.ToArray();
-        }
+        Console.WriteLine($"elva Debug SerializeBlock -----> Sérialisation du mixHash : {mixHash.ToHexString()}");
+        bs.ReadWrite(mixHash);
+
+        Console.WriteLine($"elva Debug SerializeBlock -----> Sérialisation du nombre de transactions : {transactionCount}");
+        bs.ReadWriteAsVarInt(ref transactionCount);
+
+        Console.WriteLine($"elva Debug SerializeBlock -----> Sérialisation de la coinbase");
+        bs.ReadWrite(coinbase);
+
+        Console.WriteLine($"elva Debug SerializeBlock -----> Sérialisation des transactions restantes");
+        bs.ReadWrite(rawTransactionBuffer);
+
+        Console.WriteLine($"elva Debug SerializeBlock -----> Bloc sérialisé avec succès");
+        return stream.ToArray();
     }
-*/
-
-
-
-
-protected virtual byte[] SerializeBlock(byte[] header, byte[] coinbase, ulong nonce, byte[] mixHash)
-{
-    if (nonce > 0xFFFFFFFF)
-    {
-        Console.WriteLine($"elva Debug SerializeBlock -----> ERREUR: Nonce hors plage valide (0x00000000 - 0xFFFFFFFF), reçu: {nonce:X16}");
-    //    throw new InvalidOperationException($"Nonce hors plage valide : {nonce:X16}");
-    }
-
-    var rawTransactionBuffer = BuildRawTransactionBuffer();
-    var transactionCount = (uint)BlockTemplate.Transactions.Length + 1; // +1 pour la coinbase
-
-    using var stream = new MemoryStream();
-    var bs = new BitcoinStream(stream, true);
-
-    Console.WriteLine($"elva Debug SerializeBlock -----> Sérialisation du header");
-    bs.ReadWrite(header);
-
-    Console.WriteLine($"elva Debug SerializeBlock -----> Sérialisation du nonce : {nonce:X16}");
-    bs.ReadWrite(ref nonce);
-
-    Console.WriteLine($"elva Debug SerializeBlock -----> Sérialisation du mixHash : {mixHash.ToHexString()}");
-    bs.ReadWrite(mixHash);
-
-    Console.WriteLine($"elva Debug SerializeBlock -----> Sérialisation du nombre de transactions : {transactionCount}");
-    bs.ReadWriteAsVarInt(ref transactionCount);
-
-    Console.WriteLine($"elva Debug SerializeBlock -----> Sérialisation de la coinbase");
-    bs.ReadWrite(coinbase);
-
-    Console.WriteLine($"elva Debug SerializeBlock -----> Sérialisation des transactions restantes");
-    bs.ReadWrite(rawTransactionBuffer);
-
-    Console.WriteLine($"elva Debug SerializeBlock -----> Bloc sérialisé avec succès");
-    return stream.ToArray();
-}
 
 
 
@@ -298,7 +298,7 @@ protected virtual byte[] SerializeBlock(byte[] header, byte[] coinbase, ulong no
         var coinbaseString = !string.IsNullOrEmpty(cc.PaymentProcessing?.CoinbaseString) ?
             cc.PaymentProcessing?.CoinbaseString.Trim() : "Miningcore";
 
-        if(!string.IsNullOrEmpty(coinbaseString))
+        if (!string.IsNullOrEmpty(coinbaseString))
             this.scriptSigFinalBytes = new Script(Op.GetPushOp(Encoding.UTF8.GetBytes(coinbaseString))).ToBytes();
 
         this.Difficulty = new Target(System.Numerics.BigInteger.Parse(BlockTemplate.Target, NumberStyles.HexNumber)).Difficulty;
@@ -306,19 +306,19 @@ protected virtual byte[] SerializeBlock(byte[] header, byte[] coinbase, ulong no
         this.extraNoncePlaceHolderLength = RavencoinConstants.ExtranoncePlaceHolderLength;
         this.shareMultiplier = shareMultiplier;
 
-        if(coin.HasMasterNodes)
+        if (coin.HasMasterNodes)
         {
             masterNodeParameters = BlockTemplate.Extra.SafeExtensionDataAs<MasterNodeBlockTemplateExtra>();
 
-            if(coin.Symbol == "FIRO")
+            if (coin.Symbol == "FIRO")
             {
-                if(masterNodeParameters.Extra?.ContainsKey("znode") == true)
+                if (masterNodeParameters.Extra?.ContainsKey("znode") == true)
                 {
                     masterNodeParameters.Masternode = JToken.FromObject(masterNodeParameters.Extra["znode"]);
                 }
             }
 
-            if(!string.IsNullOrEmpty(masterNodeParameters.CoinbasePayload))
+            if (!string.IsNullOrEmpty(masterNodeParameters.CoinbasePayload))
             {
                 txVersion = 3;
                 const uint txType = 5;
@@ -326,7 +326,7 @@ protected virtual byte[] SerializeBlock(byte[] header, byte[] coinbase, ulong no
             }
         }
 
-        if(coin.HasPayee)
+        if (coin.HasPayee)
             payeeParameters = BlockTemplate.Extra.SafeExtensionDataAs<PayeeBlockTemplateExtra>();
 
         if (coin.HasFounderFee)
@@ -340,7 +340,7 @@ protected virtual byte[] SerializeBlock(byte[] header, byte[] coinbase, ulong no
         this.blockHasher = blockHasher;
         this.progpowHasher = progpowHasher;
 
-        if(!string.IsNullOrEmpty(BlockTemplate.Target))
+        if (!string.IsNullOrEmpty(BlockTemplate.Target))
             this.blockTargetValue = new uint256(BlockTemplate.Target);
         else
         {

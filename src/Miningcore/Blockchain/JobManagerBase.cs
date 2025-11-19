@@ -41,7 +41,7 @@ public abstract class JobManagerBase<TJob>
     {
         using var timer = new PeriodicTimer(TimeSpan.FromSeconds(10));
 
-        while(!await AreDaemonsHealthyAsync(ct))
+        while (!await AreDaemonsHealthyAsync(ct))
         {
             logger.Info(() => "Waiting for daemons to come online ...");
 
@@ -50,7 +50,7 @@ public abstract class JobManagerBase<TJob>
 
         logger.Info(() => "All daemons online");
 
-        while(!await AreDaemonsConnectedAsync(ct))
+        while (!await AreDaemonsConnectedAsync(ct))
         {
             logger.Info(() => "Waiting for daemon to connect to peers ...");
 
@@ -63,7 +63,7 @@ public abstract class JobManagerBase<TJob>
         Interlocked.Increment(ref jobId);
         var value = Interlocked.CompareExchange(ref jobId, 0, int.MinValue);
 
-        if(format != null)
+        if (format != null)
             return value.ToString(format);
 
         return value.ToStringHex8();

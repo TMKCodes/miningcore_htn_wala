@@ -24,7 +24,7 @@ public class Ethashb3Light : IEthashLight
 
     public void Dispose()
     {
-        foreach(var value in caches.Values)
+        foreach (var value in caches.Values)
             value.Dispose();
     }
 
@@ -33,15 +33,15 @@ public class Ethashb3Light : IEthashLight
         var epoch = block / HypraConstants.EpochLength;
         Cache result;
 
-        lock(cacheLock)
+        lock (cacheLock)
         {
-            if(numCaches == 0)
+            if (numCaches == 0)
                 numCaches = 3;
 
-            if(!caches.TryGetValue(epoch, out result))
+            if (!caches.TryGetValue(epoch, out result))
             {
                 // No cached cache, evict the oldest if the cache limit was reached
-                while(caches.Count >= numCaches)
+                while (caches.Count >= numCaches)
                 {
                     var toEvict = caches.Values.OrderBy(x => x.LastUsed).First();
                     var key = caches.First(pair => pair.Value == toEvict).Key;
@@ -53,7 +53,7 @@ public class Ethashb3Light : IEthashLight
                 }
 
                 // If we have the new cache pre-generated, use that, otherwise create a new one
-                if(future != null && future.Epoch == epoch)
+                if (future != null && future.Epoch == epoch)
                 {
                     logger.Debug(() => $"Using pre-generated cache for epoch {epoch}");
 
@@ -71,7 +71,7 @@ public class Ethashb3Light : IEthashLight
             }
 
             // If we used up the future cache, or need a refresh, regenerate
-            else if(future == null || future.Epoch <= epoch)
+            else if (future == null || future.Epoch <= epoch)
             {
                 logger.Info(() => $"Pre-generating cache for epoch {epoch + 1}");
                 future = new Cache(epoch + 1, dagDir);

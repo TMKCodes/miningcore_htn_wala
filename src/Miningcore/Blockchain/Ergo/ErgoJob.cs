@@ -23,7 +23,7 @@ public class ErgoJob
     private static readonly IHashAlgorithm hasher = new Blake2b();
     private int extraNonceSize;
 
-    private static readonly uint nBase = (uint) Math.Pow(2, 26);
+    private static readonly uint nBase = (uint)Math.Pow(2, 26);
     private const uint IncreaseStart = 600 * 1024;
     private const uint IncreasePeriodForN = 50 * 1024;
     private const uint NIncreasementHeightMax = 9216000;
@@ -43,7 +43,7 @@ public class ErgoJob
         var step = nBase;
         var iterationsNumber = (height - IncreaseStart) / IncreasePeriodForN + 1;
 
-        for(var i = 0; i < iterationsNumber; i++)
+        for (var i = 0; i < iterationsNumber; i++)
             step = step / 100 * 105;
 
         return step;
@@ -61,7 +61,7 @@ public class ErgoJob
 
     protected virtual byte[] SerializeCoinbase(string msg, string nonce)
     {
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
             stream.Write(msg.HexToByteArray());
             stream.Write(nonce.HexToByteArray());
@@ -84,7 +84,7 @@ public class ErgoJob
         // map indexes
         var result = new BigInteger[32];
 
-        for(var i = 0; i < 32; i++)
+        for (var i = 0; i < 32; i++)
         {
             var x = BitConverter.ToUInt32(extendedHash.Slice(i, 4)).ToBigEndian();
             result[i] = x % n;
@@ -145,14 +145,14 @@ public class ErgoJob
         var isBlockCandidate = fh < BlockTemplate.B;
 
         // test if share meets at least workers current difficulty
-        if(!isBlockCandidate && ratio < 0.99)
+        if (!isBlockCandidate && ratio < 0.99)
         {
             // check if share matched the previous difficulty from before a vardiff retarget
-            if(context.VarDiff?.LastUpdate != null && context.PreviousDifficulty.HasValue)
+            if (context.VarDiff?.LastUpdate != null && context.PreviousDifficulty.HasValue)
             {
                 ratio = fhTarget.Difficulty / context.PreviousDifficulty.Value;
 
-                if(ratio < 0.99)
+                if (ratio < 0.99)
                     throw new StratumException(StratumError.LowDifficultyShare, $"low difficulty share ({fhTarget.Difficulty})");
 
                 // use previous difficulty
@@ -170,7 +170,7 @@ public class ErgoJob
             Difficulty = stratumDifficulty / ErgoConstants.ShareMultiplier
         };
 
-        if(isBlockCandidate)
+        if (isBlockCandidate)
         {
             result.IsBlockCandidate = true;
         }
@@ -194,18 +194,18 @@ public class ErgoJob
         var context = worker.ContextAs<ErgoWorkerContext>();
 
         // validate nonce
-        if(nonce.Length != context.ExtraNonce1.Length + extraNonceSize * 2)
+        if (nonce.Length != context.ExtraNonce1.Length + extraNonceSize * 2)
             throw new StratumException(StratumError.Other, "incorrect size of nonce");
 
-        if(!nonce.StartsWith(context.ExtraNonce1))
+        if (!nonce.StartsWith(context.ExtraNonce1))
             throw new StratumException(StratumError.Other, $"incorrect extraNonce2 in nonce (expected {context.ExtraNonce1}, got {nonce.Substring(0, Math.Min(nonce.Length, context.ExtraNonce1.Length))})");
 
         // currently unused
-        if(nTime == "undefined")
+        if (nTime == "undefined")
             nTime = string.Empty;
 
         // dupe check
-        if(!RegisterSubmit(nTime, nonce))
+        if (!RegisterSubmit(nTime, nonce))
             throw new StratumException(StratumError.DuplicateShare, $"duplicate share");
 
         return ProcessShareInternal(worker, nonce);

@@ -63,8 +63,8 @@ public class HandshakeMerkleTree
     public byte[] HashEmpty(IHashAlgorithm hasher)
     {
         Span<byte> resultBytes = stackalloc byte[32];
-        hasher.Digest((Span<byte>) this.EMPTY, resultBytes);
-        
+        hasher.Digest((Span<byte>)this.EMPTY, resultBytes);
+
         return resultBytes.ToArray();
     }
 
@@ -73,25 +73,25 @@ public class HandshakeMerkleTree
         Span<byte> leafDataBytes = stackalloc byte[this.LEAF.Length + data.Length];
         this.LEAF.CopyTo(leafDataBytes);
         data.CopyTo(leafDataBytes[this.LEAF.Length..]);
-        
+
         Span<byte> resultBytes = stackalloc byte[32];
         hasher.Digest(leafDataBytes, resultBytes);
-        
+
         return resultBytes.ToArray();
     }
 
     public byte[] HashInternal(IHashAlgorithm hasher, byte[] left, byte[] right)
     {
         Contract.RequiresNonNull(right);
-        
+
         Span<byte> internalLeftRightBytes = stackalloc byte[this.INTERNAL.Length + left.Length + right.Length];
         this.INTERNAL.CopyTo(internalLeftRightBytes);
         left.CopyTo(internalLeftRightBytes[this.INTERNAL.Length..]);
         right.CopyTo(internalLeftRightBytes[(this.INTERNAL.Length + left.Length)..]);
-        
+
         Span<byte> resultBytes = stackalloc byte[32];
         hasher.Digest(internalLeftRightBytes, resultBytes);
-        
+
         return resultBytes.ToArray();
     }
 }
@@ -124,7 +124,7 @@ public class HandshakeBech32Decoder
     {
         if (checksum < 0)
             throw new ArgumentException("Checksum cannot be negative.");
-        
+
         this.checksum = checksum;
     }
 

@@ -76,81 +76,81 @@ public class EthereumPayoutHandler : PayoutHandlerBase,
 
 
 
-public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks, CancellationToken ct)
-{
-    Contract.RequiresNonNull(poolConfig);
-    Contract.RequiresNonNull(blocks);
-
-    // ensure we have enough peers
-    var enoughPeers = await EnsureDaemonsSynchedAsync(ct);
-    if(!enoughPeers)
-        return blocks;
-
-    var coin = poolConfig.Template.As<EthereumCoinTemplate>();
-    var pageSize = 100;
-    var pageCount = (int) Math.Ceiling(blocks.Length / (double) pageSize);
-    var blockCache = new Dictionary<long, DaemonResponses.Block>();
-    var result = new List<Block>();
-
-    for(var i = 0; i < pageCount; i++)
+    public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks, CancellationToken ct)
     {
-        // get a page full of blocks
-        var page = blocks.Skip(i * pageSize).Take(pageSize).ToArray();
+        Contract.RequiresNonNull(poolConfig);
+        Contract.RequiresNonNull(blocks);
 
-        // get latest block
-        var latestBlockResponse = await rpcClient.ExecuteAsync<DaemonResponses.Block>(logger, EC.GetBlockByNumber, ct, new[] { (object) "latest", true });
-        var latestBlockHeight = latestBlockResponse.Response.Height.Value;
+        // ensure we have enough peers
+        var enoughPeers = await EnsureDaemonsSynchedAsync(ct);
+        if (!enoughPeers)
+            return blocks;
 
-        // execute batch
-        var blockInfos = await FetchBlocks(blockCache, ct, page.Select(block => (long) block.BlockHeight).ToArray());
+        var coin = poolConfig.Template.As<EthereumCoinTemplate>();
+        var pageSize = 100;
+        var pageCount = (int)Math.Ceiling(blocks.Length / (double)pageSize);
+        var blockCache = new Dictionary<long, DaemonResponses.Block>();
+        var result = new List<Block>();
 
-        for(var j = 0; j < blockInfos.Length; j++)
+        for (var i = 0; i < pageCount; i++)
         {
-            var blockInfo = blockInfos[j];
-            var block = page[j];
+            // get a page full of blocks
+            var page = blocks.Skip(i * pageSize).Take(pageSize).ToArray();
 
-            // update progress
-            block.ConfirmationProgress = Math.Min(1.0d, (double) (latestBlockHeight - block.BlockHeight) / EthereumConstants.MinConfimations);
-            result.Add(block);
+            // get latest block
+            var latestBlockResponse = await rpcClient.ExecuteAsync<DaemonResponses.Block>(logger, EC.GetBlockByNumber, ct, new[] { (object)"latest", true });
+            var latestBlockHeight = latestBlockResponse.Response.Height.Value;
 
-            messageBus.NotifyBlockConfirmationProgress(poolConfig.Id, block, coin);
+            // execute batch
+            var blockInfos = await FetchBlocks(blockCache, ct, page.Select(block => (long)block.BlockHeight).ToArray());
 
-            uint totalDuplicateBlockBefore = 0;
-
-            // is it block mined by us?
-            if(string.Equals(blockInfo.Miner, poolConfig.Address, StringComparison.OrdinalIgnoreCase))
+            for (var j = 0; j < blockInfos.Length; j++)
             {
-                // mature?
-                if(latestBlockHeight - block.BlockHeight >= EthereumConstants.MinConfimations)
+                var blockInfo = blockInfos[j];
+                var block = page[j];
+
+                // update progress
+                block.ConfirmationProgress = Math.Min(1.0d, (double)(latestBlockHeight - block.BlockHeight) / EthereumConstants.MinConfimations);
+                result.Add(block);
+
+                messageBus.NotifyBlockConfirmationProgress(poolConfig.Id, block, coin);
+
+                uint totalDuplicateBlockBefore = 0;
+
+                // is it block mined by us?
+                if (string.Equals(blockInfo.Miner, poolConfig.Address, StringComparison.OrdinalIgnoreCase))
                 {
-                    uint totalDuplicateBlock = await cf.Run(con => blockRepo.GetPoolDuplicateBlockCountByPoolHeightNoTypeAndStatusAsync(con, poolConfig.Id, Convert.ToInt64(block.BlockHeight), new[] { block.Status }));
-                    uint totalDuplicateBlockAfter = 0;
-
-                    if(totalDuplicateBlock > 1)
+                    // mature?
+                    if (latestBlockHeight - block.BlockHeight >= EthereumConstants.MinConfimations)
                     {
-                        totalDuplicateBlockAfter = await cf.Run(con => blockRepo.GetPoolDuplicateBlockAfterCountByPoolHeightNoTypeAndStatusAsync(con, poolConfig.Id, Convert.ToInt64(block.BlockHeight), new[] { block.Status }, block.Created));
-                    }
+                        uint totalDuplicateBlock = await cf.Run(con => blockRepo.GetPoolDuplicateBlockCountByPoolHeightNoTypeAndStatusAsync(con, poolConfig.Id, Convert.ToInt64(block.BlockHeight), new[] { block.Status }));
+                        uint totalDuplicateBlockAfter = 0;
 
-                    if(totalDuplicateBlock > 1 && totalDuplicateBlockAfter > 0)
-                    {
-                        logger.Info(() => $"[{LogCategory}] Got {totalDuplicateBlock} `{block.Status}` blocks with the same blockHeight: {block.BlockHeight}");
+                        if (totalDuplicateBlock > 1)
+                        {
+                            totalDuplicateBlockAfter = await cf.Run(con => blockRepo.GetPoolDuplicateBlockAfterCountByPoolHeightNoTypeAndStatusAsync(con, poolConfig.Id, Convert.ToInt64(block.BlockHeight), new[] { block.Status }, block.Created));
+                        }
 
-                    //    block.Reward = GetUncleReward(chainType, block.BlockHeight, block.BlockHeight);
-                    //    block.Status = BlockStatus.Confirmed;
+                        if (totalDuplicateBlock > 1 && totalDuplicateBlockAfter > 0)
+                        {
+                            logger.Info(() => $"[{LogCategory}] Got {totalDuplicateBlock} `{block.Status}` blocks with the same blockHeight: {block.BlockHeight}");
 
-                        totalDuplicateBlockBefore = await cf.Run(con => blockRepo.GetPoolDuplicateBlockBeforeCountByPoolHeightNoTypeAndStatusAsync(con, poolConfig.Id, Convert.ToInt64(block.BlockHeight), new[]
-                            {
+                            //    block.Reward = GetUncleReward(chainType, block.BlockHeight, block.BlockHeight);
+                            //    block.Status = BlockStatus.Confirmed;
+
+                            totalDuplicateBlockBefore = await cf.Run(con => blockRepo.GetPoolDuplicateBlockBeforeCountByPoolHeightNoTypeAndStatusAsync(con, poolConfig.Id, Convert.ToInt64(block.BlockHeight), new[]
+                                {
                                 BlockStatus.Confirmed,
                                 BlockStatus.Orphaned,
                                 BlockStatus.Pending
                             }, block.Created));
 
                             // mature?
-                            if(block.Reward == 0)
-                            block.Reward = GetUncleReward(chainType, block.BlockHeight, block.BlockHeight, totalDuplicateBlockBefore);
+                            if (block.Reward == 0)
+                                block.Reward = GetUncleReward(chainType, block.BlockHeight, block.BlockHeight, totalDuplicateBlockBefore);
                             // There is a rare case-scenario where an Uncle has a block reward of zero
                             // We must handle it carefully otherwise payout will be stuck forever
-                            if(block.Reward > 0)
+                            if (block.Reward > 0)
                             {
                                 block.Status = BlockStatus.Confirmed;
                                 block.ConfirmationProgress = 1;
@@ -163,120 +163,121 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
 
 
 
-                        block.ConfirmationProgress = 1;
-                        block.BlockHeight = (ulong) blockInfo.Height;
-                        block.Type = EthereumConstants.BlockTypeUncle;
-
-                        logger.Info(() => $"[{LogCategory}] Unlocked uncle at height {block.BlockHeight} worth {FormatAmount(block.Reward)}");
-
-                        messageBus.NotifyBlockUnlocked(poolConfig.Id, block, coin);
-                    }
-                    else
-                    {
-                        var blockHashResponse = await rpcClient.ExecuteAsync<DaemonResponses.Block>(logger, EC.GetBlockByNumber, ct,
-                            new[] { (object) block.BlockHeight.ToStringHexWithPrefix(), true });
-
-                        var blockMiner = blockHashResponse.Response.Miner;
-
-                        // is it still block mined by us?
-                        if(string.Equals(blockMiner, poolConfig.Address, StringComparison.OrdinalIgnoreCase))
-                        {
-                            var blockHash = blockHashResponse.Response.Hash;
-                            var baseGas = blockHashResponse.Response.BaseFeePerGas;
-                            var gasUsed = blockHashResponse.Response.GasUsed;
-
-                            var burnedFee = (decimal) 0;
-                            if(extraPoolConfig?.ChainTypeOverride == "Ethereum" || extraPoolConfig?.ChainTypeOverride == "Main" || extraPoolConfig?.ChainTypeOverride == "MainPow" || extraPoolConfig?.ChainTypeOverride == "Ubiq" || extraPoolConfig?.ChainTypeOverride == "EtherOne" || extraPoolConfig?.ChainTypeOverride == "Pink" || extraPoolConfig?.ChainTypeOverride == "Hypra")
-                                burnedFee = (baseGas * gasUsed / EthereumConstants.Wei);
-
-                            block.Hash = blockHash;
-                            block.Status = BlockStatus.Confirmed;
                             block.ConfirmationProgress = 1;
-                            block.BlockHeight = (ulong) blockInfo.Height;
+                            block.BlockHeight = (ulong)blockInfo.Height;
+                            block.Type = EthereumConstants.BlockTypeUncle;
 
+                            logger.Info(() => $"[{LogCategory}] Unlocked uncle at height {block.BlockHeight} worth {FormatAmount(block.Reward)}");
 
+                            messageBus.NotifyBlockUnlocked(poolConfig.Id, block, coin);
+                        }
+                        else
+                        {
+                            var blockHashResponse = await rpcClient.ExecuteAsync<DaemonResponses.Block>(logger, EC.GetBlockByNumber, ct,
+                                new[] { (object)block.BlockHeight.ToStringHexWithPrefix(), true });
 
+                            var blockMiner = blockHashResponse.Response.Miner;
 
-
-
-
-                            // Utilisation de la logique de récompense Zether
-                            //if(coin.Symbol.Equals("Zether", StringComparison.OrdinalIgnoreCase))
-                            logger.Info(() => $"[{LogCategory}] Zether Symbole {coin.Symbol} name {poolConfig.Coin}");
-
-                            var coin_Temp = poolConfig.Coin;
-                            if(coin_Temp == "zether")
+                            // is it still block mined by us?
+                            if (string.Equals(blockMiner, poolConfig.Address, StringComparison.OrdinalIgnoreCase))
                             {
-                                block.Reward = ZetherConstants.GetBlockReward(block.BlockHeight);
-                                logger.Info(() => $"[{LogCategory}] Zether block reward for block {block.BlockHeight} calculated as {FormatAmount(block.Reward)} coins");
-                            }
-                            else
-                            {
-                                block.Reward = GetBaseBlockReward(chainType, block.BlockHeight); // base reward pour les autres coins
-                            }
+                                var blockHash = blockHashResponse.Response.Hash;
+                                var baseGas = blockHashResponse.Response.BaseFeePerGas;
+                                var gasUsed = blockHashResponse.Response.GasUsed;
 
-                            //elva Traitement pour le cas de luckybits - Recupéra du mutiplicateur -- Debut
-                              //  var coin_Temp = poolConfig.Coin;
-                                if (coin_Temp == "luckybits"){
-                                var blockHeight0 = block.BlockHeight;
-                                //var Newcoin = extraPoolConfig?.coin;
-                                //logger.Info(() => $"elva 1 --->  Block {block.BlockHeight} block {blockHeight0}");
-                                // Exemple d'un numéro de bloc que vous souhaitez passer
-                                ulong blockNumber = block.BlockHeight;
-                                // Appel de la méthode statique CallRewardProcessorAsync dans la classe Program
-                                await Program.CallRewardProcessorAsync(blockNumber);
+                                var burnedFee = (decimal)0;
+                                if (extraPoolConfig?.ChainTypeOverride == "Ethereum" || extraPoolConfig?.ChainTypeOverride == "Main" || extraPoolConfig?.ChainTypeOverride == "MainPow" || extraPoolConfig?.ChainTypeOverride == "Ubiq" || extraPoolConfig?.ChainTypeOverride == "EtherOne" || extraPoolConfig?.ChainTypeOverride == "Pink" || extraPoolConfig?.ChainTypeOverride == "Hypra")
+                                    burnedFee = (baseGas * gasUsed / EthereumConstants.Wei);
 
-                                // Initialiser ApiFetcher et RewardProcessor
-                                ApiFetcherLuckybits apiFetcher = new ApiFetcherLuckybits();
-                                RewardProcessor processor = new RewardProcessor(apiFetcher);
+                                block.Hash = blockHash;
+                                block.Status = BlockStatus.Confirmed;
+                                block.ConfirmationProgress = 1;
+                                block.BlockHeight = (ulong)blockInfo.Height;
 
-                                // Appeler la méthode pour traiter les valeurs
-                                await processor.ProcessRewardValuesAsync(blockNumber);
 
-                                // Récupérer les valeurs Multiplier et Base depuis les propriétés
-                                double multiplier = processor.Multiplier;
-                                double baseValue = processor.BaseValue;
 
-                                block.Reward = (decimal)Math.Abs(baseValue * multiplier);
 
-                                logger.Info(() => $"elva 1 ---> BaseValue : {baseValue} Multiplier : {multiplier} Reward : {block.Reward}");
-                                logger.Info(() => $"[{LogCategory}] Unlocked block {block.BlockHeight} worth {FormatAmount(block.Reward)}");
+
+
+
+                                // Utilisation de la logique de récompense Zether
+                                //if(coin.Symbol.Equals("Zether", StringComparison.OrdinalIgnoreCase))
+                                logger.Info(() => $"[{LogCategory}] Zether Symbole {coin.Symbol} name {poolConfig.Coin}");
+
+                                var coin_Temp = poolConfig.Coin;
+                                if (coin_Temp == "zether")
+                                {
+                                    block.Reward = ZetherConstants.GetBlockReward(block.BlockHeight);
+                                    logger.Info(() => $"[{LogCategory}] Zether block reward for block {block.BlockHeight} calculated as {FormatAmount(block.Reward)} coins");
+                                }
+                                else
+                                {
+                                    block.Reward = GetBaseBlockReward(chainType, block.BlockHeight); // base reward pour les autres coins
+                                }
+
+                                //elva Traitement pour le cas de luckybits - Recupéra du mutiplicateur -- Debut
+                                //  var coin_Temp = poolConfig.Coin;
+                                if (coin_Temp == "luckybits")
+                                {
+                                    var blockHeight0 = block.BlockHeight;
+                                    //var Newcoin = extraPoolConfig?.coin;
+                                    //logger.Info(() => $"elva 1 --->  Block {block.BlockHeight} block {blockHeight0}");
+                                    // Exemple d'un numéro de bloc que vous souhaitez passer
+                                    ulong blockNumber = block.BlockHeight;
+                                    // Appel de la méthode statique CallRewardProcessorAsync dans la classe Program
+                                    await Program.CallRewardProcessorAsync(blockNumber);
+
+                                    // Initialiser ApiFetcher et RewardProcessor
+                                    ApiFetcherLuckybits apiFetcher = new ApiFetcherLuckybits();
+                                    RewardProcessor processor = new RewardProcessor(apiFetcher);
+
+                                    // Appeler la méthode pour traiter les valeurs
+                                    await processor.ProcessRewardValuesAsync(blockNumber);
+
+                                    // Récupérer les valeurs Multiplier et Base depuis les propriétés
+                                    double multiplier = processor.Multiplier;
+                                    double baseValue = processor.BaseValue;
+
+                                    block.Reward = (decimal)Math.Abs(baseValue * multiplier);
+
+                                    logger.Info(() => $"elva 1 ---> BaseValue : {baseValue} Multiplier : {multiplier} Reward : {block.Reward}");
+                                    logger.Info(() => $"[{LogCategory}] Unlocked block {block.BlockHeight} worth {FormatAmount(block.Reward)}");
                                 }
 
 
 
-                            block.Type = EthereumConstants.BlockTypeBlock;
+                                block.Type = EthereumConstants.BlockTypeBlock;
 
-                            if(extraConfig?.KeepUncles == false)
-                                block.Reward += blockInfo.Uncles.Length * (block.Reward / 32); // uncle rewards
+                                if (extraConfig?.KeepUncles == false)
+                                    block.Reward += blockInfo.Uncles.Length * (block.Reward / 32); // uncle rewards
 
-                            if(extraConfig?.KeepTransactionFees == false && blockInfo.Transactions?.Length > 0)
-                                block.Reward += await GetTxRewardAsync(blockInfo, ct) - burnedFee;
+                                if (extraConfig?.KeepTransactionFees == false && blockInfo.Transactions?.Length > 0)
+                                    block.Reward += await GetTxRewardAsync(blockInfo, ct) - burnedFee;
 
-                            logger.Info(() => $"[{LogCategory}] Unlocked block {block.BlockHeight} worth {FormatAmount(block.Reward)}");
+                                logger.Info(() => $"[{LogCategory}] Unlocked block {block.BlockHeight} worth {FormatAmount(block.Reward)}");
 
-                            messageBus.NotifyBlockUnlocked(poolConfig.Id, block, coin);
+                                messageBus.NotifyBlockUnlocked(poolConfig.Id, block, coin);
+                            }
                         }
                     }
+                    continue;
                 }
-                continue;
-            }
 
-            // Existing uncle block search logic
-            var heightMin = block.BlockHeight - extraConfig.BlockSearchOffset;
-            var heightMax = Math.Min(block.BlockHeight + extraConfig.BlockSearchOffset, latestBlockHeight);
-            logger.Debug(() => $"[{LogCategory}] BlockSearchOffset used: {extraConfig.BlockSearchOffset} - Range of blockHeight searched - Min: {heightMin}, Max: {heightMax}");
+                // Existing uncle block search logic
+                var heightMin = block.BlockHeight - extraConfig.BlockSearchOffset;
+                var heightMax = Math.Min(block.BlockHeight + extraConfig.BlockSearchOffset, latestBlockHeight);
+                logger.Debug(() => $"[{LogCategory}] BlockSearchOffset used: {extraConfig.BlockSearchOffset} - Range of blockHeight searched - Min: {heightMin}, Max: {heightMax}");
 
-            var range = new List<long>();
-            for(var k = heightMin; k < heightMax; k++)
-                range.Add((long) k);
+                var range = new List<long>();
+                for (var k = heightMin; k < heightMax; k++)
+                    range.Add((long)k);
 
-            var blockInfo2s = await FetchBlocks(blockCache, ct, range.ToArray());
+                var blockInfo2s = await FetchBlocks(blockCache, ct, range.ToArray());
 
-            foreach(var blockInfo2 in blockInfo2s)
+                foreach (var blockInfo2 in blockInfo2s)
                 {
                     // don't give up yet, there might be an uncle
-                    if(blockInfo2.Uncles.Length > 0)
+                    if (blockInfo2.Uncles.Length > 0)
                     {
                         // fetch all uncles in a single RPC batch request
                         var uncleBatch = blockInfo2.Uncles.Select((x, index) => new RpcRequest(EC.GetUncleByBlockNumberAndIndex,
@@ -293,7 +294,7 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
                             .Select(x => x.Response.ToObject<DaemonResponses.Block>())
                             .FirstOrDefault(x => string.Equals(x.Miner, poolConfig.Address, StringComparison.OrdinalIgnoreCase));
 
-                        if(uncle != null)
+                        if (uncle != null)
                         {
                             totalDuplicateBlockBefore = await cf.Run(con => blockRepo.GetPoolDuplicateBlockBeforeCountByPoolHeightNoTypeAndStatusAsync(con, poolConfig.Id, Convert.ToInt64(uncle.Height.Value), new[]
                             {
@@ -303,10 +304,10 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
                             }, block.Created));
 
                             // mature?
-                            if(block.Reward == 0)
+                            if (block.Reward == 0)
                                 block.Reward = GetUncleReward(chainType, uncle.Height.Value, blockInfo2.Height.Value, totalDuplicateBlockBefore);
 
-                            if(latestBlockHeight - uncle.Height.Value >= EthereumConstants.MinConfimations)
+                            if (latestBlockHeight - uncle.Height.Value >= EthereumConstants.MinConfimations)
                             {
 
                                 // make sure there is no other uncle from that block stored in the DB already.
@@ -316,7 +317,7 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
                                 // uncles from that block and continue searching if there any others.
                                 // Otherwise the payouter will crash and no further blocks will be unlocked.
                                 var uncleBlock = await cf.Run(con => blockRepo.GetBlockByPoolHeightAndTypeAsync(con, poolConfig.Id, Convert.ToInt64(uncle.Height.Value), EthereumConstants.BlockTypeUncle));
-                                if(uncleBlock != null)
+                                if (uncleBlock != null)
                                 {
                                     logger.Info(() => $"[{LogCategory}] Found another uncle from block {uncle.Height.Value} in the DB. Continuing search for uncle.");
                                     continue;
@@ -328,7 +329,7 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
 
                                 // There is a rare case-scenario where an Uncle has a block reward of zero
                                 // We must handle it carefully otherwise payout will be stuck forever
-                                if(block.Reward > 0)
+                                if (block.Reward > 0)
                                 {
                                     block.Status = BlockStatus.Confirmed;
                                     block.ConfirmationProgress = 1;
@@ -354,7 +355,7 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
                     }
                 }
 
-                if(block.Status == BlockStatus.Pending && block.ConfirmationProgress > 0.75)
+                if (block.Status == BlockStatus.Pending && block.ConfirmationProgress > 0.75)
                 {
                     // we've lost this one
                     block.Hash = "0x0";
@@ -367,11 +368,11 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
 
 
 
+            }
         }
-    }
 
-    return result.ToArray();
-}
+        return result.ToArray();
+    }
 
 
 
@@ -389,12 +390,12 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
     {
         // ensure we have enough peers
         var enoughPeers = await EnsureDaemonsSynchedAsync(ct);
-        if(!enoughPeers)
+        if (!enoughPeers)
             return;
 
         var txHashes = new List<string>();
 
-        foreach(var balance in balances)
+        foreach (var balance in balances)
         {
             try
             {
@@ -402,7 +403,7 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
                 txHashes.Add(txHash);
             }
 
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.Error(ex);
 
@@ -410,7 +411,7 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
             }
         }
 
-        if(txHashes.Any())
+        if (txHashes.Any())
             NotifyPayoutSuccess(poolConfig.Id, balances, txHashes.ToArray(), null);
     }
 
@@ -426,7 +427,7 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
         // ensure we have enough peers
         var infoResponse = await rpcClient.ExecuteAsync<string>(logger, EC.GetPeerCount, ct);
 
-        if((networkType == EthereumNetworkType.Main || extraPoolConfig?.ChainTypeOverride == "Classic" || extraPoolConfig?.ChainTypeOverride == "Mordor" || networkType == EthereumNetworkType.MainPow || extraPoolConfig?.ChainTypeOverride == "Ubiq" || extraPoolConfig?.ChainTypeOverride == "EtherOne" || extraPoolConfig?.ChainTypeOverride == "Pink" || extraPoolConfig?.ChainTypeOverride == "OctaSpace" || extraPoolConfig?.ChainTypeOverride == "OctaSpaceTestnet" || extraPoolConfig?.ChainTypeOverride == "Hypra") &&
+        if ((networkType == EthereumNetworkType.Main || extraPoolConfig?.ChainTypeOverride == "Classic" || extraPoolConfig?.ChainTypeOverride == "Mordor" || networkType == EthereumNetworkType.MainPow || extraPoolConfig?.ChainTypeOverride == "Ubiq" || extraPoolConfig?.ChainTypeOverride == "EtherOne" || extraPoolConfig?.ChainTypeOverride == "Pink" || extraPoolConfig?.ChainTypeOverride == "OctaSpace" || extraPoolConfig?.ChainTypeOverride == "OctaSpaceTestnet" || extraPoolConfig?.ChainTypeOverride == "Hypra") &&
            (infoResponse.Error != null || string.IsNullOrEmpty(infoResponse.Response) ||
                infoResponse.Response.IntegralFromHex<int>() < EthereumConstants.MinPayoutPeerCount))
         {
@@ -441,7 +442,7 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
     {
         var cacheMisses = blockHeights.Where(x => !blockCache.ContainsKey(x)).ToArray();
 
-        if(cacheMisses.Any())
+        if (cacheMisses.Any())
         {
             var blockBatch = cacheMisses.Select(height => new RpcRequest(EC.GetBlockByNumber,
                 new[]
@@ -458,8 +459,8 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
                 .Where(x => x != null)
                 .ToArray();
 
-            foreach(var block in transformed)
-                blockCache[(long) block.Height.Value] = block;
+            foreach (var block in transformed)
+                blockCache[(long)block.Height.Value] = block;
         }
 
         return blockHeights.Select(x => blockCache[x]).ToArray();
@@ -467,13 +468,13 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
 
     internal static decimal GetBaseBlockReward(GethChainType chainType, ulong height)
     {
-        switch(chainType)
+        switch (chainType)
         {
             case GethChainType.Main:
             case GethChainType.MainPow:
-                if(height >= EthereumConstants.ConstantinopleHardForkHeight)
+                if (height >= EthereumConstants.ConstantinopleHardForkHeight)
                     return EthereumConstants.ConstantinopleReward;
-                if(height >= EthereumConstants.ByzantiumHardForkHeight)
+                if (height >= EthereumConstants.ByzantiumHardForkHeight)
                     return EthereumConstants.ByzantiumBlockReward;
 
                 return EthereumConstants.HomesteadBlockReward;
@@ -491,59 +492,59 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
                 return EthOneConstants.BaseRewardInitial;
 
             case GethChainType.Pink:
-               return PinkConstants.BaseRewardInitial;
+                return PinkConstants.BaseRewardInitial;
 
             case GethChainType.Callisto:
                 return CallistoConstants.BaseRewardInitial * (CallistoConstants.TreasuryPercent / 100);
 
             case GethChainType.Ubiq:
-                if(height >= UbiqConstants.OrionHardForkHeight)
+                if (height >= UbiqConstants.OrionHardForkHeight)
                     return UbiqConstants.OrionBlockReward;
-                if(height >= UbiqConstants.YearFourHeight)
+                if (height >= UbiqConstants.YearFourHeight)
                     return UbiqConstants.YearFourBlockReward;
-                if(height >= UbiqConstants.YearThreeHeight)
+                if (height >= UbiqConstants.YearThreeHeight)
                     return UbiqConstants.YearThreeBlockReward;
-                if(height >= UbiqConstants.YearTwoHeight)
+                if (height >= UbiqConstants.YearTwoHeight)
                     return UbiqConstants.YearTwoBlockReward;
-                if(height >= UbiqConstants.YearOneHeight)
+                if (height >= UbiqConstants.YearOneHeight)
                     return UbiqConstants.YearOneBlockReward;
 
                 return UbiqConstants.BaseRewardInitial;
 
             case GethChainType.OctaSpace:
             case GethChainType.OctaSpaceTestnet:
-                if(height >= OctaSpaceConstants.TriangulumHardForkHeight)
+                if (height >= OctaSpaceConstants.TriangulumHardForkHeight)
                     return OctaSpaceConstants.TriangulumBlockReward;
-                if(height >= OctaSpaceConstants.VegaHardForkHeight)
+                if (height >= OctaSpaceConstants.VegaHardForkHeight)
                     return OctaSpaceConstants.VegaBlockReward;
-                if(height >= OctaSpaceConstants.BlackeyeHardForkHeight)
+                if (height >= OctaSpaceConstants.BlackeyeHardForkHeight)
                     return OctaSpaceConstants.BlackeyeBlockReward;
-                if(height >= OctaSpaceConstants.DneprHardForkHeight)
+                if (height >= OctaSpaceConstants.DneprHardForkHeight)
                     return OctaSpaceConstants.DneprBlockReward;
-                if(height >= OctaSpaceConstants.MahasimHardForkHeight)
+                if (height >= OctaSpaceConstants.MahasimHardForkHeight)
                     return OctaSpaceConstants.MahasimBlockReward;
-                if(height >= OctaSpaceConstants.PolarisHardForkHeight)
+                if (height >= OctaSpaceConstants.PolarisHardForkHeight)
                     return OctaSpaceConstants.PolarisBlockReward;
-                if(height >= OctaSpaceConstants.SpringwaterHardForkHeight)
+                if (height >= OctaSpaceConstants.SpringwaterHardForkHeight)
                     return OctaSpaceConstants.SpringwaterBlockReward;
-                if(height >= OctaSpaceConstants.ZagamiHardForkHeight)
+                if (height >= OctaSpaceConstants.ZagamiHardForkHeight)
                     return OctaSpaceConstants.ZagamiBlockReward;
-                if(height >= OctaSpaceConstants.OldenburgHardForkHeight)
+                if (height >= OctaSpaceConstants.OldenburgHardForkHeight)
                     return OctaSpaceConstants.OldenburgBlockReward;
-                if(height >= OctaSpaceConstants.ArcturusHardForkHeight)
+                if (height >= OctaSpaceConstants.ArcturusHardForkHeight)
                     return OctaSpaceConstants.ArcturusBlockReward;
 
-               return OctaSpaceConstants.BaseRewardInitial;
+                return OctaSpaceConstants.BaseRewardInitial;
 
             case GethChainType.Hypra:
-                if(height >= HypraConstants.LondonHeight)
+                if (height >= HypraConstants.LondonHeight)
                     return HypraConstants.LondonBlockReward;
-                if(height >= HypraConstants.ArrowGlacierHeight)
+                if (height >= HypraConstants.ArrowGlacierHeight)
                     return HypraConstants.ArrowGlacierBlockReward;
-                if(height >= HypraConstants.GrayGlacierHeight)
+                if (height >= HypraConstants.GrayGlacierHeight)
                     return HypraConstants.GrayGlacierBlockReward;
 
-               return HypraConstants.BaseRewardInitial;
+                return HypraConstants.BaseRewardInitial;
 
             default:
                 throw new Exception("Unable to determine block reward: Unsupported chain type");
@@ -558,7 +559,7 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
 
         var results = await rpcClient.ExecuteBatchAsync(logger, ct, batch);
 
-        if(results.Any(x => x.Error != null))
+        if (results.Any(x => x.Error != null))
             throw new Exception($"Error fetching tx receipts: {string.Join(", ", results.Where(x => x.Error != null).Select(y => y.Error.Message))}");
 
         // create lookup table
@@ -566,27 +567,27 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
             .ToDictionary(x => x.TransactionHash, x => x.GasUsed);
 
         // accumulate
-        var result = blockInfo.Transactions.Sum(x => (ulong) gasUsed[x.Hash] * ((decimal) x.GasPrice / EthereumConstants.Wei));
+        var result = blockInfo.Transactions.Sum(x => (ulong)gasUsed[x.Hash] * ((decimal)x.GasPrice / EthereumConstants.Wei));
 
         return result;
     }
 
-   // internal static decimal GetUncleReward(GethChainType chainType, ulong uheight, ulong height)
+    // internal static decimal GetUncleReward(GethChainType chainType, ulong uheight, ulong height)
     internal static decimal GetUncleReward(GethChainType chainType, ulong uheight, ulong height, uint totalDuplicateBlockBefore)
 
     {
         var reward = GetBaseBlockReward(chainType, height);
 
-        switch(chainType)
+        switch (chainType)
         {
             case GethChainType.Classic:
             case GethChainType.Mordor:
                 double heightEraLength = height / EthereumClassicConstants.EraLength;
                 double era = Math.Floor(heightEraLength);
 
-                if(era == 0)
+                if (era == 0)
                 {
-                    if(uheight != height)
+                    if (uheight != height)
                         reward *= uheight + 8 - height;
 
                     reward /= 8m;
@@ -598,7 +599,7 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
 
                 break;
             case GethChainType.Ubiq:
-                if(uheight != height)
+                if (uheight != height)
                     reward *= uheight + 2 - height;
 
                 reward /= 2m;
@@ -609,7 +610,7 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
 
                 break;
             default:
-                if(uheight != height)
+                if (uheight != height)
                     reward *= uheight + 8 - height;
 
                 reward /= 8m;
@@ -617,7 +618,7 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
                 break;
         }
 
-                if(totalDuplicateBlockBefore > 0)
+        if (totalDuplicateBlockBefore > 0)
             reward = 0m;
 
         return reward;
@@ -632,12 +633,12 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
 
         var results = await rpcClient.ExecuteBatchAsync(logger, ct, commands);
 
-        if(results.Any(x => x.Error != null))
+        if (results.Any(x => x.Error != null))
         {
             var errors = results.Take(1).Where(x => x.Error != null)
                 .ToArray();
 
-            if(errors.Any())
+            if (errors.Any())
                 throw new Exception($"Chain detection failed: {string.Join(", ", errors.Select(y => y.Error.Message))}");
         }
 
@@ -653,7 +654,89 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
 
 
 
-/*
+    /*
+        private async Task<string> PayoutAsync(Balance balance, CancellationToken ct)
+        {
+            // send transaction
+            logger.Info(() => $"[{LogCategory}] Sending {FormatAmount(balance.Amount)} to {balance.Address}");
+
+            var amount = (BigInteger) Math.Floor(balance.Amount * EthereumConstants.Wei);
+
+            var request = new SendTransactionRequest
+            {
+                From = poolConfig.Address,
+                To = balance.Address,
+                Value = amount.ToString("x").TrimStart('0'),
+            };
+
+            if(extraPoolConfig?.ChainTypeOverride == "Ethereum" || extraPoolConfig?.ChainTypeOverride == "Main" || (extraPoolConfig?.ChainTypeOverride == "Ubiq") || extraPoolConfig?.ChainTypeOverride == "MainPow" || extraPoolConfig?.ChainTypeOverride == "EtherOne" )
+            {
+                var maxPriorityFeePerGas = await rpcClient.ExecuteAsync<string>(logger, EC.MaxPriorityFeePerGas, ct);
+
+                logger.Debug(() => $"[{LogCategory}] MaxPriorityFeePerGas: {maxPriorityFeePerGas.Response.IntegralFromHex<ulong>()} Wei");
+
+                if(extraPoolConfig?.ChainTypeOverride == "Ubiq")
+                {
+                    // get latest block
+                    var latestBlockResponse = await rpcClient.ExecuteAsync<DaemonResponses.Block>(logger, EC.GetBlockByNumber, ct, new[] { (object) "latest", true });
+                    var latestBlockHeight = latestBlockResponse.Response.Height.Value;
+
+                    // EIP-1559 Transaction
+                    if(latestBlockHeight >= UbiqConstants.OrionHardForkHeight)
+                    {
+                        logger.Debug(() => $"[{LogCategory}] Transaction (EIP-1559)");
+
+                        request.Gas = extraConfig.Gas;
+                        request.MaxPriorityFeePerGas = maxPriorityFeePerGas.Response.IntegralFromHex<ulong>();
+                    }
+                    // Legacy Transaction
+                    else {
+                        logger.Debug(() => $"[{LogCategory}] Transaction (Legacy)");
+
+                        request.Gas = extraConfig.Gas;
+                        request.GasPrice = extraConfig.MaxFeePerGas;
+                    }
+                }
+                else {
+                    request.Gas = extraConfig.Gas;
+                    request.MaxPriorityFeePerGas = maxPriorityFeePerGas.Response.IntegralFromHex<ulong>();
+                    request.MaxFeePerGas = extraConfig.MaxFeePerGas;
+                }
+            }
+
+            RpcResponse<string> response;
+            if(extraPoolConfig?.ChainTypeOverride == "Pink")
+            {
+                var requestPink = new SendTransactionRequestPink
+                {
+                    From = poolConfig.Address,
+                    To = balance.Address,
+                    Value = amount.ToString("x").TrimStart('0'),
+                    Gas = extraConfig.Gas
+                };
+                response = await rpcClient.ExecuteAsync<string>(logger, EC.SendTx, ct, new[] { requestPink });
+            }
+            else {
+                response = await rpcClient.ExecuteAsync<string>(logger, EC.SendTx, ct, new[] { request });
+            }
+
+            if(response.Error != null)
+                throw new Exception($"{EC.SendTx} returned error: {response.Error.Message} code {response.Error.Code}");
+
+            if(string.IsNullOrEmpty(response.Response) || EthereumConstants.ZeroHashPattern.IsMatch(response.Response))
+                throw new Exception($"{EC.SendTx} did not return a valid transaction hash");
+
+            var txHash = response.Response;
+            logger.Info(() => $"[{LogCategory}] Payment transaction id: {txHash}");
+
+            // update db
+            await PersistPaymentsAsync(new[] { balance }, txHash);
+
+            // done
+            return txHash;
+        }
+    */
+    /*
     private async Task<string> PayoutAsync(Balance balance, CancellationToken ct)
     {
         // send transaction
@@ -668,7 +751,23 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
             Value = amount.ToString("x").TrimStart('0'),
         };
 
-        if(extraPoolConfig?.ChainTypeOverride == "Ethereum" || extraPoolConfig?.ChainTypeOverride == "Main" || (extraPoolConfig?.ChainTypeOverride == "Ubiq") || extraPoolConfig?.ChainTypeOverride == "MainPow" || extraPoolConfig?.ChainTypeOverride == "EtherOne" )
+        if (poolConfig.Coin.Equals("Zether", StringComparison.OrdinalIgnoreCase))
+        {
+            // Récupère maxPriorityFeePerGas
+            var maxPriorityFeeResponse = await rpcClient.ExecuteAsync<string>(logger, EC.MaxPriorityFeePerGas, ct);
+            var maxPriorityFeePerGas = maxPriorityFeeResponse.Response.IntegralFromHex<ulong>();
+
+            // Définit maxFeePerGas comme deux fois maxPriorityFeePerGas pour garantir la priorité de la transaction
+            var maxFeePerGas = maxPriorityFeePerGas * 2;
+
+            logger.Debug(() => $"[{LogCategory}] Zether MaxPriorityFeePerGas: {maxPriorityFeePerGas} Wei, MaxFeePerGas: {maxFeePerGas} Wei");
+
+            // Configure la transaction pour Zether
+            request.Gas = extraConfig.Gas;
+            request.MaxPriorityFeePerGas = maxPriorityFeePerGas;
+            request.MaxFeePerGas = maxFeePerGas;
+        }
+        else if(extraPoolConfig?.ChainTypeOverride == "Ethereum" || extraPoolConfig?.ChainTypeOverride == "Main" || extraPoolConfig?.ChainTypeOverride == "Ubiq" || extraPoolConfig?.ChainTypeOverride == "MainPow" || extraPoolConfig?.ChainTypeOverride == "EtherOne")
         {
             var maxPriorityFeePerGas = await rpcClient.ExecuteAsync<string>(logger, EC.MaxPriorityFeePerGas, ct);
 
@@ -676,11 +775,9 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
 
             if(extraPoolConfig?.ChainTypeOverride == "Ubiq")
             {
-                // get latest block
                 var latestBlockResponse = await rpcClient.ExecuteAsync<DaemonResponses.Block>(logger, EC.GetBlockByNumber, ct, new[] { (object) "latest", true });
                 var latestBlockHeight = latestBlockResponse.Response.Height.Value;
 
-                // EIP-1559 Transaction
                 if(latestBlockHeight >= UbiqConstants.OrionHardForkHeight)
                 {
                     logger.Debug(() => $"[{LogCategory}] Transaction (EIP-1559)");
@@ -688,15 +785,16 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
                     request.Gas = extraConfig.Gas;
                     request.MaxPriorityFeePerGas = maxPriorityFeePerGas.Response.IntegralFromHex<ulong>();
                 }
-                // Legacy Transaction
-                else {
+                else
+                {
                     logger.Debug(() => $"[{LogCategory}] Transaction (Legacy)");
 
                     request.Gas = extraConfig.Gas;
                     request.GasPrice = extraConfig.MaxFeePerGas;
                 }
             }
-            else {
+            else
+            {
                 request.Gas = extraConfig.Gas;
                 request.MaxPriorityFeePerGas = maxPriorityFeePerGas.Response.IntegralFromHex<ulong>();
                 request.MaxFeePerGas = extraConfig.MaxFeePerGas;
@@ -715,7 +813,8 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
             };
             response = await rpcClient.ExecuteAsync<string>(logger, EC.SendTx, ct, new[] { requestPink });
         }
-        else {
+        else
+        {
             response = await rpcClient.ExecuteAsync<string>(logger, EC.SendTx, ct, new[] { request });
         }
 
@@ -728,198 +827,100 @@ public async Task<Block[]> ClassifyBlocksAsync(IMiningPool pool, Block[] blocks,
         var txHash = response.Response;
         logger.Info(() => $"[{LogCategory}] Payment transaction id: {txHash}");
 
-        // update db
         await PersistPaymentsAsync(new[] { balance }, txHash);
 
-        // done
         return txHash;
     }
-*/
-/*
-private async Task<string> PayoutAsync(Balance balance, CancellationToken ct)
-{
-    // send transaction
-    logger.Info(() => $"[{LogCategory}] Sending {FormatAmount(balance.Amount)} to {balance.Address}");
-
-    var amount = (BigInteger) Math.Floor(balance.Amount * EthereumConstants.Wei);
-
-    var request = new SendTransactionRequest
+    */
+    private async Task<string> PayoutAsync(Balance balance, CancellationToken ct)
     {
-        From = poolConfig.Address,
-        To = balance.Address,
-        Value = amount.ToString("x").TrimStart('0'),
-    };
+        // send transaction
+        logger.Info(() => $"[{LogCategory}] Sending {FormatAmount(balance.Amount)} to {balance.Address}");
 
-    if (poolConfig.Coin.Equals("Zether", StringComparison.OrdinalIgnoreCase))
-    {
-        // Récupère maxPriorityFeePerGas
-        var maxPriorityFeeResponse = await rpcClient.ExecuteAsync<string>(logger, EC.MaxPriorityFeePerGas, ct);
-        var maxPriorityFeePerGas = maxPriorityFeeResponse.Response.IntegralFromHex<ulong>();
+        var amount = (BigInteger)Math.Floor(balance.Amount * EthereumConstants.Wei);
 
-        // Définit maxFeePerGas comme deux fois maxPriorityFeePerGas pour garantir la priorité de la transaction
-        var maxFeePerGas = maxPriorityFeePerGas * 2;
-
-        logger.Debug(() => $"[{LogCategory}] Zether MaxPriorityFeePerGas: {maxPriorityFeePerGas} Wei, MaxFeePerGas: {maxFeePerGas} Wei");
-
-        // Configure la transaction pour Zether
-        request.Gas = extraConfig.Gas;
-        request.MaxPriorityFeePerGas = maxPriorityFeePerGas;
-        request.MaxFeePerGas = maxFeePerGas;
-    }
-    else if(extraPoolConfig?.ChainTypeOverride == "Ethereum" || extraPoolConfig?.ChainTypeOverride == "Main" || extraPoolConfig?.ChainTypeOverride == "Ubiq" || extraPoolConfig?.ChainTypeOverride == "MainPow" || extraPoolConfig?.ChainTypeOverride == "EtherOne")
-    {
-        var maxPriorityFeePerGas = await rpcClient.ExecuteAsync<string>(logger, EC.MaxPriorityFeePerGas, ct);
-
-        logger.Debug(() => $"[{LogCategory}] MaxPriorityFeePerGas: {maxPriorityFeePerGas.Response.IntegralFromHex<ulong>()} Wei");
-
-        if(extraPoolConfig?.ChainTypeOverride == "Ubiq")
-        {
-            var latestBlockResponse = await rpcClient.ExecuteAsync<DaemonResponses.Block>(logger, EC.GetBlockByNumber, ct, new[] { (object) "latest", true });
-            var latestBlockHeight = latestBlockResponse.Response.Height.Value;
-
-            if(latestBlockHeight >= UbiqConstants.OrionHardForkHeight)
-            {
-                logger.Debug(() => $"[{LogCategory}] Transaction (EIP-1559)");
-
-                request.Gas = extraConfig.Gas;
-                request.MaxPriorityFeePerGas = maxPriorityFeePerGas.Response.IntegralFromHex<ulong>();
-            }
-            else
-            {
-                logger.Debug(() => $"[{LogCategory}] Transaction (Legacy)");
-
-                request.Gas = extraConfig.Gas;
-                request.GasPrice = extraConfig.MaxFeePerGas;
-            }
-        }
-        else
-        {
-            request.Gas = extraConfig.Gas;
-            request.MaxPriorityFeePerGas = maxPriorityFeePerGas.Response.IntegralFromHex<ulong>();
-            request.MaxFeePerGas = extraConfig.MaxFeePerGas;
-        }
-    }
-
-    RpcResponse<string> response;
-    if(extraPoolConfig?.ChainTypeOverride == "Pink")
-    {
-        var requestPink = new SendTransactionRequestPink
+        var request = new SendTransactionRequest
         {
             From = poolConfig.Address,
             To = balance.Address,
             Value = amount.ToString("x").TrimStart('0'),
-            Gas = extraConfig.Gas
         };
-        response = await rpcClient.ExecuteAsync<string>(logger, EC.SendTx, ct, new[] { requestPink });
-    }
-    else
-    {
-        response = await rpcClient.ExecuteAsync<string>(logger, EC.SendTx, ct, new[] { request });
-    }
 
-    if(response.Error != null)
-        throw new Exception($"{EC.SendTx} returned error: {response.Error.Message} code {response.Error.Code}");
-
-    if(string.IsNullOrEmpty(response.Response) || EthereumConstants.ZeroHashPattern.IsMatch(response.Response))
-        throw new Exception($"{EC.SendTx} did not return a valid transaction hash");
-
-    var txHash = response.Response;
-    logger.Info(() => $"[{LogCategory}] Payment transaction id: {txHash}");
-
-    await PersistPaymentsAsync(new[] { balance }, txHash);
-
-    return txHash;
-}
-*/
-private async Task<string> PayoutAsync(Balance balance, CancellationToken ct)
-{
-    // send transaction
-    logger.Info(() => $"[{LogCategory}] Sending {FormatAmount(balance.Amount)} to {balance.Address}");
-
-    var amount = (BigInteger) Math.Floor(balance.Amount * EthereumConstants.Wei);
-
-    var request = new SendTransactionRequest
-    {
-        From = poolConfig.Address,
-        To = balance.Address,
-        Value = amount.ToString("x").TrimStart('0'),
-    };
-
-    if (poolConfig.Coin.Equals("Zether", StringComparison.OrdinalIgnoreCase) || poolConfig.Coin.Equals("luckybits", StringComparison.OrdinalIgnoreCase))
-    {
-        // Utiliser une transaction "legacy" pour Zether en définissant gasPrice
-        var gasPriceResponse = await rpcClient.ExecuteAsync<string>(logger, EC.GasPrice, ct);
-        var gasPrice = gasPriceResponse.Response.IntegralFromHex<ulong>();
-
-        logger.Debug(() => $"[{LogCategory}] Zether || Luckybits GasPrice: {gasPrice} Wei");
-
-        request.Gas = extraConfig.Gas;
-        request.GasPrice = gasPrice; // Utiliser gasPrice pour une transaction legacy
-    }
-    else if (extraPoolConfig?.ChainTypeOverride == "Ethereum" || extraPoolConfig?.ChainTypeOverride == "Main" || extraPoolConfig?.ChainTypeOverride == "Ubiq" || extraPoolConfig?.ChainTypeOverride == "MainPow" || extraPoolConfig?.ChainTypeOverride == "EtherOne")
-    {
-        var maxPriorityFeePerGas = await rpcClient.ExecuteAsync<string>(logger, EC.MaxPriorityFeePerGas, ct);
-
-        logger.Debug(() => $"[{LogCategory}] MaxPriorityFeePerGas: {maxPriorityFeePerGas.Response.IntegralFromHex<ulong>()} Wei");
-
-        if(extraPoolConfig?.ChainTypeOverride == "Ubiq")
+        if (poolConfig.Coin.Equals("Zether", StringComparison.OrdinalIgnoreCase) || poolConfig.Coin.Equals("luckybits", StringComparison.OrdinalIgnoreCase))
         {
-            var latestBlockResponse = await rpcClient.ExecuteAsync<DaemonResponses.Block>(logger, EC.GetBlockByNumber, ct, new[] { (object) "latest", true });
-            var latestBlockHeight = latestBlockResponse.Response.Height.Value;
+            // Utiliser une transaction "legacy" pour Zether en définissant gasPrice
+            var gasPriceResponse = await rpcClient.ExecuteAsync<string>(logger, EC.GasPrice, ct);
+            var gasPrice = gasPriceResponse.Response.IntegralFromHex<ulong>();
 
-            if(latestBlockHeight >= UbiqConstants.OrionHardForkHeight)
+            logger.Debug(() => $"[{LogCategory}] Zether || Luckybits GasPrice: {gasPrice} Wei");
+
+            request.Gas = extraConfig.Gas;
+            request.GasPrice = gasPrice; // Utiliser gasPrice pour une transaction legacy
+        }
+        else if (extraPoolConfig?.ChainTypeOverride == "Ethereum" || extraPoolConfig?.ChainTypeOverride == "Main" || extraPoolConfig?.ChainTypeOverride == "Ubiq" || extraPoolConfig?.ChainTypeOverride == "MainPow" || extraPoolConfig?.ChainTypeOverride == "EtherOne")
+        {
+            var maxPriorityFeePerGas = await rpcClient.ExecuteAsync<string>(logger, EC.MaxPriorityFeePerGas, ct);
+
+            logger.Debug(() => $"[{LogCategory}] MaxPriorityFeePerGas: {maxPriorityFeePerGas.Response.IntegralFromHex<ulong>()} Wei");
+
+            if (extraPoolConfig?.ChainTypeOverride == "Ubiq")
             {
-                logger.Debug(() => $"[{LogCategory}] Transaction (EIP-1559)");
+                var latestBlockResponse = await rpcClient.ExecuteAsync<DaemonResponses.Block>(logger, EC.GetBlockByNumber, ct, new[] { (object)"latest", true });
+                var latestBlockHeight = latestBlockResponse.Response.Height.Value;
 
-                request.Gas = extraConfig.Gas;
-                request.MaxPriorityFeePerGas = maxPriorityFeePerGas.Response.IntegralFromHex<ulong>();
+                if (latestBlockHeight >= UbiqConstants.OrionHardForkHeight)
+                {
+                    logger.Debug(() => $"[{LogCategory}] Transaction (EIP-1559)");
+
+                    request.Gas = extraConfig.Gas;
+                    request.MaxPriorityFeePerGas = maxPriorityFeePerGas.Response.IntegralFromHex<ulong>();
+                }
+                else
+                {
+                    logger.Debug(() => $"[{LogCategory}] Transaction (Legacy)");
+
+                    request.Gas = extraConfig.Gas;
+                    request.GasPrice = extraConfig.MaxFeePerGas;
+                }
             }
             else
             {
-                logger.Debug(() => $"[{LogCategory}] Transaction (Legacy)");
-
                 request.Gas = extraConfig.Gas;
-                request.GasPrice = extraConfig.MaxFeePerGas;
+                request.MaxPriorityFeePerGas = maxPriorityFeePerGas.Response.IntegralFromHex<ulong>();
+                request.MaxFeePerGas = extraConfig.MaxFeePerGas;
             }
+        }
+
+        RpcResponse<string> response;
+        if (extraPoolConfig?.ChainTypeOverride == "Pink")
+        {
+            var requestPink = new SendTransactionRequestPink
+            {
+                From = poolConfig.Address,
+                To = balance.Address,
+                Value = amount.ToString("x").TrimStart('0'),
+                Gas = extraConfig.Gas
+            };
+            response = await rpcClient.ExecuteAsync<string>(logger, EC.SendTx, ct, new[] { requestPink });
         }
         else
         {
-            request.Gas = extraConfig.Gas;
-            request.MaxPriorityFeePerGas = maxPriorityFeePerGas.Response.IntegralFromHex<ulong>();
-            request.MaxFeePerGas = extraConfig.MaxFeePerGas;
+            response = await rpcClient.ExecuteAsync<string>(logger, EC.SendTx, ct, new[] { request });
         }
+
+        if (response.Error != null)
+            throw new Exception($"{EC.SendTx} returned error: {response.Error.Message} code {response.Error.Code}");
+
+        if (string.IsNullOrEmpty(response.Response) || EthereumConstants.ZeroHashPattern.IsMatch(response.Response))
+            throw new Exception($"{EC.SendTx} did not return a valid transaction hash");
+
+        var txHash = response.Response;
+        logger.Info(() => $"[{LogCategory}] Payment transaction id: {txHash}");
+
+        await PersistPaymentsAsync(new[] { balance }, txHash);
+
+        return txHash;
     }
-
-    RpcResponse<string> response;
-    if(extraPoolConfig?.ChainTypeOverride == "Pink")
-    {
-        var requestPink = new SendTransactionRequestPink
-        {
-            From = poolConfig.Address,
-            To = balance.Address,
-            Value = amount.ToString("x").TrimStart('0'),
-            Gas = extraConfig.Gas
-        };
-        response = await rpcClient.ExecuteAsync<string>(logger, EC.SendTx, ct, new[] { requestPink });
-    }
-    else
-    {
-        response = await rpcClient.ExecuteAsync<string>(logger, EC.SendTx, ct, new[] { request });
-    }
-
-    if(response.Error != null)
-        throw new Exception($"{EC.SendTx} returned error: {response.Error.Message} code {response.Error.Code}");
-
-    if(string.IsNullOrEmpty(response.Response) || EthereumConstants.ZeroHashPattern.IsMatch(response.Response))
-        throw new Exception($"{EC.SendTx} did not return a valid transaction hash");
-
-    var txHash = response.Response;
-    logger.Info(() => $"[{LogCategory}] Payment transaction id: {txHash}");
-
-    await PersistPaymentsAsync(new[] { balance }, txHash);
-
-    return txHash;
-}
 
 
 

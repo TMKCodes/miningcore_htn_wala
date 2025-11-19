@@ -7,10 +7,10 @@ public class PiratechainJob : EquihashJob
 {
     protected override byte[] SerializeBlock(Span<byte> header, Span<byte> coinbase, Span<byte> solution)
     {
-        var transactionCount = (uint) BlockTemplate.Transactions.Length + 1; // +1 for prepended coinbase tx
+        var transactionCount = (uint)BlockTemplate.Transactions.Length + 1; // +1 for prepended coinbase tx
         var rawTransactionBuffer = BuildRawTransactionBuffer();
 
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
             var bs = new BitcoinStream(stream, true);
 
@@ -23,7 +23,7 @@ public class PiratechainJob : EquihashJob
 
             if (transactionCount < 0xfd)
             {
-                var simpleVarIntBytes = (Span<byte>) txCount.HexToByteArray();
+                var simpleVarIntBytes = (Span<byte>)txCount.HexToByteArray();
 
                 bs.ReadWrite(simpleVarIntBytes);
             }
@@ -32,8 +32,8 @@ public class PiratechainJob : EquihashJob
                 if (txCount.Length == 2)
                     txCount = "00" + txCount;
 
-                var complexHeader = (Span<byte>) new byte[] { 0xFD };
-                var complexVarIntBytes = (Span<byte>) txCount.HexToReverseByteArray();
+                var complexHeader = (Span<byte>)new byte[] { 0xFD };
+                var complexVarIntBytes = (Span<byte>)txCount.HexToReverseByteArray();
 
                 // concat header and varInt
                 Span<byte> complexHeaderVarIntBytes = stackalloc byte[complexHeader.Length + complexVarIntBytes.Length];

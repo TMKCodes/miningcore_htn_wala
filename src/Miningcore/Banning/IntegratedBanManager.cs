@@ -25,7 +25,7 @@ public class IntegratedBanManager : IBanManager
         Contract.Requires<ArgumentException>(duration.TotalMilliseconds > 0);
 
         // don't ban loopback
-        if(address.Equals(IPAddress.Loopback) || address.Equals(IPAddress.IPv6Loopback))
+        if (address.Equals(IPAddress.Loopback) || address.Equals(IPAddress.IPv6Loopback))
             return;
 
         cache.Set(address.ToString(), string.Empty, duration);

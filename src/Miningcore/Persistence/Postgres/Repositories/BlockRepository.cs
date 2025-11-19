@@ -85,7 +85,7 @@ public class BlockRepository : IBlockRepository
         return (await con.QueryAsync<Entities.Block>(new CommandDefinition(query, new
         {
             poolId,
-	    address,
+            address,
             status = status.Select(x => x.ToString().ToLower()).ToArray(),
             offset = page * pageSize,
             pageSize
@@ -258,56 +258,56 @@ public class BlockRepository : IBlockRepository
 
 
 
-// elva -- traitement directe des blocks absents du noeud
-/*
-public async Task<uint> UpdateBlockStatusAndRewardAsync(
-    IDbConnection con, string poolId, long blockHeight, string blockHash, BlockStatus status, decimal reward)
-{
-    const string query = @"
-        UPDATE blocks
-        SET status = @status, reward = @reward, updated = now()
-        WHERE poolid = @poolId AND blockheight = @blockHeight AND hash = @blockHash
-        RETURNING id";
-
-    var parameters = new
+    // elva -- traitement directe des blocks absents du noeud
+    /*
+    public async Task<uint> UpdateBlockStatusAndRewardAsync(
+        IDbConnection con, string poolId, long blockHeight, string blockHash, BlockStatus status, decimal reward)
     {
-        poolId,
-        blockHeight,
-        blockHash,
-        status = status.ToString().ToLower(),
-        reward
-    };
+        const string query = @"
+            UPDATE blocks
+            SET status = @status, reward = @reward, updated = now()
+            WHERE poolid = @poolId AND blockheight = @blockHeight AND hash = @blockHash
+            RETURNING id";
 
-    // Exécuter la commande et récupérer l'ID du bloc mis à jour
-    var result = await con.ExecuteScalarAsync<uint>(query, parameters);
+        var parameters = new
+        {
+            poolId,
+            blockHeight,
+            blockHash,
+            status = status.ToString().ToLower(),
+            reward
+        };
 
-    return result;
-}
-*/
-// elva -- traitement directe des blocks absents du noeud
-public async Task<uint> UpdateBlockStatusAndRewardAsync(
-    IDbConnection con, string poolId, long blockHeight, string blockHash, BlockStatus status, decimal reward)
-{
-    const string query = @"
+        // Exécuter la commande et récupérer l'ID du bloc mis à jour
+        var result = await con.ExecuteScalarAsync<uint>(query, parameters);
+
+        return result;
+    }
+    */
+    // elva -- traitement directe des blocks absents du noeud
+    public async Task<uint> UpdateBlockStatusAndRewardAsync(
+        IDbConnection con, string poolId, long blockHeight, string blockHash, BlockStatus status, decimal reward)
+    {
+        const string query = @"
         UPDATE blocks
         SET status = @status, reward = @reward
         WHERE poolid = @poolId AND blockheight = @blockHeight AND hash = @blockHash
         RETURNING id";
 
-    var parameters = new
-    {
-        poolId,
-        blockHeight,
-        blockHash,
-        status = status.ToString().ToLower(),
-        reward
-    };
+        var parameters = new
+        {
+            poolId,
+            blockHeight,
+            blockHash,
+            status = status.ToString().ToLower(),
+            reward
+        };
 
-    // Exécuter la commande et récupérer l'ID du bloc mis à jour
-    var result = await con.ExecuteScalarAsync<uint>(query, parameters);
+        // Exécuter la commande et récupérer l'ID du bloc mis à jour
+        var result = await con.ExecuteScalarAsync<uint>(query, parameters);
 
-    return result;
-}
+        return result;
+    }
 
 
 }

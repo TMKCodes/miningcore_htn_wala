@@ -14,7 +14,7 @@ public unsafe class Hoohash : IHashAlgorithm
         {
             fixed (byte* output = result)
             {
-                Multihash.Hoohash(input, output, (uint) data.Length);
+                Multihash.Hoohash(input, output, (uint)data.Length);
             }
         }
     }

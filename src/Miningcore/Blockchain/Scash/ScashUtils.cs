@@ -67,40 +67,40 @@ public static class ScashUtils
     /// Gestion des adresses Bech32 SegWit Native pour SCASH.
     /// </summary>
     public static IDestination BechSegwitAddressToDestination(string address, Network expectedNetwork)
-{
-    ValidateInputs(address, expectedNetwork);
-
-    try
     {
-        var encoder = expectedNetwork.GetBech32Encoder(Bech32Type.WITNESS_PUBKEY_ADDRESS, false);
-        if (encoder == null)
-            throw new InvalidOperationException($"Bech32 encoder for WITNESS_PUBKEY_ADDRESS is not configured in the network: {expectedNetwork.Name}");
+        ValidateInputs(address, expectedNetwork);
 
-        // Décodage de l'adresse Bech32
-        var decoded = encoder.Decode(address, out var witVersion);
+        try
+        {
+            var encoder = expectedNetwork.GetBech32Encoder(Bech32Type.WITNESS_PUBKEY_ADDRESS, false);
+            if (encoder == null)
+                throw new InvalidOperationException($"Bech32 encoder for WITNESS_PUBKEY_ADDRESS is not configured in the network: {expectedNetwork.Name}");
 
-        if (witVersion != 0)
-            throw new FormatException($"Unsupported witness version: {witVersion}");
+            // Décodage de l'adresse Bech32
+            var decoded = encoder.Decode(address, out var witVersion);
 
-        // Crée une destination témoin
-        var result = new WitKeyId(decoded);
+            if (witVersion != 0)
+                throw new FormatException($"Unsupported witness version: {witVersion}");
 
-        // Reconstruit l'adresse et valide
-        var reconstructedAddress = result.GetAddress(expectedNetwork).ToString();
-        Console.WriteLine($"[DEBUG] Reconstructed Address: {reconstructedAddress}");
-        Console.WriteLine($"[DEBUG] Original Address: {address}");
+            // Crée une destination témoin
+            var result = new WitKeyId(decoded);
 
-        if (!reconstructedAddress.Equals(address, StringComparison.OrdinalIgnoreCase))
-            throw new FormatException($"Decoded address mismatch. Expected: {address}, Got: {reconstructedAddress}");
+            // Reconstruit l'adresse et valide
+            var reconstructedAddress = result.GetAddress(expectedNetwork).ToString();
+            Console.WriteLine($"[DEBUG] Reconstructed Address: {reconstructedAddress}");
+            Console.WriteLine($"[DEBUG] Original Address: {address}");
 
-        return result;
+            if (!reconstructedAddress.Equals(address, StringComparison.OrdinalIgnoreCase))
+                throw new FormatException($"Decoded address mismatch. Expected: {address}, Got: {reconstructedAddress}");
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] Failed to process Bech32 SCASH address: {address}. Reason: {ex.Message}");
+            throw new FormatException($"Unexpected error processing Bech32 SCASH address: {address}. Reason: {ex.Message}", ex);
+        }
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"[ERROR] Failed to process Bech32 SCASH address: {address}. Reason: {ex.Message}");
-        throw new FormatException($"Unexpected error processing Bech32 SCASH address: {address}. Reason: {ex.Message}", ex);
-    }
-}
 
 
     /// <summary>

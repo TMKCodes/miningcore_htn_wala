@@ -43,19 +43,19 @@ public class ProgpowWorkerJob
         var context = worker.ContextAs<ProgpowWorkerContext>();
 
         // mixHash
-        if(mixHash.Length != 64)
+        if (mixHash.Length != 64)
             throw new StratumException(StratumError.Other, $"incorrect size of mixHash: {mixHash}");
 
         // validate nonce
-        if(nonce.Length != 16)
+        if (nonce.Length != 16)
             throw new StratumException(StratumError.Other, $"incorrect size of nonce: {nonce}");
 
         // check if nonce is within range
-        if(nonce.IndexOf(context.ExtraNonce1[0..4], StringComparison.OrdinalIgnoreCase) != 0)
+        if (nonce.IndexOf(context.ExtraNonce1[0..4], StringComparison.OrdinalIgnoreCase) != 0)
             throw new StratumException(StratumError.Other, $"nonce out of range: {nonce}");
 
         // dupe check
-        if(!RegisterSubmit(nonce, headerHash, mixHash))
+        if (!RegisterSubmit(nonce, headerHash, mixHash))
             throw new StratumException(StratumError.DuplicateShare, "duplicate share");
 
         var nonceLong = ulong.Parse(nonce, NumberStyles.HexNumber);

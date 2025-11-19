@@ -65,7 +65,7 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
         try
         {
             var blockTemplate = await restClient.Get<WarthogBlockTemplate>(WarthogCommands.GetBlockTemplate.Replace(WarthogCommands.DataLabel, poolConfig.Address), ct);
-            if(blockTemplate?.Error != null)
+            if (blockTemplate?.Error != null)
                 return false;
 
             var job = currentJob;
@@ -73,7 +73,7 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
                 job.BlockTemplate.Data.Height < blockTemplate.Data.Height ||
                 job.BlockTemplate.Data.Header != blockTemplate.Data.Header;
 
-            if(isNew)
+            if (isNew)
             {
                 messageBus.NotifyChainHeight(poolConfig.Id, blockTemplate.Data.Height, poolConfig.Template);
 
@@ -81,16 +81,16 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
                 job = new WarthogJob();
                 job.Init(blockTemplate, NextJobId(), clock, network, isJanusHash);
 
-                lock(jobLock)
+                lock (jobLock)
                 {
                     validJobs.Insert(0, job);
 
                     // trim active jobs
-                    while(validJobs.Count > maxActiveJobs)
+                    while (validJobs.Count > maxActiveJobs)
                         validJobs.RemoveAt(validJobs.Count - 1);
                 }
 
-                if(via != null)
+                if (via != null)
                     logger.Info(() => $"Detected new block {blockTemplate.Data.Height} [{via}]");
                 else
                     logger.Info(() => $"Detected new block {blockTemplate.Data.Height}");
@@ -99,7 +99,7 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
                 if (job.BlockTemplate.Data.Height > BlockchainStats.BlockHeight)
                 {
                     BlockchainStats.LastNetworkBlockTime = clock.Now;
-                    BlockchainStats.BlockHeight = (ulong) job.BlockTemplate.Data.Height;
+                    BlockchainStats.BlockHeight = (ulong)job.BlockTemplate.Data.Height;
                     BlockchainStats.NetworkDifficulty = job.Difficulty;
                 }
 
@@ -108,7 +108,7 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
 
             else
             {
-                if(via != null)
+                if (via != null)
                     logger.Debug(() => $"Template update {blockTemplate.Data.Height} [{via}]");
                 else
                     logger.Debug(() => $"Template update {blockTemplate.Data.Height}");
@@ -117,12 +117,12 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
             return isNew;
         }
 
-        catch(OperationCanceledException)
+        catch (OperationCanceledException)
         {
             // ignored
         }
 
-        catch(Exception ex)
+        catch (Exception ex)
         {
             logger.Error(ex, () => $"Error during {nameof(UpdateJob)}");
         }
@@ -141,14 +141,14 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
         try
         {
             var responseHashrate = await restClient.Get<GetNetworkHashrateResponse>(WarthogCommands.GetNetworkHashrate.Replace(WarthogCommands.DataLabel, "300"), ct);
-            if(responseHashrate?.Code == 0)
+            if (responseHashrate?.Code == 0)
                 BlockchainStats.NetworkHashrate = responseHashrate.Data.Hashrate;
 
             var responsePeers = await restClient.Get<GetPeersResponse[]>(WarthogCommands.GetPeers, ct);
             BlockchainStats.ConnectedPeers = responsePeers.Length;
         }
 
-        catch(Exception e)
+        catch (Exception e)
         {
             logger.Error(e);
         }
@@ -168,7 +168,7 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
             };
 
             var response = await restClient.Post<WarthogSubmitBlockResponse>(WarthogCommands.SubmitBlock, block, ct);
-            if(response?.Error != null)
+            if (response?.Error != null)
             {
                 logger.Warn(() => $"Block {share.BlockHeight} submission failed with: {response.Error}");
                 messageBus.SendMessage(new AdminNotification("Block submission failed", $"Pool {poolConfig.Id} {(!string.IsNullOrEmpty(share.Source) ? $"[{share.Source.ToUpper()}] " : string.Empty)}failed to submit block {share.BlockHeight}: {response.Error}"));
@@ -178,7 +178,7 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
             return response?.Code == 0;
         }
 
-        catch(Exception e)
+        catch (Exception e)
         {
             logger.Error(e);
             return false;
@@ -240,7 +240,7 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
         Contract.RequiresNonNull(worker);
         Contract.RequiresNonNull(submission);
 
-        if(submission is not object[] submitParams)
+        if (submission is not object[] submitParams)
             throw new StratumException(StratumError.Other, "invalid params");
 
         var context = worker.ContextAs<WarthogWorkerContext>();
@@ -253,12 +253,12 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
 
         WarthogJob job;
 
-        lock(jobLock)
+        lock (jobLock)
         {
             job = validJobs.FirstOrDefault(x => x.JobId == jobId);
         }
 
-        if(job == null)
+        if (job == null)
             throw new StratumException(StratumError.JobNotFound, "job not found");
 
         // validate & process
@@ -274,7 +274,7 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
         share.Created = clock.Now;
 
         // if block candidate, submit & check if accepted by network
-        if(share.IsBlockCandidate)
+        if (share.IsBlockCandidate)
         {
             logger.Info(() => $"Submitting block {share.BlockHeight} [{share.BlockHash}][{headerHex}]");
 
@@ -283,7 +283,7 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
             // is it still a block candidate?
             share.IsBlockCandidate = acceptResponse;
 
-            if(share.IsBlockCandidate)
+            if (share.IsBlockCandidate)
             {
                 logger.Info(() => $"Daemon accepted block {share.BlockHeight} [{share.BlockHash}] submitted by {context.Miner}");
 
@@ -305,13 +305,13 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
 
     public async Task<bool> ValidateAddressAsync(string address, CancellationToken ct)
     {
-        if(string.IsNullOrEmpty(address))
+        if (string.IsNullOrEmpty(address))
             return false;
 
         try
         {
             var response = await restClient.Get<WarthogBlockTemplate>(WarthogCommands.GetBlockTemplate.Replace(WarthogCommands.DataLabel, address), ct);
-            if(response?.Error != null)
+            if (response?.Error != null)
             {
                 logger.Warn(() => $"'{address}': {response.Error} (Code {response?.Code})");
                 return false;
@@ -320,7 +320,7 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
             return response?.Code == 0;
         }
 
-        catch(Exception)
+        catch (Exception)
         {
             logger.Warn(() => $"'{WarthogCommands.DaemonName}' daemon does not seem to be running...");
             return false;
@@ -347,7 +347,7 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
         try
         {
             var response = await restClient.Get<GetChainInfoResponse>(WarthogCommands.GetChainInfo, ct);
-            if(response?.Error != null)
+            if (response?.Error != null)
             {
                 logger.Warn(() => $"'{WarthogCommands.GetChainInfo}': {response.Error} (Code {response?.Code})");
                 return false;
@@ -356,7 +356,7 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
             return response?.Code == 0;
         }
 
-        catch(Exception)
+        catch (Exception)
         {
             logger.Warn(() => $"'{WarthogCommands.DaemonName}' daemon does not seem to be running...");
             return false;
@@ -371,13 +371,13 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
         {
             var response = await restClient.Get<GetPeersResponse[]>(WarthogCommands.GetPeers, ct);
 
-            if(network == WarthogNetworkType.Testnet)
+            if (network == WarthogNetworkType.Testnet)
                 return response?.Length >= 0;
             else
                 return response?.Length > 0;
         }
 
-        catch(Exception)
+        catch (Exception)
         {
             logger.Warn(() => $"'{WarthogCommands.DaemonName}' daemon does not seem to be running...");
             return false;
@@ -395,13 +395,13 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
             try
             {
                 var response = await restClient.Get<GetChainInfoResponse>(WarthogCommands.GetChainInfo, ct);
-                if(response?.Code == null)
+                if (response?.Code == null)
                     logger.Debug(() => $"'{WarthogCommands.DaemonName}' daemon did not responded...");
 
-                if(response?.Error != null)
+                if (response?.Error != null)
                     logger.Debug(() => $"'{WarthogCommands.GetChainInfo}': {response.Error} (Code {response?.Code})");
 
-                if(response.Data.Synced)
+                if (response.Data.Synced)
                 {
                     logger.Info(() => $"'{WarthogCommands.DaemonName}' daemon synched with blockchain");
                     break;
@@ -410,32 +410,32 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
                 logger.Info(() => $"Daemon is still syncing with network. Current height: {response?.Data.Height}. Manager will be started once synced.");
             }
 
-            catch(Exception)
+            catch (Exception)
             {
                 logger.Warn(() => $"'{WarthogCommands.DaemonName}' daemon does not seem to be running...");
             }
-        } while(await timer.WaitForNextTickAsync(ct));
+        } while (await timer.WaitForNextTickAsync(ct));
     }
 
     protected override async Task PostStartInitAsync(CancellationToken ct)
     {
         // validate pool address
-        if(string.IsNullOrEmpty(poolConfig.Address))
+        if (string.IsNullOrEmpty(poolConfig.Address))
             throw new PoolStartupException("Pool address is not configured", poolConfig.Id);
 
         // test daemon
         try
         {
             var responseChain = await restClient.Get<GetChainInfoResponse>(WarthogCommands.GetChainInfo, ct);
-            if(responseChain?.Code == null)
+            if (responseChain?.Code == null)
                 throw new PoolStartupException("Init RPC failed...", poolConfig.Id);
 
             isJanusHash = responseChain.Data.IsJanusHash;
-            if(isJanusHash)
+            if (isJanusHash)
                 logger.Info(() => "JanusHash activated");
         }
 
-        catch(Exception)
+        catch (Exception)
         {
             logger.Warn(() => $"'{WarthogCommands.DaemonName} - {WarthogCommands.GetChainInfo}' daemon does not seem to be running...");
             throw new PoolStartupException("Init RPC failed...", poolConfig.Id);
@@ -444,7 +444,7 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
         try
         {
             var responsePoolAddress = await restClient.Get<WarthogBlockTemplate>(WarthogCommands.GetBlockTemplate.Replace(WarthogCommands.DataLabel, poolConfig.Address), ct);
-            if(responsePoolAddress?.Error != null)
+            if (responsePoolAddress?.Error != null)
                 throw new PoolStartupException($"Pool address '{poolConfig.Address}': {responsePoolAddress.Error} (Code {responsePoolAddress?.Code})", poolConfig.Id);
 
             network = responsePoolAddress.Data.Testnet ? WarthogNetworkType.Testnet : WarthogNetworkType.Mainnet;
@@ -454,29 +454,29 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
             BlockchainStats.NetworkType = $"{network}";
         }
 
-        catch(Exception)
+        catch (Exception)
         {
             logger.Warn(() => $"'{WarthogCommands.DaemonName} - {WarthogCommands.GetBlockTemplate}' daemon does not seem to be running...");
             throw new PoolStartupException($"Pool address check failed...", poolConfig.Id);
         }
 
-        if(clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
+        if (clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
         {
             // validate pool address privateKey
-            if(string.IsNullOrEmpty(extraPoolPaymentProcessingConfig?.WalletPrivateKey))
+            if (string.IsNullOrEmpty(extraPoolPaymentProcessingConfig?.WalletPrivateKey))
                 throw new PoolStartupException("Pool address private key is not configured", poolConfig.Id);
 
             try
             {
                 var responsePoolAddressWalletPrivateKey = await restClient.Get<WarthogWalletResponse>(WarthogCommands.GetWallet.Replace(WarthogCommands.DataLabel, extraPoolPaymentProcessingConfig?.WalletPrivateKey), ct);
-                if(responsePoolAddressWalletPrivateKey?.Error != null)
+                if (responsePoolAddressWalletPrivateKey?.Error != null)
                     throw new PoolStartupException($"Pool address private key '{extraPoolPaymentProcessingConfig?.WalletPrivateKey}': {responsePoolAddressWalletPrivateKey.Error} (Code {responsePoolAddressWalletPrivateKey?.Code})", poolConfig.Id);
 
-                if(responsePoolAddressWalletPrivateKey.Data.Address != poolConfig.Address)
+                if (responsePoolAddressWalletPrivateKey.Data.Address != poolConfig.Address)
                     throw new PoolStartupException($"Pool address private key '{extraPoolPaymentProcessingConfig?.WalletPrivateKey}' [{responsePoolAddressWalletPrivateKey.Data.Address}] does not match pool address: {poolConfig.Address}", poolConfig.Id);
             }
 
-            catch(Exception)
+            catch (Exception)
             {
                 logger.Warn(() => $"'{WarthogCommands.DaemonName} - {WarthogCommands.GetWallet}' daemon does not seem to be running...");
                 throw new PoolStartupException($"Pool address private key check failed...", poolConfig.Id);
@@ -488,8 +488,8 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
         // Periodically update network stats
         Observable.Interval(TimeSpan.FromMinutes(1))
             .Select(via => Observable.FromAsync(() =>
-                Guard(()=> UpdateNetworkStatsAsync(ct),
-                    ex=> logger.Error(ex))))
+                Guard(() => UpdateNetworkStatsAsync(ct),
+                    ex => logger.Error(ex))))
             .Concat()
             .Subscribe();
 
@@ -510,10 +510,10 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
 
         var endpointExtra = daemonEndpoints
             .Where(x => x.Extra.SafeExtensionDataAs<WarthogDaemonEndpointConfigExtra>() != null)
-            .Select(x=> Tuple.Create(x, x.Extra.SafeExtensionDataAs<WarthogDaemonEndpointConfigExtra>()))
+            .Select(x => Tuple.Create(x, x.Extra.SafeExtensionDataAs<WarthogDaemonEndpointConfigExtra>()))
             .FirstOrDefault();
 
-        if(endpointExtra?.Item2?.PortWs.HasValue == true)
+        if (endpointExtra?.Item2?.PortWs.HasValue == true)
         {
             var (endpointConfig, extra) = endpointExtra;
 
@@ -540,13 +540,13 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
                 .Publish()
                 .RefCount();
 
-            triggers.Add(websocketNotify.Select(_ => (JobRefreshBy.WebSocket, (string) null)));
+            triggers.Add(websocketNotify.Select(_ => (JobRefreshBy.WebSocket, (string)null)));
 
-            if(pollingInterval > 0)
+            if (pollingInterval > 0)
             {
                 triggers.Add(Observable.Timer(TimeSpan.FromMilliseconds(pollingInterval))
                     .TakeUntil(pollTimerRestart)
-                    .Select(_ => (JobRefreshBy.Poll, (string) null))
+                    .Select(_ => (JobRefreshBy.Poll, (string)null))
                     .Repeat());
             }
 
@@ -554,7 +554,7 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
             {
                 // get initial blocktemplate
                 triggers.Add(Observable.Interval(TimeSpan.FromMilliseconds(1000))
-                    .Select(_ => (JobRefreshBy.Initial, (string) null))
+                    .Select(_ => (JobRefreshBy.Initial, (string)null))
                     .TakeWhile(_ => !hasInitialBlockTemplate));
             }
         }
@@ -566,7 +566,7 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
             // ordinary polling (avoid this at all cost)
             triggers.Add(Observable.Timer(TimeSpan.FromMilliseconds(pollingInterval))
                 .TakeUntil(pollTimerRestart)
-                .Select(_ => (JobRefreshBy.Poll, (string) null))
+                .Select(_ => (JobRefreshBy.Poll, (string)null))
                 .Repeat());
         }
 
@@ -576,7 +576,7 @@ public class WarthogJobManager : JobManagerBase<WarthogJob>
             .Where(x => x)
             .Do(x =>
             {
-                if(x)
+                if (x)
                     hasInitialBlockTemplate = true;
             })
             .Select(x => GetJobParamsForStratum(x))

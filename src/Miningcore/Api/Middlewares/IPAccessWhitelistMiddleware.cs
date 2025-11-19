@@ -24,14 +24,14 @@ public class IPAccessWhitelistMiddleware
 
     public async Task Invoke(HttpContext context)
     {
-        if(locations.Any(x => context.Request.Path.Value.StartsWith(x)))
+        if (locations.Any(x => context.Request.Path.Value.StartsWith(x)))
         {
             var remoteAddress = context.Connection.RemoteIpAddress;
-            if(!whitelist.Any(x => x.Equals(remoteAddress)))
+            if (!whitelist.Any(x => x.Equals(remoteAddress)))
             {
                 logger.Info(() => $"Unauthorized request attempt to {context.Request.Path.Value} from {remoteAddress.CensorOrReturn(gpdrCompliantLogging)}");
 
-                context.Response.StatusCode = (int) HttpStatusCode.Forbidden;
+                context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                 await context.Response.WriteAsync("You are not in my access list. Good Bye.\n");
                 return;
             }

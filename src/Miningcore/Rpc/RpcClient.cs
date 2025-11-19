@@ -66,20 +66,20 @@ public class RpcClient
         {
             var response = await RequestAsync(logger, ct, config, method, payload);
 
-            if(response.Result is JToken token)
+            if (response.Result is JToken token)
                 return new RpcResponse<TResponse>(token.ToObject<TResponse>(serializer), response.Error);
 
-            return new RpcResponse<TResponse>((TResponse) response.Result, response.Error);
+            return new RpcResponse<TResponse>((TResponse)response.Result, response.Error);
         }
 
-        catch(TaskCanceledException)
+        catch (TaskCanceledException)
         {
             return new RpcResponse<TResponse>(null, new JsonRpcError(-500, "Cancelled", null));
         }
 
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            if(throwOnError)
+            if (throwOnError)
                 throw;
 
             return new RpcResponse<TResponse>(null, new JsonRpcError(-500, ex.Message, null, ex));
@@ -104,7 +104,7 @@ public class RpcClient
                 .ToArray();
         }
 
-        catch(Exception ex)
+        catch (Exception ex)
         {
             return Enumerable.Repeat(new RpcResponse<JToken>(null, new JsonRpcError(-500, ex.Message, null, ex)), batch.Length).ToArray();
         }
@@ -143,12 +143,12 @@ public class RpcClient
         var protocol = endPoint.Ssl || endPoint.Http2 ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
         var requestUrl = $"{protocol}://{endPoint.Host}:{endPoint.Port}";
 
-        if(!string.IsNullOrEmpty(endPoint.HttpPath))
+        if (!string.IsNullOrEmpty(endPoint.HttpPath))
             requestUrl += $"{(endPoint.HttpPath.StartsWith("/") ? string.Empty : "/")}{endPoint.HttpPath}";
 
-        using(var request = new HttpRequestMessage(HttpMethod.Post, requestUrl))
+        using (var request = new HttpRequestMessage(HttpMethod.Post, requestUrl))
         {
-            if(endPoint.Http2)
+            if (endPoint.Http2)
                 request.Version = new Version(2, 0);
             else
                 request.Headers.ConnectionClose = false;    // enable keep-alive
@@ -158,7 +158,7 @@ public class RpcClient
             request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
             // auth header
-            if(!string.IsNullOrEmpty(endPoint.User))
+            if (!string.IsNullOrEmpty(endPoint.User))
             {
                 var auth = $"{endPoint.User}:{endPoint.Password}";
                 request.Headers.Authorization = new AuthenticationHeaderValue("Basic", auth.ToByteArrayBase64());
@@ -167,7 +167,7 @@ public class RpcClient
             logger.Trace(() => $"Sending RPC request to {requestUrl}: {json}");
 
             // send request
-            using(var response = await httpClient.SendAsync(request, ct))
+            using (var response = await httpClient.SendAsync(request, ct))
             {
                 // read response
                 var responseContent = await response.Content.ReadAsStringAsync(ct);
@@ -175,7 +175,7 @@ public class RpcClient
                 logger.Trace(() => $"Received RPC response: {responseContent}");
 
                 // deserialize response
-                using(var jreader = new JsonTextReader(new StringReader(responseContent)))
+                using (var jreader = new JsonTextReader(new StringReader(responseContent)))
                 {
                     var result = serializer.Deserialize<JsonRpcResponse>(jreader);
 
@@ -197,12 +197,12 @@ public class RpcClient
         var protocol = (endPoint.Ssl || endPoint.Http2) ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
         var requestUrl = $"{protocol}://{endPoint.Host}:{endPoint.Port}";
 
-        if(!string.IsNullOrEmpty(endPoint.HttpPath))
+        if (!string.IsNullOrEmpty(endPoint.HttpPath))
             requestUrl += $"{(endPoint.HttpPath.StartsWith("/") ? string.Empty : "/")}{endPoint.HttpPath}";
 
-        using(var request = new HttpRequestMessage(HttpMethod.Post, requestUrl))
+        using (var request = new HttpRequestMessage(HttpMethod.Post, requestUrl))
         {
-            if(endPoint.Http2)
+            if (endPoint.Http2)
                 request.Version = new Version(2, 0);
             else
                 request.Headers.ConnectionClose = false;    // enable keep-alive
@@ -212,7 +212,7 @@ public class RpcClient
             request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
             // auth header
-            if(!string.IsNullOrEmpty(endPoint.User))
+            if (!string.IsNullOrEmpty(endPoint.User))
             {
                 var auth = $"{endPoint.User}:{endPoint.Password}";
                 request.Headers.Authorization = new AuthenticationHeaderValue("Basic", auth.ToByteArrayBase64());
@@ -221,14 +221,14 @@ public class RpcClient
             logger.Trace(() => $"Sending RPC request to {requestUrl}: {json}");
 
             // send request
-            using(var response = await httpClient.SendAsync(request, ct))
+            using (var response = await httpClient.SendAsync(request, ct))
             {
                 // deserialize response
                 var responseContent = await response.Content.ReadAsStringAsync(ct);
 
                 logger.Trace(() => $"Received RPC response: {responseContent}");
 
-                using(var jreader = new JsonTextReader(new StringReader(responseContent)))
+                using (var jreader = new JsonTextReader(new StringReader(responseContent)))
                 {
                     var result = serializer.Deserialize<JsonRpcResponse<JToken>[]>(jreader);
 
@@ -257,15 +257,15 @@ public class RpcClient
 
             Task.Run(async () =>
             {
-                using(cts)
+                using (cts)
                 {
                     var buf = new byte[0x10000];
 
-                    while(!cts.IsCancellationRequested)
+                    while (!cts.IsCancellationRequested)
                     {
                         try
                         {
-                            using(var client = new ClientWebSocket())
+                            using (var client = new ClientWebSocket())
                             {
                                 // connect
                                 var protocol = endPoint.Ssl ? "wss" : "ws";
@@ -284,7 +284,7 @@ public class RpcClient
                                 await client.SendAsync(requestData, WebSocketMessageType.Text, true, cts.Token);
 
                                 // stream response
-                                while(!cts.IsCancellationRequested && client.State == WebSocketState.Open)
+                                while (!cts.IsCancellationRequested && client.State == WebSocketState.Open)
                                 {
                                     await using var stream = new MemoryStream();
 
@@ -292,14 +292,14 @@ public class RpcClient
                                     {
                                         var response = await client.ReceiveAsync(buf, cts.Token);
 
-                                        if(response.MessageType == WebSocketMessageType.Binary)
+                                        if (response.MessageType == WebSocketMessageType.Binary)
                                             throw new InvalidDataException("expected text, received binary data");
 
                                         await stream.WriteAsync(buf, 0, response.Count, cts.Token);
 
-                                        if(response.EndOfMessage)
+                                        if (response.EndOfMessage)
                                             break;
-                                    } while(!cts.IsCancellationRequested && client.State == WebSocketState.Open);
+                                    } while (!cts.IsCancellationRequested && client.State == WebSocketState.Open);
 
                                     logger.Debug(() => $"Received WebSocket message with length {stream.Length}");
 
@@ -319,12 +319,12 @@ public class RpcClient
                             break;
                         }
 
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             logger.Error(() => $"{ex.GetType().Name} '{ex.Message}' while streaming websocket responses. Reconnecting in 5s");
                         }
 
-                        if(!cts.IsCancellationRequested)
+                        if (!cts.IsCancellationRequested)
                             await Task.Delay(TimeSpan.FromSeconds(5), cts.Token);
                     }
                 }
@@ -342,11 +342,11 @@ public class RpcClient
 
             var thread = new Thread(() =>
             {
-                while(!tcs.IsCancellationRequested)
+                while (!tcs.IsCancellationRequested)
                 {
                     try
                     {
-                        using(var subSocket = new ZSocket(ZSocketType.SUB))
+                        using (var subSocket = new ZSocket(ZSocketType.SUB))
                         {
                             //subSocket.Options.ReceiveHighWatermark = 1000;
                             subSocket.Connect(url);
@@ -354,7 +354,7 @@ public class RpcClient
 
                             logger.Debug($"Subscribed to {url}/{topic}");
 
-                            while(!tcs.IsCancellationRequested)
+                            while (!tcs.IsCancellationRequested)
                             {
                                 var msg = subSocket.ReceiveMessage();
                                 obs.OnNext(msg);
@@ -362,7 +362,7 @@ public class RpcClient
                         }
                     }
 
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         logger.Error(ex);
 

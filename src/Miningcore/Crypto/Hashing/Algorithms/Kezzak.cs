@@ -15,13 +15,13 @@ public unsafe class Kezzak : IHashAlgorithm
         Contract.Requires<ArgumentException>(result.Length >= 32);
 
         // concat nTime as hex string to data
-        var nTime = (ulong) extra[0];
+        var nTime = (ulong)extra[0];
         var nTimeHex = nTime.ToString("X").HexToByteArray();
 
         Span<byte> dataEx = stackalloc byte[data.Length + nTimeHex.Length];
         data.CopyTo(dataEx);
 
-        if(nTimeHex.Length > 0)
+        if (nTimeHex.Length > 0)
         {
             var dest = dataEx[data.Length..];
             nTimeHex.CopyTo(dest);
@@ -31,7 +31,7 @@ public unsafe class Kezzak : IHashAlgorithm
         {
             fixed (byte* output = result)
             {
-                Multihash.kezzak(input, output, (uint) data.Length);
+                Multihash.kezzak(input, output, (uint)data.Length);
             }
         }
     }

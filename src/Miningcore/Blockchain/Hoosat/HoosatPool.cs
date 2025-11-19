@@ -51,7 +51,7 @@ public class HoosatPool : PoolBase
         var request = tsRequest.Value;
         var context = connection.ContextAs<HoosatWorkerContext>();
 
-        if(request.Id == null)
+        if (request.Id == null)
             throw new StratumException(StratumError.MinusOne, "missing request id");
 
         // setup worker context
@@ -65,7 +65,8 @@ public class HoosatPool : PoolBase
         string coinAlgoName = coin.GetAlgorithmName();
         TimeSpan IceRiverBanTimeout = TimeSpan.FromSeconds(600);
         //if (Regex.IsMatch(userAgentBan, banPattern) && !string.Equals(coinAlgoName, "kHeavyHash", StringComparison.OrdinalIgnoreCase))       {
-        if (Regex.IsMatch(userAgentBan, banPattern, RegexOptions.IgnoreCase) && !string.Equals(coinAlgoName, "Hoohash", StringComparison.OrdinalIgnoreCase))       {
+        if (Regex.IsMatch(userAgentBan, banPattern, RegexOptions.IgnoreCase) && !string.Equals(coinAlgoName, "Hoohash", StringComparison.OrdinalIgnoreCase))
+        {
             // issue short-time ban if unauthorized to prevent DDos on daemon (validateaddress RPC)
             logger.Info(() => $"[{connection.ConnectionId}] Banning unauthorized useragent {userAgentBan} for {IceRiverBanTimeout.TotalSeconds} sec");
 
@@ -75,7 +76,7 @@ public class HoosatPool : PoolBase
             return; // Exit from the method if iceriver
         }
 
-        if(manager.ValidateIsGodMiner(context.UserAgent))
+        if (manager.ValidateIsGodMiner(context.UserAgent))
         {
             var data = new object[]
             {
@@ -106,12 +107,12 @@ public class HoosatPool : PoolBase
     {
         var request = tsRequest.Value;
 
-        if(request.Id == null)
+        if (request.Id == null)
             throw new StratumException(StratumError.MinusOne, "missing request id");
 
         var context = connection.ContextAs<HoosatWorkerContext>();
 
-        if(!context.IsSubscribed)
+        if (!context.IsSubscribed)
             throw new StratumException(StratumError.NotSubscribed, "subscribe first please, we aren't savages");
 
         var requestParams = request.ParamsAs<string[]>();
@@ -141,7 +142,7 @@ public class HoosatPool : PoolBase
         context.Miner = minerName;
         context.Worker = workerName;
 
-        if(context.IsAuthorized)
+        if (context.IsAuthorized)
         {
             // respond
             await connection.RespondAsync(context.IsAuthorized, request.Id);
@@ -155,9 +156,9 @@ public class HoosatPool : PoolBase
             // Nicehash support
             var nicehashDiff = await GetNicehashStaticMinDiff(context, coin.Name, coin.GetAlgorithmName());
 
-            if(nicehashDiff.HasValue)
+            if (nicehashDiff.HasValue)
             {
-                if(!staticDiff.HasValue || nicehashDiff > staticDiff)
+                if (!staticDiff.HasValue || nicehashDiff > staticDiff)
                 {
                     logger.Info(() => $"[{connection.ConnectionId}] Nicehash detected. Using API supplied difficulty of {nicehashDiff.Value}");
 
@@ -169,7 +170,7 @@ public class HoosatPool : PoolBase
             }
 
             // Static diff
-            if(staticDiff.HasValue &&
+            if (staticDiff.HasValue &&
                (context.VarDiff != null && staticDiff.Value >= context.VarDiff.Config.MinDiff ||
                    context.VarDiff == null && staticDiff.Value > context.Difficulty))
             {
@@ -187,7 +188,7 @@ public class HoosatPool : PoolBase
         {
             await connection.RespondErrorAsync(StratumError.UnauthorizedWorker, "Authorization failed", request.Id, context.IsAuthorized);
 
-            if(clusterConfig?.Banning?.BanOnLoginFailure is null or true)
+            if (clusterConfig?.Banning?.BanOnLoginFailure is null or true)
             {
                 // issue short-time ban if unauthorized to prevent DDos on daemon (validateaddress RPC)
                 logger.Info(() => $"[{connection.ConnectionId}] Banning unauthorized worker {minerName} for {loginFailureBanTimeout.TotalSeconds} sec");
@@ -206,13 +207,13 @@ public class HoosatPool : PoolBase
 
         try
         {
-            if(request.Id == null)
+            if (request.Id == null)
                 throw new StratumException(StratumError.MinusOne, "missing request id");
 
             // check age of submission (aged submissions are usually caused by high server load)
             var requestAge = clock.Now - tsRequest.Timestamp.UtcDateTime;
 
-            if(requestAge > maxShareAge)
+            if (requestAge > maxShareAge)
             {
                 logger.Warn(() => $"[{connection.ConnectionId}] Dropping stale share submission request (server overloaded?)");
                 return;
@@ -221,9 +222,9 @@ public class HoosatPool : PoolBase
             // check worker state
             context.LastActivity = clock.Now;
 
-            if(!context.IsAuthorized)
+            if (!context.IsAuthorized)
                 throw new StratumException(StratumError.UnauthorizedWorker, "Unauthorized worker");
-            else if(!context.IsSubscribed)
+            else if (!context.IsSubscribed)
                 throw new StratumException(StratumError.NotSubscribed, "Not subscribed");
 
             var requestParams = request.ParamsAs<string[]>();
@@ -241,7 +242,7 @@ public class HoosatPool : PoolBase
             logger.Info(() => $"[{connection.ConnectionId}] Share accepted: D={Math.Round(share.Difficulty * HoosatConstants.ShareMultiplier, 3)}");
 
             // update pool stats
-            if(share.IsBlockCandidate)
+            if (share.IsBlockCandidate)
                 poolStats.LastPoolBlockTime = clock.Now;
 
             // update client stats
@@ -250,7 +251,7 @@ public class HoosatPool : PoolBase
             await UpdateVarDiffAsync(connection, false, ct);
         }
 
-        catch(StratumException ex)
+        catch (StratumException ex)
         {
             // telemetry
             PublishTelemetry(TelemetryCategory.Share, clock.Now - tsRequest.Timestamp.UtcDateTime, false);
@@ -284,7 +285,7 @@ public class HoosatPool : PoolBase
     private async Task SendJob(StratumConnection connection, HoosatWorkerContext context, object[] jobParams)
     {
         object[] jobParamsActual;
-        if(context.IsLargeJob)
+        if (context.IsLargeJob)
         {
             jobParamsActual = new object[] {
                 jobParams[0],
@@ -309,7 +310,7 @@ public class HoosatPool : PoolBase
 
     public override double HashrateFromShares(double shares, double interval)
     {
-        var multiplier = HoosatConstants.Pow2xDiff1TargetNumZero * (double) HoosatConstants.MinHash;
+        var multiplier = HoosatConstants.Pow2xDiff1TargetNumZero * (double)HoosatConstants.MinHash;
         var result = shares * multiplier / interval;
 
         return result;
@@ -338,12 +339,12 @@ public class HoosatPool : PoolBase
 
         await manager.StartAsync(ct);
 
-        if(poolConfig.EnableInternalStratum == true)
+        if (poolConfig.EnableInternalStratum == true)
         {
             disposables.Add(manager.Jobs
                 .Select(job => Observable.FromAsync(() =>
-                    Guard(()=> OnNewJobAsync(job),
-                        ex=> logger.Debug(() => $"{nameof(OnNewJobAsync)}: {ex.Message}"))))
+                    Guard(() => OnNewJobAsync(job),
+                        ex => logger.Debug(() => $"{nameof(OnNewJobAsync)}: {ex.Message}"))))
                 .Concat()
                 .Subscribe(_ => { }, ex =>
                 {
@@ -379,7 +380,7 @@ public class HoosatPool : PoolBase
 
         try
         {
-            switch(request.Method)
+            switch (request.Method)
             {
                 case HoosatStratumMethods.Subscribe:
                     await OnSubscribeAsync(connection, tsRequest, ct);
@@ -413,7 +414,7 @@ public class HoosatPool : PoolBase
             }
         }
 
-        catch(StratumException ex)
+        catch (StratumException ex)
         {
             await connection.RespondErrorAsync(ex.Code, ex.Message, request.Id, false);
         }
@@ -423,7 +424,7 @@ public class HoosatPool : PoolBase
     {
         var result = await base.GetNicehashStaticMinDiff(context, coinName, algoName);
 
-        if(result.HasValue)
+        if (result.HasValue)
             result = result.Value / uint.MaxValue;
 
         return result;
@@ -435,7 +436,7 @@ public class HoosatPool : PoolBase
 
         var context = connection.ContextAs<HoosatWorkerContext>();
 
-        if(context.ApplyPendingDifficulty())
+        if (context.ApplyPendingDifficulty())
         {
             await SendJob(connection, context, currentJobParams);
         }

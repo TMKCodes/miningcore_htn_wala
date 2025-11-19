@@ -80,17 +80,17 @@ public abstract class PoolBase : StratumServer,
 
     protected double? GetStaticDiffFromPassparts(string[] parts)
     {
-        if(parts == null || parts.Length == 0)
+        if (parts == null || parts.Length == 0)
             return null;
 
-        foreach(var part in parts)
+        foreach (var part in parts)
         {
             var m = regexStaticDiff.Match(part);
 
-            if(m.Success)
+            if (m.Success)
             {
                 var str = m.Groups[1].Value.Trim();
-                if(double.TryParse(str, NumberStyles.Float, CultureInfo.InvariantCulture, out var diff) &&
+                if (double.TryParse(str, NumberStyles.Float, CultureInfo.InvariantCulture, out var diff) &&
                    !double.IsNaN(diff) && !double.IsInfinity(diff))
                     return diff;
             }
@@ -122,7 +122,7 @@ public abstract class PoolBase : StratumServer,
             {
                 try
                 {
-                    if(connection.LastReceive == null)
+                    if (connection.LastReceive == null)
                     {
                         logger.Info(() => $"[{connection.ConnectionId}] Booting zombie-worker (post-connect silence)");
 
@@ -130,7 +130,7 @@ public abstract class PoolBase : StratumServer,
                     }
                 }
 
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     logger.Error(ex);
                 }
@@ -146,7 +146,7 @@ public abstract class PoolBase : StratumServer,
     {
         var context = connection.Context;
 
-        if(context.VarDiff != null)
+        if (context.VarDiff != null)
         {
             logger.Debug(() => $"[{connection.ConnectionId}] Updating VarDiff{(idle ? " [IDLE]" : "")}");
 
@@ -156,7 +156,7 @@ public abstract class PoolBase : StratumServer,
                 VarDiffManager.Update(context, poolEndpoint.VarDiff, clock) :
                 VarDiffManager.IdleUpdate(context, poolEndpoint.VarDiff, clock);
 
-            if(newDiff != null)
+            if (newDiff != null)
             {
                 logger.Info(() => $"[{connection.ConnectionId}] VarDiff update to {Math.Round(newDiff.Value, 3)}{(idle ? " [IDLE]" : "")}");
 
@@ -171,7 +171,7 @@ public abstract class PoolBase : StratumServer,
         {
             using var timer = new PeriodicTimer(TimeSpan.FromSeconds(interval));
 
-            while(await timer.WaitForNextTickAsync(ct))
+            while (await timer.WaitForNextTickAsync(ct))
             {
                 logger.Debug(() => "Vardiff Idle Update pass begins");
 
@@ -185,7 +185,7 @@ public abstract class PoolBase : StratumServer,
             }
         }, ex =>
         {
-            if(ex is not OperationCanceledException)
+            if (ex is not OperationCanceledException)
                 logger.Error(ex);
         });
     }
@@ -212,16 +212,16 @@ public abstract class PoolBase : StratumServer,
 
             try
             {
-                if(!_ct.IsCancellationRequested && connection.IsAlive && connection.Context.IsAuthorized)
+                if (!_ct.IsCancellationRequested && connection.IsAlive && connection.Context.IsAuthorized)
                 {
-                     await SuspiciousMinerEffortCheck(connection, ct);
+                    await SuspiciousMinerEffortCheck(connection, ct);
                     ZombieCheck(connection);
 
                     await func(connection, _ct);
                 }
             }
 
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.Error(() => $"[{connection.ConnectionId}] {LogUtil.DotTerminate(ex.Message)} Closing connection ...");
 
@@ -232,15 +232,15 @@ public abstract class PoolBase : StratumServer,
 
     protected async Task SuspiciousMinerEffortCheck(StratumConnection connection, CancellationToken ct)
     {
-        if(poolConfig.Banning?.Enabled == true && poolConfig.Banning?.MinerEffortPercent.HasValue == true && poolConfig.Banning?.MinerEffortTime.HasValue == true)
+        if (poolConfig.Banning?.Enabled == true && poolConfig.Banning?.MinerEffortPercent.HasValue == true && poolConfig.Banning?.MinerEffortTime.HasValue == true)
         {
             var lastBlockTime = await cf.Run(con => blocksRepo.GetLastPoolBlockTimeAsync(con, poolConfig.Id, ct));
             DateTime dateStart = (lastBlockTime.HasValue) ? lastBlockTime.Value : connection.Context.Created;
             var minerEffort = await cf.Run(con => shareRepo.GetMinerEffortBetweenCreatedAsync(con, poolConfig.Id, connection.Context.Miner, dateStart, clock.Now, ct));
-            if(minerEffort.HasValue)
+            if (minerEffort.HasValue)
             {
                 logger.Debug(() => $"[{connection.Context.Miner}] Checking effort for worker: {minerEffort.Value}%");
-                if(minerEffort.Value >= poolConfig.Banning.MinerEffortPercent.Value)
+                if (minerEffort.Value >= poolConfig.Banning.MinerEffortPercent.Value)
                 {
                     banManager.Ban(connection.RemoteEndpoint.Address, TimeSpan.FromSeconds(poolConfig.Banning.MinerEffortTime.Value));
                     throw new Exception($"Detected suspicious over-sharing-worker: Current effort over {poolConfig.Banning.MinerEffortPercent.Value}%. Banning worker for {poolConfig.Banning.MinerEffortTime.Value} seconds");
@@ -251,18 +251,18 @@ public abstract class PoolBase : StratumServer,
 
     protected void ZombieCheck(StratumConnection connection)
     {
-        if(poolConfig.ClientConnectionTimeout > 0)
+        if (poolConfig.ClientConnectionTimeout > 0)
         {
             var lastActivityAgo = clock.Now - connection.Context.LastActivity;
 
-            if(lastActivityAgo.TotalSeconds > poolConfig.ClientConnectionTimeout)
+            if (lastActivityAgo.TotalSeconds > poolConfig.ClientConnectionTimeout)
                 throw new Exception($"Detected zombie-worker (idle-timeout exceeded)");
         }
     }
 
     protected void SetupBanManagement()
     {
-        if(poolConfig.Banning?.Enabled == true)
+        if (poolConfig.Banning?.Enabled == true)
         {
             var managerType = clusterConfig.Banning?.Manager ?? BanManagerKind.Integrated;
             banManager = ctx.ResolveKeyed<IBanManager>(managerType);
@@ -271,7 +271,7 @@ public abstract class PoolBase : StratumServer,
 
     protected virtual async Task InitStatsAsync(CancellationToken ct)
     {
-        if(clusterConfig.ShareRelay == null)
+        if (clusterConfig.ShareRelay == null)
             await LoadStatsAsync(ct);
     }
 
@@ -283,14 +283,14 @@ public abstract class PoolBase : StratumServer,
 
             var stats = await cf.Run(con => statsRepo.GetLastPoolStatsAsync(con, poolConfig.Id, ct));
 
-            if(stats != null)
+            if (stats != null)
             {
                 poolStats = mapper.Map<PoolStats>(stats);
                 blockchainStats = mapper.Map<BlockchainStats>(stats);
             }
         }
 
-        catch(Exception ex)
+        catch (Exception ex)
         {
             logger.Warn(ex, () => "Unable to load pool stats");
         }
@@ -300,11 +300,11 @@ public abstract class PoolBase : StratumServer,
     {
         var totalShares = context.Stats.ValidShares + context.Stats.InvalidShares;
 
-        if(totalShares > config.CheckThreshold)
+        if (totalShares > config.CheckThreshold)
         {
-            var ratioBad = (double) context.Stats.InvalidShares / totalShares;
+            var ratioBad = (double)context.Stats.InvalidShares / totalShares;
 
-            if(ratioBad < config.InvalidPercent / 100.0)
+            if (ratioBad < config.InvalidPercent / 100.0)
             {
                 // reset stats
                 context.Stats.ValidShares = 0;
@@ -313,7 +313,7 @@ public abstract class PoolBase : StratumServer,
 
             else
             {
-                if(poolConfig.Banning?.Enabled == true &&
+                if (poolConfig.Banning?.Enabled == true &&
                    (clusterConfig.Banning?.BanOnInvalidShares.HasValue == false ||
                        clusterConfig.Banning?.BanOnInvalidShares == true))
                 {
@@ -340,7 +340,7 @@ public abstract class PoolBase : StratumServer,
             base.RunAsync(ct, ipEndpoints)
         };
 
-        if(varDiffEnabled)
+        if (varDiffEnabled)
             tasks.Add(RunVardiffIdleUpdaterAsync(poolConfig.VardiffIdleSweepInterval ?? 30, ct));
 
         await Task.WhenAll(tasks);
@@ -348,7 +348,7 @@ public abstract class PoolBase : StratumServer,
 
     protected virtual async Task<double?> GetNicehashStaticMinDiff(WorkerContextBase context, string coinName, string algoName)
     {
-        if(context.IsNicehash && clusterConfig.Nicehash?.EnableAutoDiff == true)
+        if (context.IsNicehash && clusterConfig.Nicehash?.EnableAutoDiff == true)
             return await nicehashService.GetStaticDiff(coinName, algoName, CancellationToken.None);
 
         return null;
@@ -357,7 +357,7 @@ public abstract class PoolBase : StratumServer,
     private StratumEndpoint PoolEndpoint2IPEndpoint(int port, PoolEndpoint pep)
     {
         var listenAddress = IPAddress.Parse("127.0.0.1");
-        if(!string.IsNullOrEmpty(pep.ListenAddress))
+        if (!string.IsNullOrEmpty(pep.ListenAddress))
             listenAddress = pep.ListenAddress != "*" ? IPAddress.Parse(pep.ListenAddress) : IPAddress.Any;
 
         return new StratumEndpoint(new IPEndPoint(listenAddress, port), pep);
@@ -420,23 +420,23 @@ Pool Fee:               {(poolConfig.RewardRecipients?.Any() == true ? poolConfi
 
             messageBus.NotifyPoolStatus(this, PoolStatus.Online);
 
-            if(poolConfig.EnableInternalStratum == true)
+            if (poolConfig.EnableInternalStratum == true)
                 await RunStratum(ct);
         }
 
-        catch(PoolStartupException)
+        catch (PoolStartupException)
         {
             // just forward these
             throw;
         }
 
-        catch(TaskCanceledException)
+        catch (TaskCanceledException)
         {
             // just forward these
             throw;
         }
 
-        catch(Exception ex)
+        catch (Exception ex)
         {
             logger.Error(ex);
             throw;

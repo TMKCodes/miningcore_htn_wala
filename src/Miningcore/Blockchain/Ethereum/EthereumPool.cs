@@ -45,12 +45,12 @@ public class EthereumPool : PoolBase
         var request = tsRequest.Value;
         var context = connection.ContextAs<EthereumWorkerContext>();
 
-        if(request.Id == null)
+        if (request.Id == null)
             throw new StratumException(StratumError.Other, "missing request id");
 
         var requestParams = request.ParamsAs<string[]>();
 
-        if(requestParams == null || requestParams.Length < 2 || requestParams.Any(string.IsNullOrEmpty))
+        if (requestParams == null || requestParams.Length < 2 || requestParams.Any(string.IsNullOrEmpty))
             throw new StratumException(StratumError.MinusOne, "invalid request");
 
         manager.PrepareWorker(connection);
@@ -73,7 +73,7 @@ public class EthereumPool : PoolBase
         // in successful responses which is a violation of the JSON-RPC spec
         var response = new JsonRpcResponse<object[]>(data, request.Id);
 
-        if(context.IsNicehash)
+        if (context.IsNicehash)
         {
             response.Extra = new Dictionary<string, object>();
             response.Extra["error"] = null;
@@ -90,7 +90,7 @@ public class EthereumPool : PoolBase
         var request = tsRequest.Value;
         var context = connection.ContextAs<EthereumWorkerContext>();
 
-        if(request.Id == null)
+        if (request.Id == null)
             throw new StratumException(StratumError.MinusOne, "missing request id");
 
         var requestParams = request.ParamsAs<string[]>();
@@ -108,7 +108,7 @@ public class EthereumPool : PoolBase
         // respond
         await connection.RespondAsync(context.IsAuthorized, request.Id);
 
-        if(context.IsAuthorized)
+        if (context.IsAuthorized)
         {
             context.Miner = minerName?.ToLower();
             context.Worker = workerName;
@@ -119,9 +119,9 @@ public class EthereumPool : PoolBase
             // Nicehash support
             var nicehashDiff = await GetNicehashStaticMinDiff(context, coin.Name, coin.GetAlgorithmName());
 
-            if(nicehashDiff.HasValue)
+            if (nicehashDiff.HasValue)
             {
-                if(!staticDiff.HasValue || nicehashDiff > staticDiff)
+                if (!staticDiff.HasValue || nicehashDiff > staticDiff)
                 {
                     logger.Info(() => $"[{connection.ConnectionId}] Nicehash detected. Using API supplied difficulty of {nicehashDiff.Value}");
 
@@ -133,7 +133,7 @@ public class EthereumPool : PoolBase
             }
 
             // Static diff
-            if(staticDiff.HasValue &&
+            if (staticDiff.HasValue &&
                (context.VarDiff != null && staticDiff.Value >= context.VarDiff.Config.MinDiff ||
                    context.VarDiff == null && staticDiff.Value > context.Difficulty))
             {
@@ -151,7 +151,7 @@ public class EthereumPool : PoolBase
 
         else
         {
-            if(clusterConfig?.Banning?.BanOnLoginFailure is null or true)
+            if (clusterConfig?.Banning?.BanOnLoginFailure is null or true)
             {
                 logger.Info(() => $"[{connection.ConnectionId}] Banning unauthorized worker {minerName} for {loginFailureBanTimeout.TotalSeconds} sec");
 
@@ -169,28 +169,28 @@ public class EthereumPool : PoolBase
 
         try
         {
-            if(request.Id == null)
+            if (request.Id == null)
                 throw new StratumException(StratumError.MinusOne, "missing request id");
 
             // check age of submission (aged submissions are usually caused by high server load)
             var requestAge = clock.Now - tsRequest.Timestamp.UtcDateTime;
 
-            if(requestAge > maxShareAge)
+            if (requestAge > maxShareAge)
             {
                 logger.Warn(() => $"[{connection.ConnectionId}] Dropping stale share submission request (server overloaded?)");
                 return;
             }
 
             // validate worker
-            if(!context.IsAuthorized)
+            if (!context.IsAuthorized)
                 throw new StratumException(StratumError.UnauthorizedWorker, "unauthorized worker");
-            if(!context.IsSubscribed)
+            if (!context.IsSubscribed)
                 throw new StratumException(StratumError.NotSubscribed, "not subscribed");
 
             // check request
             var submitRequest = request.ParamsAs<string[]>();
 
-            if(submitRequest.Length != 3 ||
+            if (submitRequest.Length != 3 ||
                submitRequest.Any(string.IsNullOrEmpty))
                 throw new StratumException(StratumError.MinusOne, "malformed PoW result");
 
@@ -200,7 +200,7 @@ public class EthereumPool : PoolBase
             // submit
             Share share;
 
-            if(!v1)
+            if (!v1)
                 share = await manager.SubmitShareV2Async(connection, submitRequest, ct);
             else
                 share = await manager.SubmitShareV1Async(connection, submitRequest, GetWorkerNameFromV1Request(request, context), ct);
@@ -217,7 +217,7 @@ public class EthereumPool : PoolBase
             logger.Info(() => $"[{connection.ConnectionId}] Share accepted: D={Math.Round(share.Difficulty / EthereumConstants.Pow2x32, 3)}");
 
             // update pool stats
-            if(share.IsBlockCandidate)
+            if (share.IsBlockCandidate)
                 poolStats.LastPoolBlockTime = clock.Now;
 
             // update client stats
@@ -226,7 +226,7 @@ public class EthereumPool : PoolBase
             await UpdateVarDiffAsync(connection, false, ct);
         }
 
-        catch(StratumException ex)
+        catch (StratumException ex)
         {
             // telemetry
             PublishTelemetry(TelemetryCategory.Share, clock.Now - tsRequest.Timestamp.UtcDateTime, false);
@@ -245,7 +245,7 @@ public class EthereumPool : PoolBase
     private async Task SendJob(EthereumWorkerContext context, StratumConnection connection, object parameters)
     {
         // varDiff: if the client has a pending difficulty change, apply it now
-        if(context.ApplyPendingDifficulty())
+        if (context.ApplyPendingDifficulty())
             await connection.NotifyAsync(EthereumStratumMethods.SetDifficulty, new object[] { context.Difficulty });
 
         // send job
@@ -261,12 +261,12 @@ public class EthereumPool : PoolBase
         var request = tsRequest.Value;
         var context = connection.ContextAs<EthereumWorkerContext>();
 
-        if(request.Id == null)
+        if (request.Id == null)
             throw new StratumException(StratumError.Other, "missing request id");
 
         var requestParams = request.ParamsAs<string[]>();
 
-        if(requestParams?.Length < 1)
+        if (requestParams?.Length < 1)
             throw new StratumException(StratumError.MinusOne, "invalid request");
 
         var workerValue = requestParams?.Length > 0 ? requestParams[0] : "0";
@@ -285,7 +285,7 @@ public class EthereumPool : PoolBase
         // respond
         await connection.RespondAsync(context.IsAuthorized, request.Id);
 
-        if(context.IsAuthorized)
+        if (context.IsAuthorized)
         {
             context.Miner = minerName?.ToLower();
             context.Worker = workerName;
@@ -296,9 +296,9 @@ public class EthereumPool : PoolBase
             // Nicehash support
             var nicehashDiff = await GetNicehashStaticMinDiff(context, coin.Name, coin.GetAlgorithmName());
 
-            if(nicehashDiff.HasValue)
+            if (nicehashDiff.HasValue)
             {
-                if(!staticDiff.HasValue || nicehashDiff > staticDiff)
+                if (!staticDiff.HasValue || nicehashDiff > staticDiff)
                 {
                     logger.Info(() => $"[{connection.ConnectionId}] Nicehash detected. Using API supplied difficulty of {nicehashDiff.Value}");
 
@@ -310,7 +310,7 @@ public class EthereumPool : PoolBase
             }
 
             // Static diff
-            if(staticDiff.HasValue &&
+            if (staticDiff.HasValue &&
                (context.VarDiff != null && staticDiff.Value >= context.VarDiff.Config.MinDiff ||
                    context.VarDiff == null && staticDiff.Value > context.Difficulty))
             {
@@ -328,7 +328,7 @@ public class EthereumPool : PoolBase
 
         else
         {
-            if(clusterConfig?.Banning?.BanOnLoginFailure is null or true)
+            if (clusterConfig?.Banning?.BanOnLoginFailure is null or true)
             {
                 banManager.Ban(connection.RemoteEndpoint.Address, loginFailureBanTimeout);
 
@@ -375,12 +375,12 @@ public class EthereumPool : PoolBase
 
         await manager.StartAsync(ct);
 
-        if(poolConfig.EnableInternalStratum == true)
+        if (poolConfig.EnableInternalStratum == true)
         {
             disposables.Add(manager.Jobs
                 .Select(_ => Observable.FromAsync(() =>
                     Guard(OnNewJobAsync,
-                        ex=> logger.Debug(() => $"{nameof(OnNewJobAsync)}: {ex.Message}"))))
+                        ex => logger.Debug(() => $"{nameof(OnNewJobAsync)}: {ex.Message}"))))
                 .Concat()
                 .Subscribe(_ => { }, ex =>
                 {
@@ -412,7 +412,7 @@ public class EthereumPool : PoolBase
 
     private static string GetWorkerNameFromV1Request(JsonRpcRequest request, EthereumWorkerContext context)
     {
-        if(request.Extra?.TryGetValue(EthereumConstants.RpcRequestWorkerPropertyName, out var tmp) == true && tmp is string workerNameValue)
+        if (request.Extra?.TryGetValue(EthereumConstants.RpcRequestWorkerPropertyName, out var tmp) == true && tmp is string workerNameValue)
             return workerNameValue;
 
         return context.Worker;
@@ -428,7 +428,7 @@ public class EthereumPool : PoolBase
         {
             var context = connection.ContextAs<EthereumWorkerContext>();
 
-            switch(context.ProtocolVersion)
+            switch (context.ProtocolVersion)
             {
                 case 1:
                     await SendWork(context, connection, 0);
@@ -443,7 +443,7 @@ public class EthereumPool : PoolBase
 
     protected void EnsureProtocolVersion(EthereumWorkerContext context, int version)
     {
-        if(context.ProtocolVersion != version)
+        if (context.ProtocolVersion != version)
             throw new StratumException(StratumError.MinusOne, $"protocol mismatch");
     }
 
@@ -455,7 +455,7 @@ public class EthereumPool : PoolBase
 
         try
         {
-            switch(request.Method)
+            switch (request.Method)
             {
                 // V2/Nicehash Stratum Methods
                 case EthereumStratumMethods.Subscribe:
@@ -506,7 +506,7 @@ public class EthereumPool : PoolBase
                     await connection.RespondAsync(true, request.Id);
                     break;
 
-            logger.Info(() => $"elva ---> Protocole Stratum [{context.ProtocolVersion}]");
+                    logger.Info(() => $"elva ---> Protocole Stratum [{context.ProtocolVersion}]");
 
 
                 default:
@@ -517,7 +517,7 @@ public class EthereumPool : PoolBase
             }
         }
 
-        catch(StratumException ex)
+        catch (StratumException ex)
         {
             await connection.RespondErrorAsync(ex.Code, ex.Message, request.Id, false);
         }
@@ -537,9 +537,9 @@ public class EthereumPool : PoolBase
 
         var context = connection.ContextAs<EthereumWorkerContext>();
 
-        if(context.HasPendingDifficulty)
+        if (context.HasPendingDifficulty)
         {
-            switch(context.ProtocolVersion)
+            switch (context.ProtocolVersion)
             {
                 case 1:
                     context.ApplyPendingDifficulty();

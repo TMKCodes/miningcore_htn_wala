@@ -69,7 +69,7 @@ public class HandshakeJob
     protected static byte[] sha256Empty = new byte[32];
     protected uint txVersion = 1u; // transaction version (currently 1) - see https://github.com/handshake-org/hsd/blob/f749f5cccd0fafb3be2e47ea7e717bdb927a6efa/lib/primitives/tx.js#L51
 
-    protected static uint txInPrevOutIndex = (uint) (Math.Pow(2, 32) - 1);
+    protected static uint txInPrevOutIndex = (uint)(Math.Pow(2, 32) - 1);
     protected uint txLockTime;
 
     protected virtual void BuildMerkleBranches()
@@ -78,7 +78,7 @@ public class HandshakeJob
 
         transactionHashes.Add(coinbaseMerkle);
 
-        foreach(var transaction in BlockTemplate.Transactions)
+        foreach (var transaction in BlockTemplate.Transactions)
             transactionHashes.Add(transaction.TxId.HexToByteArray());
 
         // build merkle-root
@@ -91,7 +91,7 @@ public class HandshakeJob
 
         transactionHashes.Add(coinbaseWitness);
 
-        foreach(var transaction in BlockTemplate.Transactions)
+        foreach (var transaction in BlockTemplate.Transactions)
             transactionHashes.Add(transaction.Hash.HexToByteArray());
 
         // build witness-root
@@ -108,7 +108,7 @@ public class HandshakeJob
         scriptSigOutPoint = GenerateScriptSig();
 
         // build coinbase initial
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
             var bs = new BitcoinStream(stream, true);
 
@@ -137,7 +137,7 @@ public class HandshakeJob
         }
 
         // build coinbase final
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
             var bs = new BitcoinStream(stream, true);
 
@@ -165,9 +165,9 @@ public class HandshakeJob
 
     protected virtual byte[] SerializeInputTransaction(Transaction tx)
     {
-        var inputCount = (uint) tx.Inputs.Count;
+        var inputCount = (uint)tx.Inputs.Count;
 
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
             var bs = new BitcoinStream(stream, true);
 
@@ -180,14 +180,14 @@ public class HandshakeJob
             uint sequence;
 
             // serialize initial input
-            foreach(var input in tx.Inputs)
+            foreach (var input in tx.Inputs)
             {
                 hash = input.PrevOut.Hash.ToBytes(false);
                 index = input.PrevOut.N;
                 script = input.ScriptSig;
                 sequence = input.Sequence;
 
-                if(script == Script.Empty)
+                if (script == Script.Empty)
                 {
                     bs.ReadWrite(hash);
                     bs.ReadWrite(ref index);
@@ -208,9 +208,9 @@ public class HandshakeJob
 
     protected virtual byte[] SerializeOutputTransaction(List<HandshakeTransactionOutput> tx)
     {
-        var outputCount = (uint) tx.Count;
+        var outputCount = (uint)tx.Count;
 
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
             var bs = new BitcoinStream(stream, true);
 
@@ -225,13 +225,13 @@ public class HandshakeJob
             uint itemLength = 0;
 
             // serialize outputs
-            foreach(var output in tx)
+            foreach (var output in tx)
             {
-                amount = (ulong) output.Amount;
+                amount = (ulong)output.Amount;
                 version = output.Version;
                 raw = output.Address.HexToByteArray();
-                rawLength = (byte) raw.Length;
-                type = (byte) output.Type;
+                rawLength = (byte)raw.Length;
+                type = (byte)output.Type;
 
                 bs.ReadWrite(ref amount);
                 bs.ReadWrite(ref version);
@@ -248,11 +248,11 @@ public class HandshakeJob
 
     protected virtual byte[] SerializeScriptSig(List<Op> ops)
     {
-        var scriptSigOutPointCount = (uint) ops.Count;
+        var scriptSigOutPointCount = (uint)ops.Count;
 
         var scriptSigOutPoint = new Script(ops);
 
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
             var bs = new BitcoinStream(stream, true);
 
@@ -271,11 +271,11 @@ public class HandshakeJob
         // script ops
         var ops = new List<Op>();
 
-        var coinbaseAuxBytes = (Span<byte>) new byte[20] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        var coinbaseAuxBytes = (Span<byte>)new byte[20] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         // optionally push aux-flags
-        if(!coin.CoinbaseIgnoreAuxFlags && !string.IsNullOrEmpty(BlockTemplate.CoinbaseAux?.Flags))
+        if (!coin.CoinbaseIgnoreAuxFlags && !string.IsNullOrEmpty(BlockTemplate.CoinbaseAux?.Flags))
         {
-            var coinbaseAuxFlagsBytes = (Span<byte>) BlockTemplate.CoinbaseAux.Flags.HexToByteArray();
+            var coinbaseAuxFlagsBytes = (Span<byte>)BlockTemplate.CoinbaseAux.Flags.HexToByteArray();
             coinbaseAuxFlagsBytes.CopyTo(coinbaseAuxBytes);
         }
         ops.Add(Op.GetPushOp(coinbaseAuxBytes.ToArray()));
@@ -285,17 +285,17 @@ public class HandshakeJob
         rand.NextBytes(randomBytes);
         ops.Add(Op.GetPushOp(randomBytes));
 
-         // push placeholder
-         ops.Add(Op.GetPushOp(new byte[8] {0, 0, 0, 0, 0, 0, 0, 0}));
+        // push placeholder
+        ops.Add(Op.GetPushOp(new byte[8] { 0, 0, 0, 0, 0, 0, 0, 0 }));
 
         // claims
-        foreach(var claim in BlockTemplate.Claims)
+        foreach (var claim in BlockTemplate.Claims)
         {
             ops.Add(Op.GetPushOp(claim.Blob.HexToByteArray()));
         }
 
         // airdrops
-        foreach(var airdrop in BlockTemplate.Airdrops)
+        foreach (var airdrop in BlockTemplate.Airdrops)
         {
             ops.Add(Op.GetPushOp(airdrop.Blob.HexToByteArray()));
         }
@@ -313,11 +313,11 @@ public class HandshakeJob
 
         var rand = new Random();
         txIn = new TxIn(new OutPoint(new uint256(ZeroHash), txInPrevOutIndex));
-        txIn.Sequence = new Sequence((uint) (rand.Next(1 << 30)) << 2 | (uint) (rand.Next(1 << 2)));
+        txIn.Sequence = new Sequence((uint)(rand.Next(1 << 30)) << 2 | (uint)(rand.Next(1 << 2)));
         tx.Inputs.Add(txIn);
 
         // claims
-        foreach(var claim in BlockTemplate.Claims)
+        foreach (var claim in BlockTemplate.Claims)
         {
             txIn = new TxIn(new OutPoint(new uint256(ZeroHash), txInPrevOutIndex));
             txIn.Sequence = new Sequence(txInPrevOutIndex);
@@ -325,7 +325,7 @@ public class HandshakeJob
         }
 
         // airdrops
-        foreach(var airdrop in BlockTemplate.Airdrops)
+        foreach (var airdrop in BlockTemplate.Airdrops)
         {
             txIn = new TxIn(new OutPoint(new uint256(ZeroHash), txInPrevOutIndex));
             txIn.Sequence = new Sequence(txInPrevOutIndex);
@@ -342,32 +342,32 @@ public class HandshakeJob
         var (poolAddressHrp, poolAddressVersion, poolAddressHash) = handshakeBech32Decoder.Decode(poolAddress);
         tx.Add(new HandshakeTransactionOutput
         {
-            Amount = (decimal) BlockTemplate.CoinbaseValue,
+            Amount = (decimal)BlockTemplate.CoinbaseValue,
             Address = poolAddressHash.ToHexString(),
-            Version = (byte) poolAddressVersion,
+            Version = (byte)poolAddressVersion,
             Type = 0
         });
 
         // claims
-        foreach(var claim in BlockTemplate.Claims)
+        foreach (var claim in BlockTemplate.Claims)
         {
             tx.Add(new HandshakeTransactionOutput
             {
-                Amount = (decimal) (claim.Value - claim.Fee),
+                Amount = (decimal)(claim.Value - claim.Fee),
                 Address = claim.Address,
-                Version = (byte) claim.Version,
+                Version = (byte)claim.Version,
                 Type = 1
             });
         }
 
         // airdrops
-        foreach(var airdrop in BlockTemplate.Airdrops)
+        foreach (var airdrop in BlockTemplate.Airdrops)
         {
             tx.Add(new HandshakeTransactionOutput
             {
-                Amount = (decimal) (airdrop.Value - airdrop.Fee),
+                Amount = (decimal)(airdrop.Value - airdrop.Fee),
                 Address = airdrop.Address,
-                Version = (byte) airdrop.Version,
+                Version = (byte)airdrop.Version,
                 Type = 0
             });
         }
@@ -397,16 +397,16 @@ public class HandshakeJob
 
     protected virtual byte[] SerializeHeader(uint nonce, uint nTime, byte[] extraNonce, byte[] commitHash)
     {
-        var time = (ulong) nTime;
+        var time = (ulong)nTime;
         var previousBlockhashBytes = BlockTemplate.PreviousBlockhash.HexToByteArray();
         var treeRootBytes = BlockTemplate.TreeRoot.HexToByteArray();
 
         var reservedRootBytes = BlockTemplate.ReservedRoot.HexToByteArray();
 
         var version = BlockTemplate.Version;
-        var bits = (uint) new Target(Encoders.Hex.DecodeData(BlockTemplate.Bits));
+        var bits = (uint)new Target(Encoders.Hex.DecodeData(BlockTemplate.Bits));
 
-        using(var stream = new MemoryStream(HandshakeConstants.BlockHeaderSize))
+        using (var stream = new MemoryStream(HandshakeConstants.BlockHeaderSize))
         {
             var bw = new BinaryWriter(stream);
 
@@ -424,7 +424,7 @@ public class HandshakeJob
             bw.Write(version);
             bw.Write(bits);
 
-             // Mask.
+            // Mask.
             bw.Write(maskBytes);
 
             return stream.ToArray();
@@ -433,11 +433,11 @@ public class HandshakeJob
 
     protected virtual byte[] SerializeShare(uint nonce, uint nTime, byte[] commitHash)
     {
-        var time = (ulong) nTime;
+        var time = (ulong)nTime;
         var previousBlockhashBytes = BlockTemplate.PreviousBlockhash.HexToByteArray();
         var treeRootBytes = BlockTemplate.TreeRoot.HexToByteArray();
 
-        using(var stream = new MemoryStream(HandshakeConstants.BlockHeaderSize / 2))
+        using (var stream = new MemoryStream(HandshakeConstants.BlockHeaderSize / 2))
         {
             var bw = new BinaryWriter(stream);
 
@@ -463,14 +463,14 @@ public class HandshakeJob
         previousBlockhashBytes.CopyTo(previousBlockhashMaskBytes);
         maskBytes.CopyTo(previousBlockhashMaskBytes[previousBlockhashBytes.Length..]);
 
-        var commitMaskBytes = (Span<byte>) stackalloc byte[32];
+        var commitMaskBytes = (Span<byte>)stackalloc byte[32];
         headerHasher.Digest(previousBlockhashMaskBytes, commitMaskBytes);
 
         Span<byte> subHeaderHashMaskBytes = stackalloc byte[subHeaderHashBytes.Length + commitMaskBytes.Length];
         subHeaderHashBytes.CopyTo(subHeaderHashMaskBytes);
         commitMaskBytes.CopyTo(subHeaderHashMaskBytes[subHeaderHashBytes.Length..]);
 
-        var commitHashBytes = (Span<byte>) stackalloc byte[32];
+        var commitHashBytes = (Span<byte>)stackalloc byte[32];
         headerHasher.Digest(subHeaderHashMaskBytes, commitHashBytes);
 
         return commitHashBytes.ToArray();
@@ -478,12 +478,12 @@ public class HandshakeJob
 
     protected virtual byte[] SerializeSubHeader(byte[] extraNonce)
     {
-        var reservedRootBytes = (Span<byte>) BlockTemplate.ReservedRoot.HexToByteArray();
+        var reservedRootBytes = (Span<byte>)BlockTemplate.ReservedRoot.HexToByteArray();
 
         var version = BlockTemplate.Version;
-        var bits = (uint) new Target(Encoders.Hex.DecodeData(BlockTemplate.Bits));
+        var bits = (uint)new Target(Encoders.Hex.DecodeData(BlockTemplate.Bits));
 
-        using(var stream = new MemoryStream(HandshakeConstants.BlockHeaderSize / 2))
+        using (var stream = new MemoryStream(HandshakeConstants.BlockHeaderSize / 2))
         {
             var bw = new BinaryWriter(stream);
 
@@ -501,8 +501,8 @@ public class HandshakeJob
 
     public virtual object[] GetTransactions()
     {
-        if(BlockTemplate.Transactions.Length < 1)
-            return new object[] {};
+        if (BlockTemplate.Transactions.Length < 1)
+            return new object[] { };
         else
         {
             object[] transactions;
@@ -520,7 +520,7 @@ public class HandshakeJob
         var extraNonce1Bytes = extraNonce1.HexToByteArray();
         var extraNonce2Bytes = extraNonce2.HexToByteArray();
 
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
             stream.Write(extraNonce1Bytes);
             stream.Write(extraNonce2Bytes);
@@ -548,7 +548,7 @@ public class HandshakeJob
         Span<byte> shareLeftBytes = stackalloc byte[64];
         blockHasher.Digest(shareBytes, shareLeftBytes);
 
-        var rightPaddingBytes = (Span<byte>) PaddingPreviousBlockWithTreeRoot(8);
+        var rightPaddingBytes = (Span<byte>)PaddingPreviousBlockWithTreeRoot(8);
         Span<byte> shareRightPaddingBytes = stackalloc byte[shareBytes.Length + rightPaddingBytes.Length];
         shareBytes.CopyTo(shareRightPaddingBytes);
         rightPaddingBytes.CopyTo(shareRightPaddingBytes[shareBytes.Length..]);
@@ -556,7 +556,7 @@ public class HandshakeJob
         Span<byte> shareRightBytes = stackalloc byte[32];
         coin.ShareHasherValue.Digest(shareRightPaddingBytes, shareRightBytes);
 
-        var centerPaddingBytes = (Span<byte>) PaddingPreviousBlockWithTreeRoot(32);
+        var centerPaddingBytes = (Span<byte>)PaddingPreviousBlockWithTreeRoot(32);
         Span<byte> shareLeftCenterPaddingHeaderRighthBytes = stackalloc byte[shareLeftBytes.Length + centerPaddingBytes.Length + shareRightBytes.Length];
         shareLeftBytes.CopyTo(shareLeftCenterPaddingHeaderRighthBytes);
         centerPaddingBytes.CopyTo(shareLeftCenterPaddingHeaderRighthBytes[shareLeftBytes.Length..]);
@@ -572,7 +572,7 @@ public class HandshakeJob
         var shareHashValue = targetShareHashBytes.ToUInt256();
 
         // calc share-diff
-        var shareDiff = (double) new BigRational(HandshakeConstants.Diff1, targetShareHashBytes.ToBigInteger()) * shareMultiplier;
+        var shareDiff = (double)new BigRational(HandshakeConstants.Diff1, targetShareHashBytes.ToBigInteger()) * shareMultiplier;
         var stratumDifficulty = context.Difficulty;
         var ratio = shareDiff / stratumDifficulty;
 
@@ -580,14 +580,14 @@ public class HandshakeJob
         var isBlockCandidate = shareHashValue <= blockTargetValue;
 
         // test if share meets at least workers current difficulty
-        if(!isBlockCandidate && ratio < 0.99)
+        if (!isBlockCandidate && ratio < 0.99)
         {
             // check if share matched the previous difficulty from before a vardiff retarget
-            if(context.VarDiff?.LastUpdate != null && context.PreviousDifficulty.HasValue)
+            if (context.VarDiff?.LastUpdate != null && context.PreviousDifficulty.HasValue)
             {
                 ratio = shareDiff / context.PreviousDifficulty.Value;
 
-                if(ratio < 0.99)
+                if (ratio < 0.99)
                     throw new StratumException(StratumError.LowDifficultyShare, $"low difficulty share ({shareDiff})");
 
                 // use previous difficulty
@@ -605,7 +605,7 @@ public class HandshakeJob
             Difficulty = stratumDifficulty / shareMultiplier,
         };
 
-        if(isBlockCandidate)
+        if (isBlockCandidate)
         {
             result.IsBlockCandidate = true;
 
@@ -634,9 +634,9 @@ public class HandshakeJob
     protected virtual byte[] SerializeBlock(byte[] header, byte[] coinbase)
     {
         var rawTransactionBuffer = BuildRawTransactionBuffer();
-        var transactionCount = (uint) (BlockTemplate.Transactions.Length + 1); // +1 for prepended coinbase tx
+        var transactionCount = (uint)(BlockTemplate.Transactions.Length + 1); // +1 for prepended coinbase tx
 
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
             var bs = new BitcoinStream(stream, true);
 
@@ -652,9 +652,9 @@ public class HandshakeJob
 
     protected virtual byte[] BuildRawTransactionBuffer()
     {
-        using(var stream = new MemoryStream())
+        using (var stream = new MemoryStream())
         {
-            foreach(var tx in BlockTemplate.Transactions)
+            foreach (var tx in BlockTemplate.Transactions)
             {
                 var txRaw = tx.Data.HexToByteArray();
                 stream.Write(txRaw);
@@ -706,7 +706,7 @@ public class HandshakeJob
         this.headerHasher = headerHasher;
         this.blockHasher = blockHasher;
 
-        if(!string.IsNullOrEmpty(BlockTemplate.Target))
+        if (!string.IsNullOrEmpty(BlockTemplate.Target))
             blockTargetValue = new uint256(BlockTemplate.Target);
         else
         {
@@ -714,7 +714,7 @@ public class HandshakeJob
             blockTargetValue = tmp.ToUInt256();
         }
 
-        var previousBlockhashBytes = (Span<byte>) BlockTemplate.PreviousBlockhash.HexToByteArray();
+        var previousBlockhashBytes = (Span<byte>)BlockTemplate.PreviousBlockhash.HexToByteArray();
         maskBytes = ZeroHash;
 
         /* maskBytes = new byte[32];
@@ -770,21 +770,21 @@ public class HandshakeJob
         var context = worker.ContextAs<BitcoinWorkerContext>();
 
         // validate nTime
-        if(nTime.Length != 8)
+        if (nTime.Length != 8)
             throw new StratumException(StratumError.Other, "incorrect size of ntime");
 
         var nTimeInt = uint.Parse(nTime, NumberStyles.HexNumber);
-        if(nTimeInt < BlockTemplate.CurTime || nTimeInt > ((DateTimeOffset) clock.Now).ToUnixTimeSeconds() + 7200)
+        if (nTimeInt < BlockTemplate.CurTime || nTimeInt > ((DateTimeOffset)clock.Now).ToUnixTimeSeconds() + 7200)
             throw new StratumException(StratumError.Other, "ntime out of range");
 
         // validate nonce
-        if(nonce.Length != 8)
+        if (nonce.Length != 8)
             throw new StratumException(StratumError.Other, "incorrect size of nonce");
 
         var nonceInt = uint.Parse(nonce, NumberStyles.HexNumber);
 
         // dupe check
-        if(!RegisterSubmit(context.ExtraNonce1, extraNonce2, nTime, nonce))
+        if (!RegisterSubmit(context.ExtraNonce1, extraNonce2, nTime, nonce))
             throw new StratumException(StratumError.DuplicateShare, "duplicate");
 
         return ProcessShareInternal(worker, extraNonce2, nTimeInt, nonceInt);

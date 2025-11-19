@@ -20,288 +20,289 @@ namespace Miningcore.Blockchain.Kaspa.Custom.Kobra
             : base(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher) { }
 
 
-public class KobraXoShiRo256PlusPlus
-{
-    private ulong[] s = new ulong[4];
-
-    public KobraXoShiRo256PlusPlus(Span<byte> prePowHash)
-    {
-        Contract.Requires<ArgumentException>(prePowHash.Length >= 32);
-
-        for (int i = 0; i < 4; i++)
+        public class KobraXoShiRo256PlusPlus
         {
-            s[i] = BitConverter.ToUInt64(prePowHash.Slice(i * 8, 8));
-        }
-    }
+            private ulong[] s = new ulong[4];
 
-    public ulong NextU64()
-    {
-        ulong result = RotateLeft64(s[0] + s[3], 23) + s[0];
-
-        ulong t = s[1] << 17;
-
-        s[2] ^= s[0];
-        s[3] ^= s[1];
-        s[1] ^= s[2];
-        s[0] ^= s[3];
-
-        s[2] ^= t;
-        s[3] = RotateLeft64(s[3], 45);
-
-        return result;
-    }
-
-    private static ulong RotateLeft64(ulong value, int shift)
-    {
-        return (value << shift) | (value >> (64 - shift));
-    }
-}
-
-
-
-
-    public class Matrix
-    {
-        private readonly ushort[,] matrix;
-
-        private Matrix(ushort[,] matrix)
-        {
-            this.matrix = matrix;
-        }
-
-        public static Matrix Generate(byte[] hash)
-        {
-            var generator = new KobraXoShiRo256PlusPlus(hash);
-            while (true)
+            public KobraXoShiRo256PlusPlus(Span<byte> prePowHash)
             {
-                var mat = RandMatrixNoRankCheck(generator);
-                if (mat.ComputeRank() == 64)
+                Contract.Requires<ArgumentException>(prePowHash.Length >= 32);
+
+                for (int i = 0; i < 4; i++)
                 {
-                    return mat;
+                    s[i] = BitConverter.ToUInt64(prePowHash.Slice(i * 8, 8));
                 }
+            }
+
+            public ulong NextU64()
+            {
+                ulong result = RotateLeft64(s[0] + s[3], 23) + s[0];
+
+                ulong t = s[1] << 17;
+
+                s[2] ^= s[0];
+                s[3] ^= s[1];
+                s[1] ^= s[2];
+                s[0] ^= s[3];
+
+                s[2] ^= t;
+                s[3] = RotateLeft64(s[3], 45);
+
+                return result;
+            }
+
+            private static ulong RotateLeft64(ulong value, int shift)
+            {
+                return (value << shift) | (value >> (64 - shift));
             }
         }
 
-private static Matrix RandMatrixNoRankCheck(KobraXoShiRo256PlusPlus generator)
-{
-    ushort[,] mat = new ushort[64, 64];
-    for (int i = 0; i < 64; i++)
-    {
-        ulong val = 0;
-        for (int j = 0; j < 64; j++)
+
+
+
+        public class Matrix
         {
-            int shift = j % 16;
-            if (shift == 0)
+            private readonly ushort[,] matrix;
+
+            private Matrix(ushort[,] matrix)
             {
-                val = generator.NextU64(); // Appel de la méthode corrigée
+                this.matrix = matrix;
             }
-            mat[i, j] = (ushort)((val >> (4 * shift)) & 0x0F);
-        }
-    }
-    return new Matrix(mat);
-}
 
-
-        private double[,] ConvertToFloat()
-        {
-            var result = new double[64, 64];
-            for (int i = 0; i < 64; i++)
+            public static Matrix Generate(byte[] hash)
             {
-                for (int j = 0; j < 64; j++)
+                var generator = new KobraXoShiRo256PlusPlus(hash);
+                while (true)
                 {
-                    result[i, j] = matrix[i, j];
-                }
-            }
-            return result;
-        }
-
-        public int ComputeRank()
-        {
-            const double EPS = 1e-9;
-            var matFloat = ConvertToFloat();
-            bool[] rowSelected = new bool[64];
-            int rank = 0;
-
-            for (int i = 0; i < 64; i++)
-            {
-                int j = 0;
-                while (j < 64 && (rowSelected[j] || Math.Abs(matFloat[j, i]) <= EPS))
-                {
-                    j++;
-                }
-
-                if (j < 64)
-                {
-                    rank++;
-                    rowSelected[j] = true;
-                    for (int p = i + 1; p < 64; p++)
+                    var mat = RandMatrixNoRankCheck(generator);
+                    if (mat.ComputeRank() == 64)
                     {
-                        matFloat[j, p] /= matFloat[j, i];
+                        return mat;
+                    }
+                }
+            }
+
+            private static Matrix RandMatrixNoRankCheck(KobraXoShiRo256PlusPlus generator)
+            {
+                ushort[,] mat = new ushort[64, 64];
+                for (int i = 0; i < 64; i++)
+                {
+                    ulong val = 0;
+                    for (int j = 0; j < 64; j++)
+                    {
+                        int shift = j % 16;
+                        if (shift == 0)
+                        {
+                            val = generator.NextU64(); // Appel de la méthode corrigée
+                        }
+                        mat[i, j] = (ushort)((val >> (4 * shift)) & 0x0F);
+                    }
+                }
+                return new Matrix(mat);
+            }
+
+
+            private double[,] ConvertToFloat()
+            {
+                var result = new double[64, 64];
+                for (int i = 0; i < 64; i++)
+                {
+                    for (int j = 0; j < 64; j++)
+                    {
+                        result[i, j] = matrix[i, j];
+                    }
+                }
+                return result;
+            }
+
+            public int ComputeRank()
+            {
+                const double EPS = 1e-9;
+                var matFloat = ConvertToFloat();
+                bool[] rowSelected = new bool[64];
+                int rank = 0;
+
+                for (int i = 0; i < 64; i++)
+                {
+                    int j = 0;
+                    while (j < 64 && (rowSelected[j] || Math.Abs(matFloat[j, i]) <= EPS))
+                    {
+                        j++;
                     }
 
-                    for (int k = 0; k < 64; k++)
+                    if (j < 64)
                     {
-                        if (k != j && Math.Abs(matFloat[k, i]) > EPS)
+                        rank++;
+                        rowSelected[j] = true;
+                        for (int p = i + 1; p < 64; p++)
                         {
-                            for (int p = i + 1; p < 64; p++)
+                            matFloat[j, p] /= matFloat[j, i];
+                        }
+
+                        for (int k = 0; k < 64; k++)
+                        {
+                            if (k != j && Math.Abs(matFloat[k, i]) > EPS)
                             {
-                                matFloat[k, p] -= matFloat[j, p] * matFloat[k, i];
+                                for (int p = i + 1; p < 64; p++)
+                                {
+                                    matFloat[k, p] -= matFloat[j, p] * matFloat[k, i];
+                                }
                             }
                         }
                     }
                 }
+
+                return rank;
             }
 
-            return rank;
+            public byte[] HeavyHash(byte[] hash)
+            {
+                // Convert input hash to 4-bit vector
+                byte[] vec = new byte[64];
+                for (int i = 0; i < 32; i++)
+                {
+                    vec[2 * i] = (byte)(hash[i] >> 4);
+                    vec[2 * i + 1] = (byte)(hash[i] & 0x0F);
+                }
+
+                // Matrix-vector multiplication and reduction
+                byte[] product = new byte[32];
+                for (int i = 0; i < 32; i++)
+                {
+                    ushort sum1 = 0, sum2 = 0;
+                    for (int j = 0; j < 64; j++)
+                    {
+                        sum1 += (ushort)(matrix[2 * i, j] * vec[j]);
+                        sum2 += (ushort)(matrix[2 * i + 1, j] * vec[j]);
+                    }
+                    product[i] = (byte)((((sum1 & 0xF) ^ ((sum1 >> 4) & 0xF) ^ ((sum1 >> 8) & 0xF)) << 4) |
+                                         ((sum2 & 0xF) ^ ((sum2 >> 4) & 0xF) ^ ((sum2 >> 8) & 0xF)));
+                }
+
+                // XOR the original hash with the result
+                for (int i = 0; i < 32; i++)
+                {
+                    product[i] ^= hash[i];
+                }
+
+                // Calculer le HeavyHash
+                Span<byte> heavyHashBytes = stackalloc byte[32];
+                var heavyHasher = new HeavyHash();
+                heavyHasher.Digest(product, heavyHashBytes);
+
+                // Retourner le résultat final
+                return heavyHashBytes.ToArray();
+            }
+
         }
 
-    public byte[] HeavyHash(byte[] hash) {
-    // Convert input hash to 4-bit vector
-    byte[] vec = new byte[64];
-    for (int i = 0; i < 32; i++)
-    {
-        vec[2 * i] = (byte)(hash[i] >> 4);
-        vec[2 * i + 1] = (byte)(hash[i] & 0x0F);
-    }
 
-    // Matrix-vector multiplication and reduction
-    byte[] product = new byte[32];
-    for (int i = 0; i < 32; i++)
-    {
-        ushort sum1 = 0, sum2 = 0;
-        for (int j = 0; j < 64; j++)
+        public class PowHash
         {
-            sum1 += (ushort)(matrix[2 * i, j] * vec[j]);
-            sum2 += (ushort)(matrix[2 * i + 1, j] * vec[j]);
+            private readonly byte[] prePowHash;
+            private readonly long timestamp;
+
+            public PowHash(byte[] prePowHash, long timestamp)
+            {
+                this.prePowHash = prePowHash;
+                this.timestamp = timestamp;
+            }
+
+            public byte[] FinalizeWithNonce(ulong nonce)
+            {
+                // Combine prePowHash, timestamp, and nonce
+                using (var stream = new MemoryStream())
+                {
+                    stream.Write(prePowHash, 0, prePowHash.Length);
+                    stream.Write(BitConverter.GetBytes(timestamp), 0, 8);
+                    stream.Write(new byte[32], 0, 32); // Zero padding
+                    stream.Write(BitConverter.GetBytes(nonce), 0, 8);
+
+                    // Apply hashing logic if needed
+                    return stream.ToArray();
+                }
+            }
         }
-        product[i] = (byte)((((sum1 & 0xF) ^ ((sum1 >> 4) & 0xF) ^ ((sum1 >> 8) & 0xF)) << 4) |
-                             ((sum2 & 0xF) ^ ((sum2 >> 4) & 0xF) ^ ((sum2 >> 8) & 0xF)));
-    }
-
-    // XOR the original hash with the result
-    for (int i = 0; i < 32; i++)
-    {
-        product[i] ^= hash[i];
-    }
-
-    // Calculer le HeavyHash
-    Span<byte> heavyHashBytes = stackalloc byte[32];
-    var heavyHasher = new HeavyHash();
-    heavyHasher.Digest(product, heavyHashBytes);
-
-    // Retourner le résultat final
-    return heavyHashBytes.ToArray();
-    }
-
-}
 
 
-public class PowHash
-{
-    private readonly byte[] prePowHash;
-    private readonly long timestamp;
 
-    public PowHash(byte[] prePowHash, long timestamp)
-    {
-        this.prePowHash = prePowHash;
-        this.timestamp = timestamp;
-    }
 
-    public byte[] FinalizeWithNonce(ulong nonce)
-    {
-        // Combine prePowHash, timestamp, and nonce
-        using (var stream = new MemoryStream())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        protected override Share ProcessShareInternal(StratumConnection worker, string nonceHex)
         {
-            stream.Write(prePowHash, 0, prePowHash.Length);
-            stream.Write(BitConverter.GetBytes(timestamp), 0, 8);
-            stream.Write(new byte[32], 0, 32); // Zero padding
-            stream.Write(BitConverter.GetBytes(nonce), 0, 8);
+            var context = worker.ContextAs<KaspaWorkerContext>();
 
-            // Apply hashing logic if needed
-            return stream.ToArray();
+            // Convert nonce from hex string to ulong
+            ulong nonce = Convert.ToUInt64(nonceHex, 16);
+            Console.WriteLine($"elva Debug KobraJob -----> ProcessShareInternal ---> Nonce = {nonce}");
+
+            // Prepare the State object
+            var prePowHashBytes = SerializeHeader(BlockTemplate.Header, true);
+            Console.WriteLine($"elva Debug KobraJob -----> ProcessShareInternal ---> PrePowHash = {prePowHashBytes.ToHexString()}");
+
+            // Convert target to BigInteger
+            var target = new Target(KaspaUtils.CompactToBig(BlockTemplate.Header.Bits));
+            var targetUInt256 = target.ToUInt256(); // Vérifiez si cette méthode est disponible
+            var targetBigInteger = UInt256ToBigInteger(targetUInt256);
+            Console.WriteLine($"elva Debug KobraJob -----> ProcessShareInternal ---> Target = {targetBigInteger}");
+
+            var state = new KobraState(prePowHashBytes, BlockTemplate.Header.Timestamp, targetBigInteger);
+
+            // Calculate and verify PoW
+            var (isValid, pow) = state.CheckPow(nonce);
+            Console.WriteLine($"elva Debug KobraJob -----> ProcessShareInternal ---> PoW = {pow}, IsValid = {isValid}");
+
+            if (!isValid)
+                throw new StratumException(StratumError.LowDifficultyShare, $"Invalid share: Nonce {nonce}, PoW {pow}");
+
+            // Calculate share difficulty
+            var shareDiff = (double)new BigRational(KobraConstants.Diff1b, pow) * 256;
+            Console.WriteLine($"elva Debug KobraJob -----> ProcessShareInternal ---> ShareDiff = {shareDiff}");
+
+            // Determine if the share is a block candidate
+            var blockTargetBigInteger = UInt256ToBigInteger(blockTargetValue);
+            var isBlockCandidate = pow <= blockTargetBigInteger;
+            Console.WriteLine($"elva Debug KobraJob -----> ProcessShareInternal ---> IsBlockCandidate = {isBlockCandidate}");
+
+            // Create the share object
+            var result = new Share
+            {
+                BlockHeight = (long)BlockTemplate.Header.DaaScore,
+                NetworkDifficulty = Difficulty,
+                Difficulty = context.Difficulty / 256,
+                IsBlockCandidate = isBlockCandidate
+            };
+
+            if (isBlockCandidate)
+            {
+                var hashBytes = SerializeHeader(BlockTemplate.Header, false);
+                result.BlockHash = hashBytes.ToHexString();
+                Console.WriteLine($"elva Debug KobraJob -----> ProcessShareInternal ---> BlockHash = {result.BlockHash}");
+            }
+
+            return result;
         }
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-protected override Share ProcessShareInternal(StratumConnection worker, string nonceHex)
-{
-    var context = worker.ContextAs<KaspaWorkerContext>();
-
-    // Convert nonce from hex string to ulong
-    ulong nonce = Convert.ToUInt64(nonceHex, 16);
-    Console.WriteLine($"elva Debug KobraJob -----> ProcessShareInternal ---> Nonce = {nonce}");
-
-    // Prepare the State object
-    var prePowHashBytes = SerializeHeader(BlockTemplate.Header, true);
-    Console.WriteLine($"elva Debug KobraJob -----> ProcessShareInternal ---> PrePowHash = {prePowHashBytes.ToHexString()}");
-
-    // Convert target to BigInteger
-    var target = new Target(KaspaUtils.CompactToBig(BlockTemplate.Header.Bits));
-    var targetUInt256 = target.ToUInt256(); // Vérifiez si cette méthode est disponible
-    var targetBigInteger = UInt256ToBigInteger(targetUInt256);
-    Console.WriteLine($"elva Debug KobraJob -----> ProcessShareInternal ---> Target = {targetBigInteger}");
-
-    var state = new KobraState(prePowHashBytes, BlockTemplate.Header.Timestamp, targetBigInteger);
-
-    // Calculate and verify PoW
-    var (isValid, pow) = state.CheckPow(nonce);
-    Console.WriteLine($"elva Debug KobraJob -----> ProcessShareInternal ---> PoW = {pow}, IsValid = {isValid}");
-
-    if (!isValid)
-        throw new StratumException(StratumError.LowDifficultyShare, $"Invalid share: Nonce {nonce}, PoW {pow}");
-
-    // Calculate share difficulty
-    var shareDiff = (double)new BigRational(KobraConstants.Diff1b, pow) * 256;
-    Console.WriteLine($"elva Debug KobraJob -----> ProcessShareInternal ---> ShareDiff = {shareDiff}");
-
-    // Determine if the share is a block candidate
-    var blockTargetBigInteger = UInt256ToBigInteger(blockTargetValue);
-    var isBlockCandidate = pow <= blockTargetBigInteger;
-    Console.WriteLine($"elva Debug KobraJob -----> ProcessShareInternal ---> IsBlockCandidate = {isBlockCandidate}");
-
-    // Create the share object
-    var result = new Share
-    {
-        BlockHeight = (long)BlockTemplate.Header.DaaScore,
-        NetworkDifficulty = Difficulty,
-        Difficulty = context.Difficulty / 256,
-        IsBlockCandidate = isBlockCandidate
-    };
-
-    if (isBlockCandidate)
-    {
-        var hashBytes = SerializeHeader(BlockTemplate.Header, false);
-        result.BlockHash = hashBytes.ToHexString();
-        Console.WriteLine($"elva Debug KobraJob -----> ProcessShareInternal ---> BlockHash = {result.BlockHash}");
-    }
-
-    return result;
-}
 
 
 

@@ -14,7 +14,7 @@ public unsafe class Sha512256D : IHashAlgorithm
         {
             fixed (byte* output = result)
             {
-                Multihash.sha512_256(input, output, (uint) data.Length);
+                Multihash.sha512_256(input, output, (uint)data.Length);
                 Multihash.sha512_256(output, output, 32);
             }
         }

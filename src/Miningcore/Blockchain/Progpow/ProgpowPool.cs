@@ -44,7 +44,7 @@ public class ProgpowPool : PoolBase
 
     private string createEncodeTarget(double difficulty)
     {
-        switch(coin.Symbol) 
+        switch (coin.Symbol)
         {
             case "FIRO":
                 return ProgpowUtils.FiroEncodeTarget(difficulty);
@@ -58,7 +58,7 @@ public class ProgpowPool : PoolBase
     {
         var request = tsRequest.Value;
 
-        if(request.Id == null)
+        if (request.Id == null)
             throw new StratumException(StratumError.MinusOne, "missing request id");
 
         var context = connection.ContextAs<ProgpowWorkerContext>();
@@ -84,7 +84,7 @@ public class ProgpowPool : PoolBase
         // Nicehash support
         var nicehashDiff = await GetNicehashStaticMinDiff(context, coin.Name, coin.GetAlgorithmName());
 
-        if(nicehashDiff.HasValue)
+        if (nicehashDiff.HasValue)
         {
             logger.Info(() => $"[{connection.ConnectionId}] Nicehash detected. Using API supplied difficulty of {nicehashDiff.Value}");
 
@@ -102,7 +102,7 @@ public class ProgpowPool : PoolBase
     {
         var request = tsRequest.Value;
 
-        if(request.Id == null)
+        if (request.Id == null)
             throw new StratumException(StratumError.MinusOne, "missing request id");
 
         var context = connection.ContextAs<ProgpowWorkerContext>();
@@ -121,7 +121,7 @@ public class ProgpowPool : PoolBase
         context.Miner = minerName;
         context.Worker = workerName;
 
-        if(context.IsAuthorized)
+        if (context.IsAuthorized)
         {
             // respond
             await connection.RespondAsync(context.IsAuthorized, request.Id);
@@ -133,7 +133,7 @@ public class ProgpowPool : PoolBase
             var staticDiff = GetStaticDiffFromPassparts(passParts);
 
             // Static diff
-            if(staticDiff.HasValue &&
+            if (staticDiff.HasValue &&
                (context.VarDiff != null && staticDiff.Value >= context.VarDiff.Config.MinDiff ||
                    context.VarDiff == null && staticDiff.Value > context.Difficulty))
             {
@@ -150,7 +150,7 @@ public class ProgpowPool : PoolBase
         {
             await connection.RespondErrorAsync(StratumError.UnauthorizedWorker, "Authorization failed", request.Id, context.IsAuthorized);
 
-            if(clusterConfig?.Banning?.BanOnLoginFailure is null or true)
+            if (clusterConfig?.Banning?.BanOnLoginFailure is null or true)
             {
                 // issue short-time ban if unauthorized to prevent DDos on daemon (validateaddress RPC)
                 logger.Info(() => $"[{connection.ConnectionId}] Banning unauthorized worker {minerName} for {loginFailureBanTimeout.TotalSeconds} sec");
@@ -181,7 +181,7 @@ public class ProgpowPool : PoolBase
         };
 
         // update context
-        lock(context)
+        lock (context)
         {
             context.AddJob(job);
         }
@@ -201,13 +201,13 @@ public class ProgpowPool : PoolBase
 
         try
         {
-            if(request.Id == null)
+            if (request.Id == null)
                 throw new StratumException(StratumError.MinusOne, "missing request id");
 
             // check age of submission (aged submissions are usually caused by high server load)
             var requestAge = clock.Now - tsRequest.Timestamp.UtcDateTime;
 
-            if(requestAge > maxShareAge)
+            if (requestAge > maxShareAge)
             {
                 logger.Warn(() => $"[{connection.ConnectionId}] Dropping stale share submission request (server overloaded?)");
                 return;
@@ -217,9 +217,9 @@ public class ProgpowPool : PoolBase
             context.LastActivity = clock.Now;
 
             // validate worker
-            if(!context.IsAuthorized)
+            if (!context.IsAuthorized)
                 throw new StratumException(StratumError.UnauthorizedWorker, "unauthorized worker");
-            else if(!context.IsSubscribed)
+            else if (!context.IsSubscribed)
                 throw new StratumException(StratumError.NotSubscribed, "not subscribed");
 
             var requestParams = request.ParamsAs<string[]>();
@@ -234,11 +234,11 @@ public class ProgpowPool : PoolBase
             // telemetry
             PublishTelemetry(TelemetryCategory.Share, clock.Now - tsRequest.Timestamp.UtcDateTime, true);
 
-// elva - suppression de la ligne en dessous
-  //          logger.Info(() => $"[{connection.ConnectionId}] Share accepted: D={Math.Round(share.Difficulty * coin.ShareMultiplier, 3)}");
+            // elva - suppression de la ligne en dessous
+            //          logger.Info(() => $"[{connection.ConnectionId}] Share accepted: D={Math.Round(share.Difficulty * coin.ShareMultiplier, 3)}");
 
             // update pool stats
-            if(share.IsBlockCandidate)
+            if (share.IsBlockCandidate)
                 poolStats.LastPoolBlockTime = clock.Now;
 
             // update client stats
@@ -247,7 +247,7 @@ public class ProgpowPool : PoolBase
             await UpdateVarDiffAsync(connection, false, ct);
         }
 
-        catch(StratumException ex)
+        catch (StratumException ex)
         {
             // telemetry
             PublishTelemetry(TelemetryCategory.Share, clock.Now - tsRequest.Timestamp.UtcDateTime, false);
@@ -268,7 +268,7 @@ public class ProgpowPool : PoolBase
     protected virtual async Task OnNewJobAsync(object job)
     {
         // elva - suppression de la ligne en dessous
-   //     logger.Info(() => $"Broadcasting jobs");
+        //     logger.Info(() => $"Broadcasting jobs");
 
         currentJobParams = job as ProgpowJobParams;
 
@@ -278,7 +278,7 @@ public class ProgpowPool : PoolBase
 
             var minerJobParams = CreateWorkerJob(connection, currentJobParams.CleanJobs);
 
-            if(context.ApplyPendingDifficulty())
+            if (context.ApplyPendingDifficulty())
                 await connection.NotifyAsync(ProgpowStratumMethods.SetDifficulty, new object[] { createEncodeTarget(context.Difficulty) });
 
             // send job
@@ -286,23 +286,23 @@ public class ProgpowPool : PoolBase
         }));
     }
 
-public override double HashrateFromShares(double shares, double interval)
-{
-    var multiplier = BitcoinConstants.Pow2x32;
-    var result = shares * multiplier / interval;
+    public override double HashrateFromShares(double shares, double interval)
+    {
+        var multiplier = BitcoinConstants.Pow2x32;
+        var result = shares * multiplier / interval;
 
-    // Vérifie si HashrateMultiplier est défini (valeur par défaut si absent)
-    if (coin.HashrateMultiplier > 0)
-        result *= coin.HashrateMultiplier ?? 1.0;
-     //   result *= coin.HashrateMultiplier;
+        // Vérifie si HashrateMultiplier est défini (valeur par défaut si absent)
+        if (coin.HashrateMultiplier > 0)
+            result *= coin.HashrateMultiplier ?? 1.0;
+        //   result *= coin.HashrateMultiplier;
 
-    return result;
-}
+        return result;
+    }
     public override double ShareMultiplier => coin.ShareMultiplier;
 
     private ProgpowJobManager createProgpowExtraNonceProvider()
     {
-        switch(coin.Symbol)
+        switch (coin.Symbol)
         {
             case "FIRO":
                 return ctx.Resolve<ProgpowJobManager>(new TypedParameter(typeof(IExtraNonceProvider), new FiroExtraNonceProvider(poolConfig.Id, clusterConfig.InstanceId)));
@@ -329,7 +329,7 @@ public override double HashrateFromShares(double shares, double interval)
 
         await manager.StartAsync(ct);
 
-        if(poolConfig.EnableInternalStratum == true)
+        if (poolConfig.EnableInternalStratum == true)
         {
             disposables.Add(manager.Jobs
                 .Select(job => Observable.FromAsync(() =>
@@ -371,7 +371,7 @@ public override double HashrateFromShares(double shares, double interval)
 
         try
         {
-            switch(request.Method)
+            switch (request.Method)
             {
                 case ProgpowStratumMethods.Subscribe:
                     await OnSubscribeAsync(connection, tsRequest);
@@ -405,7 +405,7 @@ public override double HashrateFromShares(double shares, double interval)
             }
         }
 
-        catch(StratumException ex)
+        catch (StratumException ex)
         {
             await connection.RespondErrorAsync(ex.Code, ex.Message, request.Id, false);
         }
@@ -415,7 +415,7 @@ public override double HashrateFromShares(double shares, double interval)
     {
         await base.OnVarDiffUpdateAsync(connection, newDiff, ct);
 
-        if(connection.Context.ApplyPendingDifficulty())
+        if (connection.Context.ApplyPendingDifficulty())
         {
             var minerJobParams = CreateWorkerJob(connection, currentJobParams.CleanJobs);
             await connection.NotifyAsync(ProgpowStratumMethods.SetDifficulty, new object[] { createEncodeTarget(connection.Context.Difficulty) });

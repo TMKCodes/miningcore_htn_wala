@@ -1,9 +1,9 @@
 {
   "logging": {
-    "level": "info",
+    "level": "debug",
     "enableConsoleLog": true,
     "enableConsoleColors": true,
-    "logFile": "",
+    "logFile": "core.log",
     "apiLogFile": "",
     "logBaseDirectory": "",
     "perPoolLogFile": false
@@ -11,21 +11,21 @@
   "banning": {
     "manager": "Integrated",
     "banOnJunkReceive": true,
-    "banOnInvalidShares": false
+    "banOnInvalidShares": true
   },
   "notifications": {
     "enabled": false,
     "email": {
-      "host": "smtp.example.com",
+      "host": "smtp.address.com",
       "port": 587,
-      "user": "user",
-      "password": "password",
-      "fromAddress": "info@yourpool.org",
+      "user": "address@address.com",
+      "password": "PASSWORD",
+      "fromAddress": "address@address.com",
       "fromName": "support"
     },
     "admin": {
       "enabled": false,
-      "emailAddress": "user@example.com",
+      "emailAddress": "address@address.com",
       "notifyBlockFound": true
     }
   },
@@ -33,7 +33,7 @@
     "postgres": {
       "host": "127.0.0.1",
       "port": 5432,
-      "user": "user",
+      "user": "miningcore",
       "password": "PASSWORD",
       "database": "miningcore"
     }
@@ -64,7 +64,7 @@
   },
   "pools": [
     {
-      "id": "HTN1",
+      "id": "HTN-PPLNSBF70",
       "enabled": true,
       "coin": "hoosat",
       "address": "hoosat:qp4ad2eh72xc8dtjjyz4llxzq9utn6k26uyl644xxw70wskdfl85zsqj9k4vz",
@@ -80,32 +80,15 @@
       "banning": {
         "enabled": true,
         "time": 600,
-        "invalidPercent": 50,
-        "checkThreshold": 50,
-        "minerEffortPercent": 0.00000000465661287,
-        "minerEffortTime": 259200
+        "invalidPercent": 25,
+        "checkThreshold": 50
       },
       "ports": {
-        "3094": {
+        "42494": {
           "listenAddress": "0.0.0.0",
-          "difficulty": 4,
+          "difficulty": 0.01,
           "varDiff": {
-            "minDiff": 2,
-            "maxDiff": null,
-            "targetTime": 15,
-            "retargetTime": 90,
-            "variancePercent": 100,
-            "maxDelta": 512
-          }
-        },
-        "3095": {
-          "listenAddress": "0.0.0.0",
-          "difficulty": 4,
-          "tls": true,
-          "tlsPfxFile": "<Your directory for the pfx file>",
-          "tlsPfxPassword": "password",
-          "varDiff": {
-            "minDiff": 2,
+            "minDiff": 0.01,
             "maxDiff": null,
             "targetTime": 15,
             "retargetTime": 90,
@@ -131,12 +114,11 @@
       ],
       "paymentProcessing": {
         "enabled": true,
-        "walletPassword": "<The Hoosat's wallet password which owns the pool address>",
-        "minimumPayment": 1,
-        "versionEnablingMaxFee": "v0.12.18-rc5",
-        "maxFee": 200000,
-        "payoutScheme": "PPLNS",
+        "walletPassword": "PASSWORD",
+        "minimumPayment": 20,
+        "payoutScheme": "PPLNSBF",
         "payoutSchemeConfig": {
+          "blockFinderReward": 0.7,
           "factor": 0.5
         }
       }

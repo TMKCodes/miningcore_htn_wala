@@ -261,6 +261,16 @@ Then, if you are planning to run a Multipool-Cluster, perform the additional ste
 psql -U miningcore -d miningcore -f miningcore/src/Miningcore/Persistence/Postgres/Scripts/createdb_postgresql_11_appendix.sql
 ```
 
+if you do this, remember to create partition tables for every pool you add later on.
+
+```sh
+psql -U miningcore -d miningcore
+```
+
+```sql
+CREATE TABLE shares_pool_id PARTITION OF shares FOR VALUES IN ('POOL_ID');
+```
+
 Change directory to the miningcore folder and build the miningcore container:
 
 ```sh

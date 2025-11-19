@@ -75,7 +75,7 @@
           "percentage": 1
         }
       ],
-      "protobufWalletRpcServiceName": "hoosatwalletd.hoosatwalletd",
+      "protobufWalletRpcServiceName": "htnwalletd.htnwalletd",
       "clientConnectionTimeout": 600,
       "banning": {
         "enabled": true,

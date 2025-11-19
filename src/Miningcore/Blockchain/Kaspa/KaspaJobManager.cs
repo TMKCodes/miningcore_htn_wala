@@ -47,21 +47,21 @@ namespace Miningcore.Blockchain.Kaspa;
 public class KaspaJobManager : JobManagerBase<KaspaJob>
 {
 
-//private readonly IDbConnection connection;
+    //private readonly IDbConnection connection;
 
 
-public KaspaJobManager(
-    IComponentContext ctx,
-    IMessageBus messageBus,
-    IMasterClock clock,
-    IExtraNonceProvider extraNonceProvider)
-{
-    Contract.RequiresNonNull(clock);
-    Contract.RequiresNonNull(extraNonceProvider);
+    public KaspaJobManager(
+        IComponentContext ctx,
+        IMessageBus messageBus,
+        IMasterClock clock,
+        IExtraNonceProvider extraNonceProvider) : base(ctx, messageBus)
+    {
+        Contract.RequiresNonNull(clock);
+        Contract.RequiresNonNull(extraNonceProvider);
 
-    this.clock = clock;
-    this.extraNonceProvider = extraNonceProvider;
-}
+        this.clock = clock;
+        this.extraNonceProvider = extraNonceProvider;
+    }
 
     private DaemonEndpointConfig[] daemonEndpoints;
     private DaemonEndpointConfig[] walletDaemonEndpoints;
@@ -90,32 +90,73 @@ public KaspaJobManager(
 
             Task.Run(async () =>
             {
-                using(cts)
+                using (cts)
                 {
-                    retry_subscription:
-                        var streamNotifyNewBlockTemplate = rpc.MessageStream(null, null, cts.Token);
+                retry_subscription:
+                    var streamNotifyNewBlockTemplate = rpc.MessageStream(null, null, cts.Token);
 
-                        var requestNotifyNewBlockTemplate = new kaspad.KaspadMessage();
-                        requestNotifyNewBlockTemplate.NotifyNewBlockTemplateRequest = new kaspad.NotifyNewBlockTemplateRequestMessage();
+                    var requestNotifyNewBlockTemplate = new kaspad.KaspadMessage();
+                    requestNotifyNewBlockTemplate.NotifyNewBlockTemplateRequest = new kaspad.NotifyNewBlockTemplateRequestMessage();
 
-                        var requestBlockTemplate = new kaspad.KaspadMessage();
-                        requestBlockTemplate.GetBlockTemplateRequest = new kaspad.GetBlockTemplateRequestMessage
+                    var requestBlockTemplate = new kaspad.KaspadMessage();
+                    requestBlockTemplate.GetBlockTemplateRequest = new kaspad.GetBlockTemplateRequestMessage
+                    {
+                        PayAddress = poolConfig.Address,
+                        ExtraData = extraData,
+                    };
+
+                    logger.Debug(() => $"Sending NotifyNewBlockTemplateRequest");
+
+                    try
+                    {
+                        await streamNotifyNewBlockTemplate.RequestStream.WriteAsync(requestNotifyNewBlockTemplate, cts.Token);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error(() => $"{ex.GetType().Name} '{ex.Message}' while subscribing to kaspad \"NewBlockTemplate\" notifications");
+
+                        if (!cts.IsCancellationRequested)
                         {
-                            PayAddress = poolConfig.Address,
-                            ExtraData = extraData,
-                        };
+                            await streamNotifyNewBlockTemplate.RequestStream.CompleteAsync();
+                            logger.Error(() => $"Reconnecting in 10s");
+                            await Task.Delay(TimeSpan.FromSeconds(10), cts.Token);
+                            goto retry_subscription;
+                        }
+                        else
+                            goto end_gameover;
+                    }
 
-                        logger.Debug(() => $"Sending NotifyNewBlockTemplateRequest");
+                    while (!cts.IsCancellationRequested)
+                    {
+                        logger.Debug(() => $"Successful `NewBlockTemplate` subscription");
+
+                    retry_blocktemplate:
+                        logger.Debug(() => $"New job received :D");
 
                         try
                         {
-                            await streamNotifyNewBlockTemplate.RequestStream.WriteAsync(requestNotifyNewBlockTemplate, cts.Token);
-                        }
-                        catch(Exception ex)
-                        {
-                            logger.Error(() => $"{ex.GetType().Name} '{ex.Message}' while subscribing to kaspad \"NewBlockTemplate\" notifications");
+                            await streamNotifyNewBlockTemplate.RequestStream.WriteAsync(requestBlockTemplate, cts.Token);
+                            await foreach (var responseBlockTemplate in streamNotifyNewBlockTemplate.ResponseStream.ReadAllAsync(cts.Token))
+                            {
+                                logger.Debug(() => $"DaaScore (BlockHeight): {responseBlockTemplate.GetBlockTemplateResponse.Block.Header.DaaScore}");
 
-                            if(!cts.IsCancellationRequested)
+                                obs.OnNext(responseBlockTemplate.GetBlockTemplateResponse.Block);
+
+                                if (!string.IsNullOrEmpty(responseBlockTemplate.GetBlockTemplateResponse.Error?.Message))
+                                    logger.Warn(() => responseBlockTemplate.GetBlockTemplateResponse.Error?.Message);
+                            }
+                        }
+                        catch (NullReferenceException)
+                        {
+                            logger.Debug(() => $"Waiting for data...");
+                            goto retry_blocktemplate;
+                        }
+
+                        catch (Exception ex)
+                        {
+                            logger.Error(() => $"{ex.GetType().Name} '{ex.Message}' while streaming kaspad \"NewBlockTemplate\" notifications");
+
+                            if (!cts.IsCancellationRequested)
                             {
                                 await streamNotifyNewBlockTemplate.RequestStream.CompleteAsync();
                                 logger.Error(() => $"Reconnecting in 10s");
@@ -125,51 +166,10 @@ public KaspaJobManager(
                             else
                                 goto end_gameover;
                         }
-
-                        while (!cts.IsCancellationRequested)
-                        {
-                            logger.Debug(() => $"Successful `NewBlockTemplate` subscription");
-
-                            retry_blocktemplate:
-                                logger.Debug(() => $"New job received :D");
-
-                                try
-                                {
-                                    await streamNotifyNewBlockTemplate.RequestStream.WriteAsync(requestBlockTemplate, cts.Token);
-                                    await foreach (var responseBlockTemplate in streamNotifyNewBlockTemplate.ResponseStream.ReadAllAsync(cts.Token))
-                                    {
-                                        logger.Debug(() => $"DaaScore (BlockHeight): {responseBlockTemplate.GetBlockTemplateResponse.Block.Header.DaaScore}");
-
-                                        obs.OnNext(responseBlockTemplate.GetBlockTemplateResponse.Block);
-
-                                        if(!string.IsNullOrEmpty(responseBlockTemplate.GetBlockTemplateResponse.Error?.Message))
-                                            logger.Warn(() => responseBlockTemplate.GetBlockTemplateResponse.Error?.Message);
-                                    }
-                                }
-                                catch(NullReferenceException)
-                                {
-                                    logger.Debug(() => $"Waiting for data...");
-                                    goto retry_blocktemplate;
-                                }
-
-                                catch(Exception ex)
-                                {
-                                    logger.Error(() => $"{ex.GetType().Name} '{ex.Message}' while streaming kaspad \"NewBlockTemplate\" notifications");
-
-                                    if(!cts.IsCancellationRequested)
-                                    {
-                                        await streamNotifyNewBlockTemplate.RequestStream.CompleteAsync();
-                                        logger.Error(() => $"Reconnecting in 10s");
-                                        await Task.Delay(TimeSpan.FromSeconds(10), cts.Token);
-                                        goto retry_subscription;
-                                    }
-                                    else
-                                        goto end_gameover;
-                                }
-                        }
-                        end_gameover:
-                            await streamNotifyNewBlockTemplate.RequestStream.CompleteAsync();
-                            logger.Debug(() => $"No more data received. Bye!");
+                    }
+                end_gameover:
+                    await streamNotifyNewBlockTemplate.RequestStream.CompleteAsync();
+                    logger.Debug(() => $"No more data received. Bye!");
                 }
             }, cts.Token);
 
@@ -210,7 +210,7 @@ public KaspaJobManager(
             .Where(x => x)
             .Do(x =>
             {
-                if(x)
+                if (x)
                     hasInitialBlockTemplate = true;
             })
             .Select(x => GetJobParamsForStratum())
@@ -223,151 +223,34 @@ public KaspaJobManager(
     {
         Console.WriteLine($"KaspaJob CreateJob: {coin.Symbol}.");
 
-        switch(coin.Symbol)
+        switch (coin.Symbol)
         {
             case "WALA":
-            if (customBlockHeaderHasher is not Blake2b)
-            {
-                Console.WriteLine("WaglaylaJob: Initializing customBlockHeaderHasher with Blake2b...");
-                customBlockHeaderHasher = new Blake2b(Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseBlockHash));
-            }
-            if (customCoinbaseHasher is not CShake256)
-            {
-                Console.WriteLine("WaglaylaJob: Initializing customCoinbaseHasher with CShake256...");
-                customCoinbaseHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseProofOfWorkHash));
-            }
-            if (customShareHasher is not CShake256)
-            {
-                Console.WriteLine("WaglaylaJob: Initializing customShareHasher with CShake256...");
-                customShareHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseHeavyHash));
-            }
+                if (customBlockHeaderHasher is not Blake2b)
+                {
+                    Console.WriteLine("WaglaylaJob: Initializing customBlockHeaderHasher with Blake2b...");
+                    customBlockHeaderHasher = new Blake2b(Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseBlockHash));
+                }
+                if (customCoinbaseHasher is not CShake256)
+                {
+                    Console.WriteLine("WaglaylaJob: Initializing customCoinbaseHasher with CShake256...");
+                    customCoinbaseHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseProofOfWorkHash));
+                }
+                if (customShareHasher is not CShake256)
+                {
+                    Console.WriteLine("WaglaylaJob: Initializing customShareHasher with CShake256...");
+                    customShareHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseHeavyHash));
+                }
                 return new WaglaylaJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);
             case "AIX":
-                if(customBlockHeaderHasher is not Blake2b)
+                if (customBlockHeaderHasher is not Blake2b)
                     customBlockHeaderHasher = new Blake2b(Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseBlockHash));
-                if(customCoinbaseHasher is not CShake256)
+                if (customCoinbaseHasher is not CShake256)
                     customCoinbaseHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseProofOfWorkHash));
-                if(customShareHasher is not CShake256)
+                if (customShareHasher is not CShake256)
                     customShareHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseHeavyHash));
                 return new AstrixJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);
             case "CAS":
-                if(customBlockHeaderHasher is not Blake3)
-                {
-                    string coinbaseBlockHash = KaspaConstants.CoinbaseBlockHash;
-                    byte[] hashBytes = Encoding.UTF8.GetBytes(coinbaseBlockHash.PadRight(32, '\0')).Take(32).ToArray();
-                    customBlockHeaderHasher = new Blake3(hashBytes);
-                }
-
-                if(customCoinbaseHasher is not Blake3)
-                        customCoinbaseHasher = new Blake3();
-
-                if(customShareHasher is not Blake3)
-                    customShareHasher = new Blake3();
-
-                return new PyrinJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);
-            case "KODA":
-                if(customBlockHeaderHasher is not Blake3)
-                {
-                    string coinbaseBlockHash = KaspaConstants.CoinbaseBlockHash;
-                    byte[] hashBytes = Encoding.UTF8.GetBytes(coinbaseBlockHash.PadRight(32, '\0')).Take(32).ToArray();
-                    customBlockHeaderHasher = new Blake3(hashBytes);
-                }
-
-                if(customCoinbaseHasher is not Blake3)
-                        customCoinbaseHasher = new Blake3();
-
-                if(customShareHasher is not Blake3)
-                    customShareHasher = new Blake3();
-
-                return new KobraJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);
-            case "KLS":
-                var karlsenNetwork = network.ToLower();
-
-                if(customBlockHeaderHasher is not Blake2b)
-                    customBlockHeaderHasher = new Blake2b(Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseBlockHash));
-
-                if(customCoinbaseHasher is not Blake3)
-                    customCoinbaseHasher = new Blake3();
-
-            if((karlsenNetwork == "testnet" && (ulong)blockHeight >= KarlsencoinConstants.FishHashPlusForkHeightTestnet) ||
-            (karlsenNetwork == "mainnet" && (ulong)blockHeight >= KarlsencoinConstants.FishHashPlusForkHeightMainnet))
-            {
-                logger.Debug(() => $"fishHashPlusHardFork activated");
-
-                if(customShareHasher is not FishHashKarlsen)
-                {
-                    customShareHasher = new FishHashKarlsen(FishHash.FishHashKernelPlus);
-                }
-                else if(customShareHasher is FishHashKarlsen fishHashKarlsenAlgo)
-                {
-                    // Vérifie si l'algorithme utilisé n'est pas déjà FishHashKernelPlus
-                    if(fishHashKarlsenAlgo.fishHashKernel != FishHash.FishHashKernelPlus)
-                    {
-                        customShareHasher = new FishHashKarlsen(FishHash.FishHashKernelPlus);
-                    }
-                }
-            }
-            else if(karlsenNetwork == "testnet" && (ulong)blockHeight >= KarlsencoinConstants.FishHashForkHeightTestnet)
-            {
-                logger.Debug(() => $"fishHashHardFork activated");
-
-                if(customShareHasher is not FishHashKarlsen)
-                {
-                    customShareHasher = new FishHashKarlsen();
-                }
-            }
-            else
-                if(customShareHasher is not CShake256)
-                    customShareHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseHeavyHash));
-
-                return new KarlsencoinJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);
-            case "NTL":
-            case "CSS":
-            case "PUG":
-                if(customBlockHeaderHasher is not Blake2b)
-                customBlockHeaderHasher = new Blake2b(Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseBlockHash));
-
-                if(customCoinbaseHasher is not Blake3)
-                    customCoinbaseHasher = new Blake3();
-
-                if(customShareHasher is not CShake256)
-                    customShareHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseHeavyHash));
-
-
-                Console.WriteLine($"[DEBUG] Creating Hash Pugdag");
-
-            return new PugdagJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);
-
-            case "SPR":
-                if(customBlockHeaderHasher is not Blake2b)
-                    customBlockHeaderHasher = new Blake2b(Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseBlockHash));
-                if(customCoinbaseHasher is not CShake256)
-                    customCoinbaseHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseProofOfWorkHash));
-                if(customShareHasher is not CShake256)
-                    customShareHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseHeavyHash));
-
-            Console.WriteLine($"[DEBUG] Creating Hash Spectre");
-
-            return new SpectreJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);
-
-
-            case "NXL":
-                if(customBlockHeaderHasher is not Blake2b)
-                    customBlockHeaderHasher = new Blake2b(Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseBlockHash));
-
-                if(customCoinbaseHasher is not Blake3)
-                    customCoinbaseHasher = new Blake3();
-
-                if(customShareHasher is not CShake256)
-                    customShareHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseHeavyHash));
-
-            return new KarlsencoinJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);
-
-            case "PYI":
-            if ((ulong)blockHeight >= PyrinConstants.Blake3ForkHeight)
-            {
-                logger.Debug(() => $"blake3HardFork activated");
-
                 if (customBlockHeaderHasher is not Blake3)
                 {
                     string coinbaseBlockHash = KaspaConstants.CoinbaseBlockHash;
@@ -376,36 +259,153 @@ public KaspaJobManager(
                 }
 
                 if (customCoinbaseHasher is not Blake3)
-                {
                     customCoinbaseHasher = new Blake3();
-                }
 
                 if (customShareHasher is not Blake3)
-                {
                     customShareHasher = new Blake3();
+
+                return new PyrinJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);
+            case "KODA":
+                if (customBlockHeaderHasher is not Blake3)
+                {
+                    string coinbaseBlockHash = KaspaConstants.CoinbaseBlockHash;
+                    byte[] hashBytes = Encoding.UTF8.GetBytes(coinbaseBlockHash.PadRight(32, '\0')).Take(32).ToArray();
+                    customBlockHeaderHasher = new Blake3(hashBytes);
                 }
+
+                if (customCoinbaseHasher is not Blake3)
+                    customCoinbaseHasher = new Blake3();
+
+                if (customShareHasher is not Blake3)
+                    customShareHasher = new Blake3();
+
+                return new KobraJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);
+            case "KLS":
+                var karlsenNetwork = network.ToLower();
+
+                if (customBlockHeaderHasher is not Blake2b)
+                    customBlockHeaderHasher = new Blake2b(Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseBlockHash));
+
+                if (customCoinbaseHasher is not Blake3)
+                    customCoinbaseHasher = new Blake3();
+
+                if ((karlsenNetwork == "testnet" && (ulong)blockHeight >= KarlsencoinConstants.FishHashPlusForkHeightTestnet) ||
+                (karlsenNetwork == "mainnet" && (ulong)blockHeight >= KarlsencoinConstants.FishHashPlusForkHeightMainnet))
+                {
+                    logger.Debug(() => $"fishHashPlusHardFork activated");
+
+                    if (customShareHasher is not FishHashKarlsen)
+                    {
+                        customShareHasher = new FishHashKarlsen(FishHash.FishHashKernelPlus);
+                    }
+                    else if (customShareHasher is FishHashKarlsen fishHashKarlsenAlgo)
+                    {
+                        // Vérifie si l'algorithme utilisé n'est pas déjà FishHashKernelPlus
+                        if (fishHashKarlsenAlgo.fishHashKernel != FishHash.FishHashKernelPlus)
+                        {
+                            customShareHasher = new FishHashKarlsen(FishHash.FishHashKernelPlus);
+                        }
+                    }
+                }
+                else if (karlsenNetwork == "testnet" && (ulong)blockHeight >= KarlsencoinConstants.FishHashForkHeightTestnet)
+                {
+                    logger.Debug(() => $"fishHashHardFork activated");
+
+                    if (customShareHasher is not FishHashKarlsen)
+                    {
+                        customShareHasher = new FishHashKarlsen();
+                    }
+                }
+                else
+                    if (customShareHasher is not CShake256)
+                    customShareHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseHeavyHash));
+
+                return new KarlsencoinJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);
+            case "NTL":
+            case "CSS":
+            case "PUG":
+                if (customBlockHeaderHasher is not Blake2b)
+                    customBlockHeaderHasher = new Blake2b(Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseBlockHash));
+
+                if (customCoinbaseHasher is not Blake3)
+                    customCoinbaseHasher = new Blake3();
+
+                if (customShareHasher is not CShake256)
+                    customShareHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseHeavyHash));
+
+
+                Console.WriteLine($"[DEBUG] Creating Hash Pugdag");
+
+                return new PugdagJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);
+
+            case "SPR":
+                if (customBlockHeaderHasher is not Blake2b)
+                    customBlockHeaderHasher = new Blake2b(Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseBlockHash));
+                if (customCoinbaseHasher is not CShake256)
+                    customCoinbaseHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseProofOfWorkHash));
+                if (customShareHasher is not CShake256)
+                    customShareHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseHeavyHash));
+
+                Console.WriteLine($"[DEBUG] Creating Hash Spectre");
+
+                return new SpectreJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);
+
+
+            case "NXL":
+                if (customBlockHeaderHasher is not Blake2b)
+                    customBlockHeaderHasher = new Blake2b(Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseBlockHash));
+
+                if (customCoinbaseHasher is not Blake3)
+                    customCoinbaseHasher = new Blake3();
+
+                if (customShareHasher is not CShake256)
+                    customShareHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseHeavyHash));
+
+                return new KarlsencoinJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);
+
+            case "PYI":
+                if ((ulong)blockHeight >= PyrinConstants.Blake3ForkHeight)
+                {
+                    logger.Debug(() => $"blake3HardFork activated");
+
+                    if (customBlockHeaderHasher is not Blake3)
+                    {
+                        string coinbaseBlockHash = KaspaConstants.CoinbaseBlockHash;
+                        byte[] hashBytes = Encoding.UTF8.GetBytes(coinbaseBlockHash.PadRight(32, '\0')).Take(32).ToArray();
+                        customBlockHeaderHasher = new Blake3(hashBytes);
+                    }
+
+                    if (customCoinbaseHasher is not Blake3)
+                    {
+                        customCoinbaseHasher = new Blake3();
+                    }
+
+                    if (customShareHasher is not Blake3)
+                    {
+                        customShareHasher = new Blake3();
+                    }
                 }
                 else
                 {
-                    if(customBlockHeaderHasher is not Blake2b)
+                    if (customBlockHeaderHasher is not Blake2b)
                         customBlockHeaderHasher = new Blake2b(Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseBlockHash));
 
-                    if(customCoinbaseHasher is not CShake256)
+                    if (customCoinbaseHasher is not CShake256)
                         customCoinbaseHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseProofOfWorkHash));
 
-                    if(customShareHasher is not CShake256)
+                    if (customShareHasher is not CShake256)
                         customShareHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseHeavyHash));
                 }
-            return new PyrinJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);
+                return new PyrinJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);
         }
 
-        if(customBlockHeaderHasher is not Blake2b)
+        if (customBlockHeaderHasher is not Blake2b)
             customBlockHeaderHasher = new Blake2b(Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseBlockHash));
 
-        if(customCoinbaseHasher is not CShake256)
+        if (customCoinbaseHasher is not CShake256)
             customCoinbaseHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseProofOfWorkHash));
 
-        if(customShareHasher is not CShake256)
+        if (customShareHasher is not CShake256)
             customShareHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseHeavyHash));
 
 
@@ -413,68 +413,68 @@ public KaspaJobManager(
         return new KaspaJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);
     }
 
-private async Task<bool> UpdateJob(CancellationToken ct, string via = null, kaspad.RpcBlock blockTemplate = null)
-{
-    using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-
-    return await Task.Run(() =>
+    private async Task<bool> UpdateJob(CancellationToken ct, string via = null, kaspad.RpcBlock blockTemplate = null)
     {
-        try
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+
+        return await Task.Run(() =>
         {
-            if (blockTemplate == null)
+            try
             {
-                logger.Warn(() => "Block template is null. UpdateJob aborted.");
-                return false;
-            }
-
-            var job = currentJob;
-            var isNew = job == null || job.BlockTemplate?.Header.DaaScore < blockTemplate.Header.DaaScore;
-
-            if (isNew)
-            {
-                messageBus.NotifyChainHeight(poolConfig.Id, blockTemplate.Header.DaaScore, poolConfig.Template);
-
-                job = CreateJob((long)blockTemplate.Header.DaaScore);
-                job.Init(blockTemplate, NextJobId(), ShareMultiplier);
-
-                lock (jobLock)
+                if (blockTemplate == null)
                 {
-                    validJobs.Insert(0, job);
-
-                    while (validJobs.Count > maxActiveJobs)
-                        validJobs.RemoveAt(validJobs.Count - 1);
+                    logger.Warn(() => "Block template is null. UpdateJob aborted.");
+                    return false;
                 }
 
-                logger.Info(() => $"New block detected: Height={job.BlockTemplate.Header.DaaScore}, Target={job.blockTargetValue}, Difficulty={job.Difficulty}, Via={via ?? "Unknown"}");
+                var job = currentJob;
+                var isNew = job == null || job.BlockTemplate?.Header.DaaScore < blockTemplate.Header.DaaScore;
 
-                if (job.BlockTemplate.Header.DaaScore > BlockchainStats.BlockHeight)
+                if (isNew)
                 {
-                    BlockchainStats.LastNetworkBlockTime = clock.Now;
-                    BlockchainStats.BlockHeight = job.BlockTemplate.Header.DaaScore;
-                    BlockchainStats.NetworkDifficulty = job.Difficulty;
+                    messageBus.NotifyChainHeight(poolConfig.Id, blockTemplate.Header.DaaScore, poolConfig.Template);
+
+                    job = CreateJob((long)blockTemplate.Header.DaaScore);
+                    job.Init(blockTemplate, NextJobId(), ShareMultiplier);
+
+                    lock (jobLock)
+                    {
+                        validJobs.Insert(0, job);
+
+                        while (validJobs.Count > maxActiveJobs)
+                            validJobs.RemoveAt(validJobs.Count - 1);
+                    }
+
+                    logger.Info(() => $"New block detected: Height={job.BlockTemplate.Header.DaaScore}, Target={job.blockTargetValue}, Difficulty={job.Difficulty}, Via={via ?? "Unknown"}");
+
+                    if (job.BlockTemplate.Header.DaaScore > BlockchainStats.BlockHeight)
+                    {
+                        BlockchainStats.LastNetworkBlockTime = clock.Now;
+                        BlockchainStats.BlockHeight = job.BlockTemplate.Header.DaaScore;
+                        BlockchainStats.NetworkDifficulty = job.Difficulty;
+                    }
+
+                    currentJob = job;
+                }
+                else
+                {
+                    logger.Debug(() => $"Template updated: Height={job.BlockTemplate.Header.DaaScore}, Via={via ?? "Unknown"}");
                 }
 
-                currentJob = job;
+                return isNew;
             }
-            else
+            catch (OperationCanceledException)
             {
-                logger.Debug(() => $"Template updated: Height={job.BlockTemplate.Header.DaaScore}, Via={via ?? "Unknown"}");
+                logger.Warn(() => "UpdateJob operation was canceled.");
+            }
+            catch (Exception ex)
+            {
+                logger.Error(() => $"Unexpected error in UpdateJob: {ex.GetType().Name} - {ex.Message}");
             }
 
-            return isNew;
-        }
-        catch (OperationCanceledException)
-        {
-            logger.Warn(() => "UpdateJob operation was canceled.");
-        }
-        catch (Exception ex)
-        {
-            logger.Error(() => $"Unexpected error in UpdateJob: {ex.GetType().Name} - {ex.Message}");
-        }
-
-        return false;
-    }, cts.Token);
-}
+            return false;
+        }, cts.Token);
+    }
 
     private async Task UpdateNetworkStatsAsync(CancellationToken ct)
     {
@@ -491,8 +491,8 @@ private async Task<bool> UpdateJob(CancellationToken ct, string via = null, kasp
             await stream.RequestStream.WriteAsync(request);
             await foreach (var infoHashrate in stream.ResponseStream.ReadAllAsync(ct))
             {
-                if(string.IsNullOrEmpty(infoHashrate.EstimateNetworkHashesPerSecondResponse.Error?.Message))
-                    BlockchainStats.NetworkHashrate = (double) infoHashrate.EstimateNetworkHashesPerSecondResponse.NetworkHashesPerSecond;
+                if (string.IsNullOrEmpty(infoHashrate.EstimateNetworkHashesPerSecondResponse.Error?.Message))
+                    BlockchainStats.NetworkHashrate = (double)infoHashrate.EstimateNetworkHashesPerSecondResponse.NetworkHashesPerSecond;
 
                 break;
             }
@@ -502,7 +502,7 @@ private async Task<bool> UpdateJob(CancellationToken ct, string via = null, kasp
             await stream.RequestStream.WriteAsync(request);
             await foreach (var info in stream.ResponseStream.ReadAllAsync(ct))
             {
-                if(string.IsNullOrEmpty(info.GetConnectedPeerInfoResponse.Error?.Message))
+                if (string.IsNullOrEmpty(info.GetConnectedPeerInfoResponse.Error?.Message))
                     BlockchainStats.ConnectedPeers = info.GetConnectedPeerInfoResponse.Infos.Count;
 
                 break;
@@ -510,7 +510,7 @@ private async Task<bool> UpdateJob(CancellationToken ct, string via = null, kasp
             await stream.RequestStream.CompleteAsync();
         }
 
-        catch(Exception ex)
+        catch (Exception ex)
         {
             logger.Error(() => $"{ex.GetType().Name} '{ex.Message}' while updating network stats");
         }
@@ -524,13 +524,13 @@ private async Task<bool> UpdateJob(CancellationToken ct, string via = null, kasp
         var request = new kaspad.KaspadMessage();
         request.GetInfoRequest = new kaspad.GetInfoRequestMessage();
         await Guard(() => stream.RequestStream.WriteAsync(request),
-            ex=> logger.Debug(ex));
+            ex => logger.Debug(ex));
         await foreach (var info in stream.ResponseStream.ReadAllAsync(ct))
         {
-            if(!string.IsNullOrEmpty(info.GetInfoResponse.Error?.Message))
+            if (!string.IsNullOrEmpty(info.GetInfoResponse.Error?.Message))
                 logger.Debug(info.GetInfoResponse.Error?.Message);
 
-            if(info.GetInfoResponse.IsSynced != true && info.GetInfoResponse.IsUtxoIndexed != true)
+            if (info.GetInfoResponse.IsSynced != true && info.GetInfoResponse.IsUtxoIndexed != true)
                 logger.Info(() => $"Daemon is downloading headers ...");
 
             break;
@@ -553,13 +553,13 @@ private async Task<bool> UpdateJob(CancellationToken ct, string via = null, kasp
             request.SubmitBlockRequest = new kaspad.SubmitBlockRequestMessage
             {
                 Block = block,
-             //   AllowNonDAABlocks = false,
+                //   AllowNonDAABlocks = false,
                 AllowNonDAABlocks = true,
             };
             await stream.RequestStream.WriteAsync(request);
             await foreach (var response in stream.ResponseStream.ReadAllAsync(ct))
             {
-                if(!string.IsNullOrEmpty(response.SubmitBlockResponse.Error?.Message))
+                if (!string.IsNullOrEmpty(response.SubmitBlockResponse.Error?.Message))
                 {
                     // We lost that battle
                     logger.Warn(() => $"Block submission failed: {response.SubmitBlockResponse.Error?.Message} [{response.SubmitBlockResponse?.RejectReason.ToString()}]");
@@ -573,7 +573,7 @@ private async Task<bool> UpdateJob(CancellationToken ct, string via = null, kasp
             await stream.RequestStream.CompleteAsync();
         }
 
-        catch(Exception ex)
+        catch (Exception ex)
         {
             // We lost that battle
             logger.Error(() => $"{ex.GetType().Name} '{ex.Message}' while submitting block");
@@ -615,98 +615,98 @@ private async Task<bool> UpdateJob(CancellationToken ct, string via = null, kasp
     {
         return extraPoolConfig?.ExtraNonce1Size ?? 2;
     }
-public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker, object submission, CancellationToken ct)
-{
-    // Validation initiale
-    Contract.RequiresNonNull(worker);
-    Contract.RequiresNonNull(submission);
-
-    logger.Debug("Starting SubmitShareAsync method.");
-
-    if (submission is not object[] submitParams)
+    public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker, object submission, CancellationToken ct)
     {
-        logger.Error("Invalid submission parameters. Expected object array.");
-        throw new StratumException(StratumError.Other, "Invalid params");
-    }
+        // Validation initiale
+        Contract.RequiresNonNull(worker);
+        Contract.RequiresNonNull(submission);
 
-    var context = worker.ContextAs<KaspaWorkerContext>();
-    if (context == null)
-    {
-        logger.Error("Worker context is null. Connection ID: " + worker.ConnectionId);
-        throw new NullReferenceException("Worker context is null.");
-    }
+        logger.Debug("Starting SubmitShareAsync method.");
 
-    var jobId = submitParams[1] as string;
-    var nonce = submitParams[2] as string;
+        if (submission is not object[] submitParams)
+        {
+            logger.Error("Invalid submission parameters. Expected object array.");
+            throw new StratumException(StratumError.Other, "Invalid params");
+        }
 
-    if (jobId == null || nonce == null)
-    {
-        logger.Error($"Invalid jobId or nonce: jobId={jobId}, nonce={nonce}");
-        throw new StratumException(StratumError.Other, "Invalid jobId or nonce");
-    }
+        var context = worker.ContextAs<KaspaWorkerContext>();
+        if (context == null)
+        {
+            logger.Error("Worker context is null. Connection ID: " + worker.ConnectionId);
+            throw new NullReferenceException("Worker context is null.");
+        }
 
-    // Traitement de la part
-    logger.Info($"Processing share for Job ID: {jobId}, Nonce: {nonce}");
+        var jobId = submitParams[1] as string;
+        var nonce = submitParams[2] as string;
 
-    KaspaJob job;
-    lock (jobLock)
-    {
-        job = validJobs.FirstOrDefault(x => x.JobId == jobId);
-    }
+        if (jobId == null || nonce == null)
+        {
+            logger.Error($"Invalid jobId or nonce: jobId={jobId}, nonce={nonce}");
+            throw new StratumException(StratumError.Other, "Invalid jobId or nonce");
+        }
 
-    if (job == null)
-    {
-        logger.Error($"Job not found for Job ID: {jobId}");
-        throw new StratumException(StratumError.JobNotFound, "Job not found");
-    }
-    var share = job.ProcessShare(worker, nonce);
-    share.PoolId = poolConfig.Id ?? throw new NullReferenceException("poolConfig.Id is null");
-    share.IpAddress = worker.RemoteEndpoint?.Address?.ToString() ?? throw new NullReferenceException("worker.RemoteEndpoint.Address is null");
-    share.Miner = context.Miner;
-    share.Worker = context.Worker;
-    share.UserAgent = context.UserAgent;
-    share.Source = clusterConfig.ClusterName;
-    share.Created = clock.Now;
+        // Traitement de la part
+        logger.Info($"Processing share for Job ID: {jobId}, Nonce: {nonce}");
 
-    logger.Debug($"Share created: Pool ID: {share.PoolId}, IP: {share.IpAddress}, Miner: {share.Miner}");
+        KaspaJob job;
+        lock (jobLock)
+        {
+            job = validJobs.FirstOrDefault(x => x.JobId == jobId);
+        }
 
-    if (share.IsBlockCandidate)
-    {
-        logger.Debug($"Submitting block {share.BlockHeight} [{share.BlockHash}] for verification.");
-        var acceptResponse = await SubmitBlockAsync(ct, job.BlockTemplate);
-        share.IsBlockCandidate = acceptResponse;
+        if (job == null)
+        {
+            logger.Error($"Job not found for Job ID: {jobId}");
+            throw new StratumException(StratumError.JobNotFound, "Job not found");
+        }
+        var share = job.ProcessShare(worker, nonce);
+        share.PoolId = poolConfig.Id ?? throw new NullReferenceException("poolConfig.Id is null");
+        share.IpAddress = worker.RemoteEndpoint?.Address?.ToString() ?? throw new NullReferenceException("worker.RemoteEndpoint.Address is null");
+        share.Miner = context.Miner;
+        share.Worker = context.Worker;
+        share.UserAgent = context.UserAgent;
+        share.Source = clusterConfig.ClusterName;
+        share.Created = clock.Now;
+
+        logger.Debug($"Share created: Pool ID: {share.PoolId}, IP: {share.IpAddress}, Miner: {share.Miner}");
 
         if (share.IsBlockCandidate)
         {
-            logger.Debug($"Block {share.BlockHeight} accepted by daemon. Block Hash: {share.BlockHash}, submitted by Miner: {context.Miner}");
-            OnBlockFound();
-            share.TransactionConfirmationData = nonce;
+            logger.Debug($"Submitting block {share.BlockHeight} [{share.BlockHash}] for verification.");
+            var acceptResponse = await SubmitBlockAsync(ct, job.BlockTemplate);
+            share.IsBlockCandidate = acceptResponse;
+
+            if (share.IsBlockCandidate)
+            {
+                logger.Debug($"Block {share.BlockHeight} accepted by daemon. Block Hash: {share.BlockHash}, submitted by Miner: {context.Miner}");
+                OnBlockFound();
+                share.TransactionConfirmationData = nonce;
+            }
+            else
+            {
+                logger.Warn($"Block {share.BlockHeight} was rejected by the daemon.");
+                share.TransactionConfirmationData = null;
+            }
         }
-        else
-        {
-            logger.Warn($"Block {share.BlockHeight} was rejected by the daemon.");
-            share.TransactionConfirmationData = null;
-        }
+
+
+        logger.Debug("SubmitShareAsync completed.");
+        return share;
     }
-
-
-    logger.Debug("SubmitShareAsync completed.");
-    return share;
-}
 
 
     public bool ValidateIsLargeJob(string userAgent)
     {
-        if(string.IsNullOrEmpty(userAgent))
+        if (string.IsNullOrEmpty(userAgent))
             return false;
 
-        if(ValidateIsBzMiner(userAgent))
+        if (ValidateIsBzMiner(userAgent))
             return true;
 
-        if(ValidateIsIceRiverMiner(userAgent))
+        if (ValidateIsIceRiverMiner(userAgent))
             return true;
 
-        if(ValidateIsGoldShell(userAgent))
+        if (ValidateIsGoldShell(userAgent))
             return true;
 
         return false;
@@ -714,7 +714,7 @@ public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker,
 
     public bool ValidateIsBzMiner(string userAgent)
     {
-        if(string.IsNullOrEmpty(userAgent))
+        if (string.IsNullOrEmpty(userAgent))
             return false;
 
         // Find matches
@@ -724,7 +724,7 @@ public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker,
 
     public bool ValidateIsGodMiner(string userAgent)
     {
-        if(string.IsNullOrEmpty(userAgent))
+        if (string.IsNullOrEmpty(userAgent))
             return false;
 
         // Find matches
@@ -734,7 +734,7 @@ public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker,
 
     public bool ValidateIsIceRiverMiner(string userAgent)
     {
-        if(string.IsNullOrEmpty(userAgent))
+        if (string.IsNullOrEmpty(userAgent))
             return false;
 
         // Find matches
@@ -744,7 +744,7 @@ public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker,
 
     public bool ValidateIsGoldShell(string userAgent)
     {
-        if(string.IsNullOrEmpty(userAgent))
+        if (string.IsNullOrEmpty(userAgent))
             return false;
 
         // Find matches
@@ -753,7 +753,7 @@ public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker,
     }
     public bool ValidateIsTNNMiner(string userAgent)
     {
-        if(string.IsNullOrEmpty(userAgent))
+        if (string.IsNullOrEmpty(userAgent))
             return false;
 
         // Find matches
@@ -769,7 +769,7 @@ public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker,
     protected override async Task PostStartInitAsync(CancellationToken ct)
     {
         // validate pool address
-        if(string.IsNullOrEmpty(poolConfig.Address))
+        if (string.IsNullOrEmpty(poolConfig.Address))
             throw new PoolStartupException($"Pool address is not configured", poolConfig.Id);
 
         // we need a stream to communicate with Kaspad
@@ -778,10 +778,10 @@ public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker,
         var request = new kaspad.KaspadMessage();
         request.GetCurrentNetworkRequest = new kaspad.GetCurrentNetworkRequestMessage();
         await Guard(() => stream.RequestStream.WriteAsync(request),
-            ex=> throw new PoolStartupException($"Error writing a request in the communication stream '{ex.GetType().Name}' : {ex}", poolConfig.Id));
+            ex => throw new PoolStartupException($"Error writing a request in the communication stream '{ex.GetType().Name}' : {ex}", poolConfig.Id));
         await foreach (var currentNetwork in stream.ResponseStream.ReadAllAsync(ct))
         {
-            if(!string.IsNullOrEmpty(currentNetwork.GetCurrentNetworkResponse.Error?.Message))
+            if (!string.IsNullOrEmpty(currentNetwork.GetCurrentNetworkResponse.Error?.Message))
                 throw new PoolStartupException($"Daemon reports: {currentNetwork.GetCurrentNetworkResponse.Error?.Message}", poolConfig.Id);
 
             network = currentNetwork.GetCurrentNetworkResponse.CurrentNetwork;
@@ -789,7 +789,7 @@ public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker,
         }
 
         var (kaspaAddressUtility, errorKaspaAddressUtility) = KaspaUtils.ValidateAddress(poolConfig.Address, network, coin);
-        if(errorKaspaAddressUtility != null)
+        if (errorKaspaAddressUtility != null)
             throw new PoolStartupException($"Pool address: {poolConfig.Address} is invalid for network [{network}]: {errorKaspaAddressUtility}", poolConfig.Id);
         else
             logger.Info(() => $"Pool address: {poolConfig.Address} => {KaspaConstants.KaspaAddressType[kaspaAddressUtility.KaspaAddress.Version()]}");
@@ -801,30 +801,30 @@ public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker,
         request = new kaspad.KaspadMessage();
         request.GetInfoRequest = new kaspad.GetInfoRequestMessage();
         await Guard(() => stream.RequestStream.WriteAsync(request),
-            ex=> throw new PoolStartupException($"Error writing a request in the communication stream '{ex.GetType().Name}' : {ex}", poolConfig.Id));
+            ex => throw new PoolStartupException($"Error writing a request in the communication stream '{ex.GetType().Name}' : {ex}", poolConfig.Id));
         await foreach (var info in stream.ResponseStream.ReadAllAsync(ct))
         {
-            if(!string.IsNullOrEmpty(info.GetInfoResponse.Error?.Message))
+            if (!string.IsNullOrEmpty(info.GetInfoResponse.Error?.Message))
                 throw new PoolStartupException($"Daemon reports: {info.GetInfoResponse.Error?.Message}", poolConfig.Id);
 
-            if(info.GetInfoResponse.IsUtxoIndexed != true)
+            if (info.GetInfoResponse.IsUtxoIndexed != true)
                 throw new PoolStartupException("UTXO index is disabled", poolConfig.Id);
 
-            extraData = (string) info.GetInfoResponse.ServerVersion + (!string.IsNullOrEmpty(extraData) ? "." + extraData : "");
+            extraData = (string)info.GetInfoResponse.ServerVersion + (!string.IsNullOrEmpty(extraData) ? "." + extraData : "");
             break;
         }
         await stream.RequestStream.CompleteAsync();
 
         // Payment-processing setup
-        if(clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
+        if (clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
         {
             var call = walletRpc.ShowAddressesAsync(new kaspaWalletd.ShowAddressesRequest(), null, null, ct);
 
             var walletAddresses = await Guard(() => call.ResponseAsync,
-                ex=> throw new PoolStartupException($"Error validating pool address '{ex.GetType().Name}' : {ex}", poolConfig.Id));
+                ex => throw new PoolStartupException($"Error validating pool address '{ex.GetType().Name}' : {ex}", poolConfig.Id));
             call.Dispose();
 
-            if(!walletAddresses.Address.Contains(poolConfig.Address))
+            if (!walletAddresses.Address.Contains(poolConfig.Address))
                 throw new PoolStartupException($"Pool address: {poolConfig.Address} is not controlled by pool wallet", poolConfig.Id);
         }
 
@@ -832,8 +832,8 @@ public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker,
 
         Observable.Interval(TimeSpan.FromMinutes(1))
             .Select(via => Observable.FromAsync(() =>
-                Guard(()=> UpdateNetworkStatsAsync(ct),
-                    ex=> logger.Error(ex))))
+                Guard(() => UpdateNetworkStatsAsync(ct),
+                    ex => logger.Error(ex))))
             .Concat()
             .Subscribe();
 
@@ -855,14 +855,14 @@ public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker,
             .Where(x => string.IsNullOrEmpty(x.Category))
             .ToArray();
 
-        if(cc.PaymentProcessing?.Enabled == true && pc.PaymentProcessing?.Enabled == true)
+        if (cc.PaymentProcessing?.Enabled == true && pc.PaymentProcessing?.Enabled == true)
         {
             // extract wallet daemon endpoints
             walletDaemonEndpoints = pc.Daemons
                 .Where(x => x.Category?.ToLower() == KaspaConstants.WalletDaemonCategory)
                 .ToArray();
 
-            if(walletDaemonEndpoints.Length == 0)
+            if (walletDaemonEndpoints.Length == 0)
                 throw new PoolStartupException("Wallet-RPC daemon is not configured (Daemon configuration for kaspa-pools require an additional entry of category 'wallet' pointing to the wallet daemon)", pc.Id);
         }
 
@@ -876,7 +876,7 @@ public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker,
         rpc = KaspaClientFactory.CreateKaspadRPCClient(daemonEndpoints, extraPoolConfig?.ProtobufDaemonRpcServiceName ?? KaspaConstants.ProtobufDaemonRpcServiceName);
 
         // Payment-processing setup
-        if(clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
+        if (clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
         {
             logger.Debug(() => $"ProtobufWalletRpcServiceName: {extraPoolConfig?.ProtobufWalletRpcServiceName ?? KaspaConstants.ProtobufWalletRpcServiceName}");
 
@@ -886,15 +886,15 @@ public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker,
 
     protected override async Task<bool> AreDaemonsHealthyAsync(CancellationToken ct)
     {
-        if(clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
+        if (clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
         {
             var call = walletRpc.ShowAddressesAsync(new kaspaWalletd.ShowAddressesRequest(), null, null, ct);
 
             var walletAddresses = await Guard(() => call.ResponseAsync,
-                ex=> logger.Debug(ex));
+                ex => logger.Debug(ex));
             call.Dispose();
 
-            if(walletAddresses == null)
+            if (walletAddresses == null)
                 return false;
         }
 
@@ -904,22 +904,22 @@ public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker,
         var request = new kaspad.KaspadMessage();
         request.GetInfoRequest = new kaspad.GetInfoRequestMessage();
         await Guard(() => stream.RequestStream.WriteAsync(request),
-            ex=> logger.Debug(ex));
+            ex => logger.Debug(ex));
         bool areDaemonsHealthy = false;
         await foreach (var info in stream.ResponseStream.ReadAllAsync(ct))
         {
-            if(!string.IsNullOrEmpty(info.GetInfoResponse.Error?.Message))
+            if (!string.IsNullOrEmpty(info.GetInfoResponse.Error?.Message))
             {
                 logger.Debug(info.GetInfoResponse.Error?.Message);
                 return false;
             }
 
-            if(info.GetInfoResponse.IsUtxoIndexed != true)
+            if (info.GetInfoResponse.IsUtxoIndexed != true)
                 throw new PoolStartupException("UTXO index is disabled", poolConfig.Id);
 
             // update stats
-            if(info.GetInfoResponse.ServerVersion != null)
-                BlockchainStats.NodeVersion = (string) info.GetInfoResponse.ServerVersion;
+            if (info.GetInfoResponse.ServerVersion != null)
+                BlockchainStats.NodeVersion = (string)info.GetInfoResponse.ServerVersion;
 
             areDaemonsHealthy = true;
             break;
@@ -932,17 +932,17 @@ public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker,
     protected override async Task<bool> AreDaemonsConnectedAsync(CancellationToken ct)
     {
         // Payment-processing setup
-        if(clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
+        if (clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
         {
             // we need a call to communicate with kaspadWallet
             var call = walletRpc.ShowAddressesAsync(new kaspaWalletd.ShowAddressesRequest(), null, null, ct);
 
             // check if daemon responds
             var walletAddresses = await Guard(() => call.ResponseAsync,
-                ex=> logger.Debug(ex));
+                ex => logger.Debug(ex));
             call.Dispose();
 
-            if(walletAddresses == null)
+            if (walletAddresses == null)
                 return false;
         }
 
@@ -952,11 +952,11 @@ public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker,
         var request = new kaspad.KaspadMessage();
         request.GetConnectedPeerInfoRequest = new kaspad.GetConnectedPeerInfoRequestMessage();
         await Guard(() => stream.RequestStream.WriteAsync(request),
-            ex=> logger.Debug(ex));
+            ex => logger.Debug(ex));
         int totalPeers = 0;
         await foreach (var info in stream.ResponseStream.ReadAllAsync(ct))
         {
-            if(!string.IsNullOrEmpty(info.GetConnectedPeerInfoResponse.Error?.Message))
+            if (!string.IsNullOrEmpty(info.GetConnectedPeerInfoResponse.Error?.Message))
             {
                 logger.Debug(info.GetConnectedPeerInfoResponse.Error?.Message);
                 return false;
@@ -987,10 +987,10 @@ public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker,
             var request = new kaspad.KaspadMessage();
             request.GetInfoRequest = new kaspad.GetInfoRequestMessage();
             await Guard(() => stream.RequestStream.WriteAsync(request),
-                ex=> logger.Debug(ex));
+                ex => logger.Debug(ex));
             await foreach (var info in stream.ResponseStream.ReadAllAsync(ct))
             {
-                if(!string.IsNullOrEmpty(info.GetInfoResponse.Error?.Message))
+                if (!string.IsNullOrEmpty(info.GetInfoResponse.Error?.Message))
                     logger.Debug(info.GetInfoResponse.Error?.Message);
 
                 isSynched = (info.GetInfoResponse.IsSynced == true && info.GetInfoResponse.IsUtxoIndexed == true);
@@ -998,20 +998,20 @@ public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker,
             }
             await stream.RequestStream.CompleteAsync();
 
-            if(isSynched)
+            if (isSynched)
             {
                 logger.Info(() => "Daemon is synced with blockchain");
                 break;
             }
 
-            if(!syncPendingNotificationShown)
+            if (!syncPendingNotificationShown)
             {
                 logger.Info(() => "Daemon is still syncing with network. Manager will be started once synced.");
                 syncPendingNotificationShown = true;
             }
 
             await ShowDaemonSyncProgressAsync(ct);
-        } while(await timer.WaitForNextTickAsync(ct));
+        } while (await timer.WaitForNextTickAsync(ct));
     }
 
     private object[] GetJobParamsForStratum()

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "6MOzEa23hye4b+3tmVRnhVn5HJXbXk1ZqbSZIrUbSSq4mMFN9l8UIAcaKKTZOIoXbf4x7FaLdtMyA/e9Bfvz/Q==",
+  "dgSpecHash": "yA7hfspeT4zWQ/hdeI361x8xYRjvQbRRscZSqxWcC3vPfiHa/6A9pvzcsHCiZRK5K+Eprcg1CmPUl1aShDy9mQ==",
   "success": true,
-  "projectFilePath": "/home/elvalere/Pool/miningcore/src/Miningcore/Miningcore.csproj",
+  "projectFilePath": "/app/src/Miningcore/Miningcore.csproj",
   "expectedPackageFiles": [
     "/root/.nuget/packages/aspnetcoreratelimit/5.0.0/aspnetcoreratelimit.5.0.0.nupkg.sha512",
     "/root/.nuget/packages/autofac/8.0.0/autofac.8.0.0.nupkg.sha512",

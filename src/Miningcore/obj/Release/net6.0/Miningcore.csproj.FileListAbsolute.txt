@@ -200,3 +200,12 @@
 /home/elvalere/Pool/miningcore/src/Miningcore/bin/Release/net6.0/Polly.Core.dll
 /home/elvalere/Pool/miningcore/src/Miningcore/bin/Release/net6.0/System.Collections.Immutable.dll
 /home/elvalere/Pool/miningcore/src/Miningcore/bin/Release/net6.0/System.Diagnostics.DiagnosticSource.dll
+/app/src/Miningcore/obj/Release/net6.0/Miningcore.csproj.AssemblyReference.cache
+/app/src/Miningcore/obj/Release/net6.0/Miningcore.GeneratedMSBuildEditorConfig.editorconfig
+/app/src/Miningcore/obj/Release/net6.0/GitVersionInformation.g.cs
+/app/src/Miningcore/obj/Release/net6.0/AssemblyInfo.g.cs
+/app/src/Miningcore/obj/Release/net6.0/Miningcore.AssemblyInfoInputs.cache
+/app/src/Miningcore/obj/Release/net6.0/Miningcore.AssemblyInfo.cs
+/app/src/Miningcore/obj/Release/net6.0/Miningcore.csproj.CoreCompileInputs.cache
+/app/src/Miningcore/obj/Release/net6.0/Miningcore.dll
+/app/src/Miningcore/obj/Release/net6.0/Miningcore.pdb

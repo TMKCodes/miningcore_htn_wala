@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/elvalere/Pool/miningcore/src/Miningcore/Miningcore.csproj": {}
+    "/app/src/Miningcore/Miningcore.csproj": {}
   },
   "projects": {
-    "/home/elvalere/Pool/miningcore/src/Miningcore/Miningcore.csproj": {
+    "/app/src/Miningcore/Miningcore.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/elvalere/Pool/miningcore/src/Miningcore/Miningcore.csproj",
+        "projectUniqueName": "/app/src/Miningcore/Miningcore.csproj",
         "projectName": "Miningcore",
-        "projectPath": "/home/elvalere/Pool/miningcore/src/Miningcore/Miningcore.csproj",
+        "projectPath": "/app/src/Miningcore/Miningcore.csproj",
         "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/home/elvalere/Pool/miningcore/src/Miningcore/obj/",
+        "outputPath": "/app/src/Miningcore/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/root/.nuget/NuGet/NuGet.Config"
@@ -215,7 +215,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -224,7 +225,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/6.0.135/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.428/RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -41,19 +41,27 @@ Depending on your OS Version run either of these scripts:
 ```console
 ./build-debian-11.sh
 ```
+
 or
+
 ```console
 ./build-debian-12.sh
 ```
+
 or
+
 ```console
 ./build-ubuntu-20.04.sh
 ```
+
 or
+
 ```console
 ./build-ubuntu-21.04.sh
 ```
+
 or
+
 ```console
 ./build-ubuntu-22.04.sh
 ```
@@ -74,17 +82,20 @@ build-windows.bat
 - Open `Miningcore.sln` in Visual Studio
 
 ## Building using Docker Engine
+
 In case you don't want to install any dependencies then you can build the app using the official Microsoft .NET SDK Docker image.
 
 ```console
 git clone https://github.com/blackmennewstyle/miningcore
 cd miningcore
 ```
+
 Then build using Docker:
 
 ```console
 docker run --rm -v $(pwd):/app -w /app mcr.microsoft.com/dotnet/sdk:6.0 /bin/bash -c 'apt update && apt install cmake ninja-build build-essential libssl-dev pkg-config libboost-all-dev libsodium-dev libzmq5n libzmq3-dev golang-go libgmp-dev -y --no-install-recommends && cd src/Miningcore && dotnet publish -c Release --framework net6.0 -o /app/build/'
 ```
+
 It will use a Linux container, you will build a Linux executable that will not run on Windows or macOS. You can use a runtime argument (-r) to specify the type of assets that you want to publish (if they don't match the SDK container). The following examples assume you want assets that match your host operating system, and use runtime arguments to ensure that.
 
 For macOS:
@@ -95,11 +106,11 @@ docker run --rm -v $(pwd):/app -w /app mcr.microsoft.com/dotnet/sdk:6.0 /bin/bas
 
 ### Building and Running Miningcore from a container
 
-**note** - The build scripts optimize  the build for the hardware platform the container is built on ( does it have avx for example).  If you run this container on a platform that does NOT have the same architecture you could have unexplained crashes.  YOU SHOULD BUILD THIS CONTAINER ON THE HOST YOU ARE GOING TO RUN THIS CONTAINER ON.
+**note** - The build scripts optimize the build for the hardware platform the container is built on ( does it have avx for example). If you run this container on a platform that does NOT have the same architecture you could have unexplained crashes. YOU SHOULD BUILD THIS CONTAINER ON THE HOST YOU ARE GOING TO RUN THIS CONTAINER ON.
 
 Commands to build container: `docker build -t <your_dockerhubid>/miningcore:v73-foo .`
 
-The docker build assumes you are going to mount your  config file  in a volume mount.  for example:
+The docker build assumes you are going to mount your config file in a volume mount. for example:
 
 ```sh
 
@@ -114,10 +125,6 @@ docker run -d \
 
 ```
 
-
-
-
-
 For Windows using Linux container:
 
 ```console
@@ -125,6 +132,7 @@ docker run --rm -v $(pwd):/app -w /app mcr.microsoft.com/dotnet/sdk:6.0 /bin/bas
 ```
 
 To delete used images and containers you can run after all:
+
 ```console
 docker system prune -af
 ```
@@ -227,16 +235,60 @@ A public production pool requires a web-frontend for your users to check their h
 
 Once again, do not run a production pool on Windows! This is not a supported configuration.
 
+## Simple setup with docker
+
+First download and run a postgres 16 container:
+
+```sh
+sudo docker run --rm --name pg16 --network host \
+  -e POSTGRES_USER=miningcore \
+  -e POSTGRES_PASSWORD=PASSWORD \
+  -e POSTGRES_DB=miningcore \
+  --shm-size=1g \
+  -v /var/lib/postgres/data16:/var/lib/postgresql/data \
+  -d postgres:16
+```
+
+Then import the database schema:
+
+```sh
+psql -U miningcore -d miningcore -f /app/miningcore/src/Miningcore/Persistence/Postgres/Scripts/createdb.sql
+```
+
+Then, if you are planning to run a Multipool-Cluster, perform the additional steps for Postgres 11 or higher:
+
+```sh
+psql -U miningcore -d miningcore -f miningcore/src/Miningcore/Persistence/Postgres/Scripts/createdb_postgresql_11_appendix.sql
+```
+
+Change directory to the miningcore folder and build the miningcore container:
+
+```sh
+docker build -t miningcore:latest .
+```
+
+Then create a config file `config.json` in the root of the miningcore folder. Use examples folder configuration files as reference.
+
+Then run the miningcore container:
+
+```sh
+sudo docker run -d --network host --name mc  -v `pwd`/config.json:/app/config.json  --restart=unless-stopped miningcore:latest
+```
+
 ## Donations
 
-To support this project you can become a [sponsor]( https://github.com/sponsors//blackmennewstyle ) or send a donation to the following accounts:
+To support this project you can become a [sponsor](https://github.com/sponsors//blackmennewstyle) or send a donation to the following accounts:
 
-* ETH:  `0xbC059e88A4dD11c2E882Fc6B83F8Ec12E4CCCFad`
-* BTC:  `16xvkGfG9nrJSKKo5nGWphP8w4hr2ZzVuw`
-* LTC:  `LLs76baYT7iMqQhizxtBC96Cy48iX3Eh1p`
-* DOGE: `DFuvDSFh4N3SiXGDnye2Vbc8kqvMHbyQE1`
-* KAS:  `kaspa:qpmf0wyu7c5z4l82ax9cfc5ughwk2f9lgu8uckkqrrpjqkxuk7yrga5nntvgn`
-* CCX:  `ccx7S4B3gBeH1SGWCfqZp3NM7Vavg7H3S8ovJn8fU4bwC4vU7ChWfHtbNzifhrpbJ74bMDxj4KZFTcznTfsucCEg1Kgv7zbNgs`
-* FIRO: `a5AsoTSkfPHQ3SUmR6binG1XW7oQQoFNU1`
-* ERGO: `9gYyuZzaSw3TiCtUkSRuS3XVDUv41EFs3dtNCFGqiEwHqpb7gkF`
-* XMR:  `483zaHtMRfM7rw1dXgebhWaRR8QLgAF6w4BomAV319FVVHfdbYTLVuBRc4pQgRAnRpfy6CXvvwngK4Lo3mRKE29RRx3Jb5c`
+- ETH: `0xbC059e88A4dD11c2E882Fc6B83F8Ec12E4CCCFad`
+- BTC: `16xvkGfG9nrJSKKo5nGWphP8w4hr2ZzVuw`
+- LTC: `LLs76baYT7iMqQhizxtBC96Cy48iX3Eh1p`
+- DOGE: `DFuvDSFh4N3SiXGDnye2Vbc8kqvMHbyQE1`
+- KAS: `kaspa:qpmf0wyu7c5z4l82ax9cfc5ughwk2f9lgu8uckkqrrpjqkxuk7yrga5nntvgn`
+- CCX: `ccx7S4B3gBeH1SGWCfqZp3NM7Vavg7H3S8ovJn8fU4bwC4vU7ChWfHtbNzifhrpbJ74bMDxj4KZFTcznTfsucCEg1Kgv7zbNgs`
+- FIRO: `a5AsoTSkfPHQ3SUmR6binG1XW7oQQoFNU1`
+- ERGO: `9gYyuZzaSw3TiCtUkSRuS3XVDUv41EFs3dtNCFGqiEwHqpb7gkF`
+- XMR: `483zaHtMRfM7rw1dXgebhWaRR8QLgAF6w4BomAV319FVVHfdbYTLVuBRc4pQgRAnRpfy6CXvvwngK4Lo3mRKE29RRx3Jb5c`
+
+```
+
+```

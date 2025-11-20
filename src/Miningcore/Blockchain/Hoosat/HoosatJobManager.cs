@@ -73,9 +73,9 @@ public class HoosatJobManager : JobManagerBase<HoosatJob>
     private HoosatPaymentProcessingConfigExtra extraPoolPaymentProcessingConfig;
     protected int maxActiveJobs;
     protected string extraData;
-   // protected IHashAlgorithm customBlockHeaderHasher;
-   // protected IHashAlgorithm customCoinbaseHasher;
-  //  protected IHashAlgorithm customShareHasher;
+    // protected IHashAlgorithm customBlockHeaderHasher;
+    // protected IHashAlgorithm customCoinbaseHasher;
+    //  protected IHashAlgorithm customShareHasher;
 
     protected IObservable<htnd.RpcBlock> HoosatSubscribeNewBlockTemplate(CancellationToken ct, object payload = null,
         JsonSerializerSettings payloadJsonSerializerSettings = null)
@@ -86,35 +86,80 @@ public class HoosatJobManager : JobManagerBase<HoosatJob>
 
             Task.Run(async () =>
             {
-                using(cts)
+                using (cts)
                 {
-                    retry_subscription:
-                        // we need a stream to communicate with htnd
-                        var streamNotifyNewBlockTemplate = rpc.MessageStream(null, null, cts.Token);
+                retry_subscription:
+                    // we need a stream to communicate with htnd
+                    var streamNotifyNewBlockTemplate = rpc.MessageStream(null, null, cts.Token);
 
-                        // we need a request for subscribing to NotifyNewBlockTemplate
-                        var requestNotifyNewBlockTemplate = new htnd.HtndMessage();
-                        requestNotifyNewBlockTemplate.NotifyNewBlockTemplateRequest = new htnd.NotifyNewBlockTemplateRequestMessage();
+                    // we need a request for subscribing to NotifyNewBlockTemplate
+                    var requestNotifyNewBlockTemplate = new htnd.HtndMessage();
+                    requestNotifyNewBlockTemplate.NotifyNewBlockTemplateRequest = new htnd.NotifyNewBlockTemplateRequestMessage();
 
-                        // we need a request for retrieving BlockTemplate
-                        var requestBlockTemplate = new htnd.HtndMessage();
-                        requestBlockTemplate.GetBlockTemplateRequest = new htnd.GetBlockTemplateRequestMessage
+                    // we need a request for retrieving BlockTemplate
+                    var requestBlockTemplate = new htnd.HtndMessage();
+                    requestBlockTemplate.GetBlockTemplateRequest = new htnd.GetBlockTemplateRequestMessage
+                    {
+                        PayAddress = poolConfig.Address,
+                        ExtraData = extraData,
+                    };
+
+                    logger.Debug(() => $"Sending NotifyNewBlockTemplateRequest");
+
+                    try
+                    {
+                        await streamNotifyNewBlockTemplate.RequestStream.WriteAsync(requestNotifyNewBlockTemplate, cts.Token);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error(() => $"{ex.GetType().Name} '{ex.Message}' while subscribing to htnd \"NewBlockTemplate\" notifications");
+
+                        if (!cts.IsCancellationRequested)
                         {
-                            PayAddress = poolConfig.Address,
-                            ExtraData = extraData,
-                        };
+                            // We make sure the stream is closed in order to free resources and avoid reaching the "RPC inbound connections limitation"
+                            await streamNotifyNewBlockTemplate.RequestStream.CompleteAsync();
+                            logger.Error(() => $"Reconnecting in 10s");
+                            await Task.Delay(TimeSpan.FromSeconds(10), cts.Token);
+                            goto retry_subscription;
+                        }
+                        else
+                            goto end_gameover;
+                    }
 
-                        logger.Debug(() => $"Sending NotifyNewBlockTemplateRequest");
+                    while (!cts.IsCancellationRequested)
+                    {
+                        logger.Debug(() => $"Successful `NewBlockTemplate` subscription");
+
+                    retry_blocktemplate:
+                        logger.Debug(() => $"New job received :D");
 
                         try
                         {
-                            await streamNotifyNewBlockTemplate.RequestStream.WriteAsync(requestNotifyNewBlockTemplate, cts.Token);
-                        }
-                        catch(Exception ex)
-                        {
-                            logger.Error(() => $"{ex.GetType().Name} '{ex.Message}' while subscribing to htnd \"NewBlockTemplate\" notifications");
+                            await streamNotifyNewBlockTemplate.RequestStream.WriteAsync(requestBlockTemplate, cts.Token);
+                            await foreach (var responseBlockTemplate in streamNotifyNewBlockTemplate.ResponseStream.ReadAllAsync(cts.Token))
+                            {
+                                logger.Debug(() => $"DaaScore (BlockHeight): {responseBlockTemplate.GetBlockTemplateResponse.Block.Header.DaaScore}");
 
-                            if(!cts.IsCancellationRequested)
+                                // publish
+                                //logger.Debug(() => $"Publishing...");
+                                obs.OnNext(responseBlockTemplate.GetBlockTemplateResponse.Block);
+
+                                if (!string.IsNullOrEmpty(responseBlockTemplate.GetBlockTemplateResponse.Error?.Message))
+                                    logger.Warn(() => responseBlockTemplate.GetBlockTemplateResponse.Error?.Message);
+                            }
+                        }
+                        catch (NullReferenceException)
+                        {
+                            // The following is weird but correct, when all data has been received `streamNotifyNewBlockTemplate.ResponseStream.ReadAllAsync()` will return a `NullReferenceException`
+                            logger.Debug(() => $"Waiting for data...");
+                            goto retry_blocktemplate;
+                        }
+
+                        catch (Exception ex)
+                        {
+                            logger.Error(() => $"{ex.GetType().Name} '{ex.Message}' while streaming htnd \"NewBlockTemplate\" notifications");
+
+                            if (!cts.IsCancellationRequested)
                             {
                                 // We make sure the stream is closed in order to free resources and avoid reaching the "RPC inbound connections limitation"
                                 await streamNotifyNewBlockTemplate.RequestStream.CompleteAsync();
@@ -125,57 +170,12 @@ public class HoosatJobManager : JobManagerBase<HoosatJob>
                             else
                                 goto end_gameover;
                         }
+                    }
 
-                        while (!cts.IsCancellationRequested)
-                        {
-                            logger.Debug(() => $"Successful `NewBlockTemplate` subscription");
-
-                            retry_blocktemplate:
-                                logger.Debug(() => $"New job received :D");
-
-                                try
-                                {
-                                    await streamNotifyNewBlockTemplate.RequestStream.WriteAsync(requestBlockTemplate, cts.Token);
-                                    await foreach (var responseBlockTemplate in streamNotifyNewBlockTemplate.ResponseStream.ReadAllAsync(cts.Token))
-                                    {
-                                        logger.Debug(() => $"DaaScore (BlockHeight): {responseBlockTemplate.GetBlockTemplateResponse.Block.Header.DaaScore}");
-
-                                        // publish
-                                        //logger.Debug(() => $"Publishing...");
-                                        obs.OnNext(responseBlockTemplate.GetBlockTemplateResponse.Block);
-
-                                        if(!string.IsNullOrEmpty(responseBlockTemplate.GetBlockTemplateResponse.Error?.Message))
-                                            logger.Warn(() => responseBlockTemplate.GetBlockTemplateResponse.Error?.Message);
-                                    }
-                                }
-                                catch(NullReferenceException)
-                                {
-                                    // The following is weird but correct, when all data has been received `streamNotifyNewBlockTemplate.ResponseStream.ReadAllAsync()` will return a `NullReferenceException`
-                                    logger.Debug(() => $"Waiting for data...");
-                                    goto retry_blocktemplate;
-                                }
-
-                                catch(Exception ex)
-                                {
-                                    logger.Error(() => $"{ex.GetType().Name} '{ex.Message}' while streaming htnd \"NewBlockTemplate\" notifications");
-
-                                    if(!cts.IsCancellationRequested)
-                                    {
-                                        // We make sure the stream is closed in order to free resources and avoid reaching the "RPC inbound connections limitation"
-                                        await streamNotifyNewBlockTemplate.RequestStream.CompleteAsync();
-                                        logger.Error(() => $"Reconnecting in 10s");
-                                        await Task.Delay(TimeSpan.FromSeconds(10), cts.Token);
-                                        goto retry_subscription;
-                                    }
-                                    else
-                                        goto end_gameover;
-                                }
-                        }
-
-                        end_gameover:
-                            // We make sure the stream is closed in order to free resources and avoid reaching the "RPC inbound connections limitation"
-                            await streamNotifyNewBlockTemplate.RequestStream.CompleteAsync();
-                            logger.Debug(() => $"No more data received. Bye!");
+                end_gameover:
+                    // We make sure the stream is closed in order to free resources and avoid reaching the "RPC inbound connections limitation"
+                    await streamNotifyNewBlockTemplate.RequestStream.CompleteAsync();
+                    logger.Debug(() => $"No more data received. Bye!");
                 }
             }, cts.Token);
 
@@ -205,7 +205,7 @@ public class HoosatJobManager : JobManagerBase<HoosatJob>
 
         // get initial blocktemplate
         triggers.Add(Observable.Interval(TimeSpan.FromMilliseconds(1000))
-            .Select(_ => (JobRefreshBy.Initial, (htnd.RpcBlock) null))
+            .Select(_ => (JobRefreshBy.Initial, (htnd.RpcBlock)null))
             .TakeWhile(_ => !hasInitialBlockTemplate));
 
         Jobs = triggers.Merge()
@@ -214,7 +214,7 @@ public class HoosatJobManager : JobManagerBase<HoosatJob>
             .Where(x => x)
             .Do(x =>
             {
-                if(x)
+                if (x)
                     hasInitialBlockTemplate = true;
             })
             .Select(x => GetJobParamsForStratum())
@@ -223,45 +223,45 @@ public class HoosatJobManager : JobManagerBase<HoosatJob>
     }
 
 
-/*
-    private Blake3? customBlockHeaderHasher;
-    private Blake3? customCoinbaseHasher;
-    private Blake3? customShareHasher;
-*/
+    /*
+        private Blake3? customBlockHeaderHasher;
+        private Blake3? customCoinbaseHasher;
+        private Blake3? customShareHasher;
+    */
     protected IHashAlgorithm customBlockHeaderHasher;
     protected IHashAlgorithm customCoinbaseHasher;
     protected IHashAlgorithm customShareHasher;
 
 
 
-public HoosatJob CreateJob(long blockHeight)
-{
-    if (coin == null || string.IsNullOrEmpty(coin.Symbol))
+    public HoosatJob CreateJob(long blockHeight)
     {
-        throw new InvalidOperationException("[ERROR] 'coin.Symbol' is not defined or initialized.");
-    }
+        if (coin == null || string.IsNullOrEmpty(coin.Symbol))
+        {
+            throw new InvalidOperationException("[ERROR] 'coin.Symbol' is not defined or initialized.");
+        }
 
-    string coinSymbol = coin.Symbol;
+        string coinSymbol = coin.Symbol;
 
 
-                Console.WriteLine("[DEBUG] Initializing default hashers for Hoosat.");
-                customBlockHeaderHasher = InitializeHasher<Blake3>(
-                    customBlockHeaderHasher,
-                    () => CreateBlake3Hasher(HoosatConstants.CoinbaseBlockHash, "Block Header"),
-                    "Block Header Hasher"
-                );
+        Console.WriteLine("[DEBUG] Initializing default hashers for Hoosat.");
+        customBlockHeaderHasher = InitializeHasher<Blake3>(
+            customBlockHeaderHasher,
+            () => CreateBlake3Hasher(HoosatConstants.CoinbaseBlockHash, "Block Header"),
+            "Block Header Hasher"
+        );
 
-                customCoinbaseHasher = InitializeHasher<Blake3>(
-                    customCoinbaseHasher,
-                    () => new Blake3(),
-                    "Coinbase Hasher"
-                );
+        customCoinbaseHasher = InitializeHasher<Blake3>(
+            customCoinbaseHasher,
+            () => new Blake3(),
+            "Coinbase Hasher"
+        );
 
-                customShareHasher = InitializeHasher<Blake3>(
-                    customShareHasher,
-                    () => new Blake3(),
-                    "Share Hasher"
-                );
+        customShareHasher = InitializeHasher<Blake3>(
+            customShareHasher,
+            () => new Blake3(),
+            "Share Hasher"
+        );
 
 
 
@@ -271,72 +271,72 @@ public HoosatJob CreateJob(long blockHeight)
         Console.WriteLine("[DEBUG] HoosatJob successfully created.");
         return job;
 
-}
-
-// Utility method to initialize hashers
-private T InitializeHasher<T>(object hasher, Func<T> initializer, string hasherName) where T : class
-{
-    if (hasher is not T)
-    {
-        Console.WriteLine($"[DEBUG] Initializing {hasherName}.");
-        return initializer();
     }
 
-    Console.WriteLine($"[DEBUG] {hasherName} already initialized.");
-    return hasher as T;
-}
+    // Utility method to initialize hashers
+    private T InitializeHasher<T>(object hasher, Func<T> initializer, string hasherName) where T : class
+    {
+        if (hasher is not T)
+        {
+            Console.WriteLine($"[DEBUG] Initializing {hasherName}.");
+            return initializer();
+        }
 
-// Utility method for creating Blake3 hashers
-private Blake3 CreateBlake3Hasher(string coinbaseBlockHash, string purpose)
-{
-    Console.WriteLine($"[DEBUG] Initializing Blake3 for {purpose}.");
-    byte[] hashBytes = Encoding.UTF8
-        .GetBytes(coinbaseBlockHash.PadRight(32, '\0'))
-        .Take(32)
-        .ToArray();
+        Console.WriteLine($"[DEBUG] {hasherName} already initialized.");
+        return hasher as T;
+    }
 
-    Console.WriteLine($"[DEBUG] HashBytes for {purpose} (hex): {BitConverter.ToString(hashBytes).Replace("-", "")}");
-    return new Blake3(hashBytes);
-}
+    // Utility method for creating Blake3 hashers
+    private Blake3 CreateBlake3Hasher(string coinbaseBlockHash, string purpose)
+    {
+        Console.WriteLine($"[DEBUG] Initializing Blake3 for {purpose}.");
+        byte[] hashBytes = Encoding.UTF8
+            .GetBytes(coinbaseBlockHash.PadRight(32, '\0'))
+            .Take(32)
+            .ToArray();
+
+        Console.WriteLine($"[DEBUG] HashBytes for {purpose} (hex): {BitConverter.ToString(hashBytes).Replace("-", "")}");
+        return new Blake3(hashBytes);
+    }
     private async Task<bool> UpdateJob(CancellationToken ct, string via = null, htnd.RpcBlock blockTemplate = null)
     {
         var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
         return await Task.Run(() =>
         {
-            using(cts)
+            using (cts)
             {
                 try
                 {
-                    if(blockTemplate == null)
+                    if (blockTemplate == null)
                         return false;
 
                     var job = currentJob;
 
                     var isNew = (job == null || job.BlockTemplate?.Header.DaaScore < blockTemplate.Header.DaaScore);
 
-                    if(isNew)
+                    if (isNew)
                         messageBus.NotifyChainHeight(poolConfig.Id, blockTemplate.Header.DaaScore, poolConfig.Template);
 
-                    if(isNew)
+                    if (isNew)
                     {
-                        job = CreateJob((long) blockTemplate.Header.DaaScore);
+                        job = CreateJob((long)blockTemplate.Header.DaaScore);
 
                         job.Init(blockTemplate, NextJobId());
 
-                        lock(jobLock)
+                        lock (jobLock)
                         {
                             validJobs.Insert(0, job);
 
                             // trim active jobs
-                            while(validJobs.Count > maxActiveJobs)
+                            while (validJobs.Count > maxActiveJobs)
                                 validJobs.RemoveAt(validJobs.Count - 1);
                         }
 
                         logger.Debug(() => $"blockTargetValue: {job.blockTargetValue}");
                         logger.Debug(() => $"Difficulty: {job.Difficulty}");
 
-                        if(via != null)
+                        if (via != null)
                             logger.Info(() => $"Detected new block {job.BlockTemplate.Header.DaaScore} [{via}]");
                         else
                             logger.Info(() => $"Detected new block {job.BlockTemplate.Header.DaaScore}");
@@ -354,7 +354,7 @@ private Blake3 CreateBlake3Hasher(string coinbaseBlockHash, string purpose)
                     }
                     else
                     {
-                        if(via != null)
+                        if (via != null)
                             logger.Debug(() => $"Template update {job.BlockTemplate.Header.DaaScore}");
                         else
                             logger.Debug(() => $"Template update {job.BlockTemplate.Header.DaaScore}");
@@ -363,12 +363,12 @@ private Blake3 CreateBlake3Hasher(string coinbaseBlockHash, string purpose)
                     return isNew;
                 }
 
-                catch(OperationCanceledException)
+                catch (OperationCanceledException)
                 {
                     // ignored
                 }
 
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     logger.Error(() => $"{ex.GetType().Name} '{ex.Message}' while updating new job");
                 }
@@ -394,8 +394,8 @@ private Blake3 CreateBlake3Hasher(string coinbaseBlockHash, string purpose)
             await stream.RequestStream.WriteAsync(request);
             await foreach (var infoHashrate in stream.ResponseStream.ReadAllAsync(ct))
             {
-                if(string.IsNullOrEmpty(infoHashrate.EstimateNetworkHashesPerSecondResponse.Error?.Message))
-                    BlockchainStats.NetworkHashrate = (double) infoHashrate.EstimateNetworkHashesPerSecondResponse.NetworkHashesPerSecond;
+                if (string.IsNullOrEmpty(infoHashrate.EstimateNetworkHashesPerSecondResponse.Error?.Message))
+                    BlockchainStats.NetworkHashrate = (double)infoHashrate.EstimateNetworkHashesPerSecondResponse.NetworkHashesPerSecond;
 
                 break;
             }
@@ -405,7 +405,7 @@ private Blake3 CreateBlake3Hasher(string coinbaseBlockHash, string purpose)
             await stream.RequestStream.WriteAsync(request);
             await foreach (var info in stream.ResponseStream.ReadAllAsync(ct))
             {
-                if(string.IsNullOrEmpty(info.GetConnectedPeerInfoResponse.Error?.Message))
+                if (string.IsNullOrEmpty(info.GetConnectedPeerInfoResponse.Error?.Message))
                     BlockchainStats.ConnectedPeers = info.GetConnectedPeerInfoResponse.Infos.Count;
 
                 break;
@@ -413,7 +413,7 @@ private Blake3 CreateBlake3Hasher(string coinbaseBlockHash, string purpose)
             await stream.RequestStream.CompleteAsync();
         }
 
-        catch(Exception ex)
+        catch (Exception ex)
         {
             logger.Error(() => $"{ex.GetType().Name} '{ex.Message}' while updating network stats");
         }
@@ -427,13 +427,13 @@ private Blake3 CreateBlake3Hasher(string coinbaseBlockHash, string purpose)
         var request = new htnd.HtndMessage();
         request.GetInfoRequest = new htnd.GetInfoRequestMessage();
         await Guard(() => stream.RequestStream.WriteAsync(request),
-            ex=> logger.Debug(ex));
+            ex => logger.Debug(ex));
         await foreach (var info in stream.ResponseStream.ReadAllAsync(ct))
         {
-            if(!string.IsNullOrEmpty(info.GetInfoResponse.Error?.Message))
+            if (!string.IsNullOrEmpty(info.GetInfoResponse.Error?.Message))
                 logger.Debug(info.GetInfoResponse.Error?.Message);
 
-            if(info.GetInfoResponse.IsSynced != true && info.GetInfoResponse.IsUtxoIndexed != true)
+            if (info.GetInfoResponse.IsSynced != true && info.GetInfoResponse.IsUtxoIndexed != true)
                 logger.Info(() => $"Daemon is downloading headers ...");
 
             break;
@@ -441,214 +441,218 @@ private Blake3 CreateBlake3Hasher(string coinbaseBlockHash, string purpose)
         await stream.RequestStream.CompleteAsync();
     }
 
-private async Task<bool> SubmitBlockAsync(CancellationToken ct, htnd.RpcBlock block, string powHash, ulong nonce, object payload = null,
-    JsonSerializerSettings payloadJsonSerializerSettings = null)
-{
-//    Console.WriteLine("elva Debug HoosatJob -----> SubmitBlockAsync --- Starting block submission...");
-
-    block.Header.Nonce = nonce;
-//    Console.WriteLine($"elva Debug HoosatJobManager -----> SubmitBlockAsync --- powHash (BigInteger): {powHash}");
-
-    Contract.RequiresNonNull(block);
-    bool isSuccessful = false;
-
-    try
+    private async Task<bool> SubmitBlockAsync(CancellationToken ct, htnd.RpcBlock block, string powHash, ulong nonce, object payload = null,
+        JsonSerializerSettings payloadJsonSerializerSettings = null)
     {
- //       Console.WriteLine("elva Debug HoosatJobManager -----> SubmitBlockAsync --- Establishing message stream...");
+        // Console.WriteLine("elva Debug HoosatJob -----> SubmitBlockAsync --- Starting block submission...");
 
-    var powHash_x0 = "";
+        block.Header.Nonce = nonce;
+        // Console.WriteLine($"elva Debug HoosatJobManager -----> SubmitBlockAsync --- powHash (BigInteger): {powHash}");
 
-        // Vérifiez si le nonce commence par "0x" et le supprime si c'est le cas
-        if (powHash.StartsWith("0x"))
+        Contract.RequiresNonNull(block);
+        bool isSuccessful = false;
+
+        try
         {
-            powHash_x0 = powHash.Substring(2);
-      //      Console.WriteLine("elva Debug HoosatJob -----> ProcessShare ---> Préfixe '0x' supprimé du nonce");
-        }
-   //     Console.WriteLine($"elva Debug HoosatJobManager -----> SubmitBlockAsync --- powHash submitted powHash {powHash} without x0 {powHash_x0}");
+            // Console.WriteLine("elva Debug HoosatJobManager -----> SubmitBlockAsync --- Establishing message stream...");
 
-        // Création de la requête de soumission du bloc
-        var request = new htnd.HtndMessage
-        {
-            SubmitBlockRequest = new htnd.SubmitBlockRequestMessage
+            var powHash_x0 = "";
+
+            // Vérifiez si le nonce commence par "0x" et le supprime si c'est le cas
+            if (powHash.StartsWith("0x"))
             {
-                Block = block,
-                AllowNonDAABlocks = true,
-                PowHash = powHash_x0
-            }
-        };
-
-        // Sérialisation et affichage du message en JSON pour le log
-        var requestJson = JsonConvert.SerializeObject(request, Formatting.Indented);
-        Console.WriteLine("elva Debug HoosatJobManager -----> SubmitBlockAsync --- Full SubmitBlockRequestMessage: ");
-        Console.WriteLine(requestJson);
-
-        // Envoi de la requête
-        using var stream = rpc.MessageStream(null, null, ct);
-        await stream.RequestStream.WriteAsync(request);
- //       Console.WriteLine("elva Debug HoosatJobManager -----> SubmitBlockAsync --- Block submission request sent successfully.");
-
-        // Lire la réponse de soumission
-        await foreach (var response in stream.ResponseStream.ReadAllAsync(ct))
-        {
-            if (!string.IsNullOrEmpty(response.SubmitBlockResponse.Error?.Message))
-            {
-                string errorMsg = response.SubmitBlockResponse.Error.Message;
-                string rejectReason = response.SubmitBlockResponse.RejectReason.ToString();
- //               Console.WriteLine($"elva Debug HoosatJobManager -----> SubmitBlockAsync --- Block submission failed. Error: {errorMsg}, Reason: {rejectReason}");
-
-                logger.Warn(() => $"Block submission failed: {errorMsg} [{rejectReason}]");
-
-                messageBus.SendMessage(new AdminNotification(
-                    "Block submission failed",
-                    $"Pool {poolConfig.Id}: {errorMsg} [{rejectReason}]"));
+                powHash_x0 = powHash.Substring(2);
+                // Console.WriteLine("elva Debug HoosatJob -----> ProcessShare ---> Préfixe '0x' supprimé du nonce");
             }
             else
             {
- //               Console.WriteLine("elva Debug HoosatJobManager -----> SubmitBlockAsync --- Block submission succeeded.");
-                isSuccessful = true;
+                powHash_x0 = powHash;
+            }
+            // Console.WriteLine($"elva Debug HoosatJobManager -----> SubmitBlockAsync --- powHash submitted powHash {powHash} without x0 {powHash_x0}");
+
+            // Création de la requête de soumission du bloc
+            var request = new htnd.HtndMessage
+            {
+                SubmitBlockRequest = new htnd.SubmitBlockRequestMessage
+                {
+                    Block = block,
+                    AllowNonDAABlocks = true,
+                    PowHash = powHash_x0
+                }
+            };
+
+            // Sérialisation et affichage du message en JSON pour le log
+            var requestJson = JsonConvert.SerializeObject(request, Formatting.Indented);
+            Console.WriteLine("elva Debug HoosatJobManager -----> SubmitBlockAsync --- Full SubmitBlockRequestMessage: ");
+            Console.WriteLine(requestJson);
+
+            // Envoi de la requête
+            using var stream = rpc.MessageStream(null, null, ct);
+            await stream.RequestStream.WriteAsync(request);
+            //       Console.WriteLine("elva Debug HoosatJobManager -----> SubmitBlockAsync --- Block submission request sent successfully.");
+
+            // Lire la réponse de soumission
+            await foreach (var response in stream.ResponseStream.ReadAllAsync(ct))
+            {
+                if (!string.IsNullOrEmpty(response.SubmitBlockResponse.Error?.Message))
+                {
+                    string errorMsg = response.SubmitBlockResponse.Error.Message;
+                    string rejectReason = response.SubmitBlockResponse.RejectReason.ToString();
+                    //               Console.WriteLine($"elva Debug HoosatJobManager -----> SubmitBlockAsync --- Block submission failed. Error: {errorMsg}, Reason: {rejectReason}");
+
+                    logger.Warn(() => $"Block submission failed: {errorMsg} [{rejectReason}]");
+
+                    messageBus.SendMessage(new AdminNotification(
+                        "Block submission failed",
+                        $"Pool {poolConfig.Id}: {errorMsg} [{rejectReason}]"));
+                }
+                else
+                {
+                    //               Console.WriteLine("elva Debug HoosatJobManager -----> SubmitBlockAsync --- Block submission succeeded.");
+                    isSuccessful = true;
+                }
+
+                break;
             }
 
-            break;
+            await stream.RequestStream.CompleteAsync();
+            //      Console.WriteLine("elva Debug HoosatJobManager -----> SubmitBlockAsync --- Stream completed.");
         }
-
-        await stream.RequestStream.CompleteAsync();
-  //      Console.WriteLine("elva Debug HoosatJobManager -----> SubmitBlockAsync --- Stream completed.");
-    }
-    catch (Exception ex)
-    {
-  //      Console.WriteLine($"elva Debug HoosatJobManager -----> SubmitBlockAsync --- Exception caught: {ex.GetType().Name} - {ex.Message}");
-        logger.Error(() => $"{ex.GetType().Name} '{ex.Message}' while submitting block");
-
-        messageBus.SendMessage(new AdminNotification(
-            "Block submission failed",
-            $"Pool {poolConfig.Id} failed to submit block"));
-    }
-
- //   Console.WriteLine($"elva Debug HoosatJobManager -----> SubmitBlockAsync --- Block submission result: {(isSuccessful ? "Success" : "Failure")}");
-    return isSuccessful;
-}
-public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker, object submission, CancellationToken ct)
-{
-    Contract.RequiresNonNull(worker);
-    Contract.RequiresNonNull(submission);
-    logger.Debug("elva Debug SubmitShareAsync ---> Start: Validation started for worker and submission.");
-
-    if (submission is not object[] submitParams)
-    {
-        logger.Error("elva Error SubmitShareAsync ---> Invalid parameters: Submission is not an object array.");
-        throw new StratumException(StratumError.Other, "invalid params");
-    }
-
-    var context = worker.ContextAs<HoosatWorkerContext>();
-    logger.Debug($"elva Debug SubmitShareAsync ---> Worker context obtained: Miner = {context.Miner}, Worker = {context.Worker}");
-
-    // Log complet des paramètres transmis par le mineur
-    for (int i = 0; i < submitParams.Length; i++)
-    {
-        logger.Debug($"elva Debug SubmitShareAsync ---> Parameter {i}: {submitParams[i]?.ToString() ?? "null"}");
-    }
-
-    var jobId = submitParams[1] as string;
-    var nonce = submitParams[2] as string;
-    var powHashHexString = submitParams.Length > 3 ? submitParams[3] as string : null;
-
-    logger.Debug($"elva Debug SubmitShareAsync ---> Submission parameters extracted - JobId: {jobId}, Nonce: {nonce}, powHashHexString: {powHashHexString}");
-
-    HoosatJob job;
-
-    lock (jobLock)
-    {
-        job = validJobs.FirstOrDefault(x => x.JobId == jobId);
-    }
-
-    if (job == null)
-    {
-        logger.Error($"elva Error SubmitShareAsync ---> Job not found for JobId: {jobId}");
-        throw new StratumException(StratumError.JobNotFound, "job not found");
-    }
-
-    logger.Debug($"elva Debug SubmitShareAsync ---> Job found - Processing share for JobId: {jobId}");
-
-    if (string.IsNullOrEmpty(powHashHexString))
-    {
-        throw new StratumException(StratumError.Other, "powHashHexString is missing or invalid.");
-    }
-
-    // Conversion de powHashHexString en BigInteger
-    byte[] powHashBytes = ConvertHexStringToByteArray(powHashHexString);
-    BigInteger powHashBigInt = new BigInteger(powHashBytes, isUnsigned: true, isBigEndian: false);
-    logger.Debug($"elva Debug SubmitShareAsync ---> Converted powHashHexString to BigInteger: {powHashBigInt}");
-    var share = job.ProcessShare(worker, nonce, powHashHexString);
-    logger.Debug($"elva Debug SubmitShareAsync ---> ProcessShare called successfully - Share generated with BlockHeight: {share.BlockHeight}");
-    share.PoolId = poolConfig.Id ?? throw new NullReferenceException("poolConfig.Id is null");
-    share.IpAddress = worker.RemoteEndpoint?.Address?.ToString() ?? throw new NullReferenceException("worker.RemoteEndpoint.Address is null");
-    share.Miner = context.Miner;
-    share.Worker = context.Worker;
-    share.UserAgent = context.UserAgent;
-    share.Source = clusterConfig.ClusterName;
-    share.Created = clock.Now;
-    logger.Debug($"elva Debug SubmitShareAsync ---> Share enriched with PoolId: {share.PoolId}, IP Address: {share.IpAddress}, Miner: {share.Miner}, Worker: {share.Worker}, Source: {share.Source}");
-
-    // Soumission et vérification de bloc candidat
-    if (share.IsBlockCandidate)
-    {
-        logger.Info($"elva Info SubmitShareAsync ---> Submitting block {share.BlockHeight} [{share.BlockHash}] Pw [{powHashHexString}]");
-
-        string nonceString = nonce.Replace("0x", "");
-        if (!ulong.TryParse(nonceString, System.Globalization.NumberStyles.HexNumber, null, out ulong nonceValue))
+        catch (Exception ex)
         {
-            throw new FormatException($"Invalid nonce format: {nonce}");
+            //      Console.WriteLine($"elva Debug HoosatJobManager -----> SubmitBlockAsync --- Exception caught: {ex.GetType().Name} - {ex.Message}");
+            logger.Error(() => $"{ex.GetType().Name} '{ex.Message}' while submitting block");
+
+            messageBus.SendMessage(new AdminNotification(
+                "Block submission failed",
+                $"Pool {poolConfig.Id} failed to submit block"));
         }
 
-        var acceptResponse = await SubmitBlockAsync(ct, job.BlockTemplate, powHashHexString, nonceValue);
-        share.IsBlockCandidate = acceptResponse;
+        //   Console.WriteLine($"elva Debug HoosatJobManager -----> SubmitBlockAsync --- Block submission result: {(isSuccessful ? "Success" : "Failure")}");
+        return isSuccessful;
+    }
+    public virtual async ValueTask<Share> SubmitShareAsync(StratumConnection worker, object submission, CancellationToken ct)
+    {
+        Contract.RequiresNonNull(worker);
+        Contract.RequiresNonNull(submission);
+        logger.Debug("elva Debug SubmitShareAsync ---> Start: Validation started for worker and submission.");
 
+        if (submission is not object[] submitParams)
+        {
+            logger.Error("elva Error SubmitShareAsync ---> Invalid parameters: Submission is not an object array.");
+            throw new StratumException(StratumError.Other, "invalid params");
+        }
+
+        var context = worker.ContextAs<HoosatWorkerContext>();
+        logger.Debug($"elva Debug SubmitShareAsync ---> Worker context obtained: Miner = {context.Miner}, Worker = {context.Worker}");
+
+        // Log complet des paramètres transmis par le mineur
+        for (int i = 0; i < submitParams.Length; i++)
+        {
+            logger.Debug($"elva Debug SubmitShareAsync ---> Parameter {i}: {submitParams[i]?.ToString() ?? "null"}");
+        }
+
+        var jobId = submitParams[1] as string;
+        var nonce = submitParams[2] as string;
+        var powHashHexString = submitParams.Length > 3 ? submitParams[3] as string : null;
+
+        logger.Debug($"elva Debug SubmitShareAsync ---> Submission parameters extracted - JobId: {jobId}, Nonce: {nonce}, powHashHexString: {powHashHexString}");
+
+        HoosatJob job;
+
+        lock (jobLock)
+        {
+            job = validJobs.FirstOrDefault(x => x.JobId == jobId);
+        }
+
+        if (job == null)
+        {
+            logger.Error($"elva Error SubmitShareAsync ---> Job not found for JobId: {jobId}");
+            throw new StratumException(StratumError.JobNotFound, "job not found");
+        }
+
+        logger.Debug($"elva Debug SubmitShareAsync ---> Job found - Processing share for JobId: {jobId}");
+
+        if (string.IsNullOrEmpty(powHashHexString))
+        {
+            throw new StratumException(StratumError.Other, "powHashHexString is missing or invalid.");
+        }
+
+        // Conversion de powHashHexString en BigInteger
+        byte[] powHashBytes = ConvertHexStringToByteArray(powHashHexString);
+        BigInteger powHashBigInt = new BigInteger(powHashBytes, isUnsigned: true, isBigEndian: false);
+        logger.Debug($"elva Debug SubmitShareAsync ---> Converted powHashHexString to BigInteger: {powHashBigInt}");
+        var share = job.ProcessShare(worker, nonce, powHashHexString);
+        logger.Debug($"elva Debug SubmitShareAsync ---> ProcessShare called successfully - Share generated with BlockHeight: {share.BlockHeight}");
+        share.PoolId = poolConfig.Id ?? throw new NullReferenceException("poolConfig.Id is null");
+        share.IpAddress = worker.RemoteEndpoint?.Address?.ToString() ?? throw new NullReferenceException("worker.RemoteEndpoint.Address is null");
+        share.Miner = context.Miner;
+        share.Worker = context.Worker;
+        share.UserAgent = context.UserAgent;
+        share.Source = clusterConfig.ClusterName;
+        share.Created = clock.Now;
+        logger.Debug($"elva Debug SubmitShareAsync ---> Share enriched with PoolId: {share.PoolId}, IP Address: {share.IpAddress}, Miner: {share.Miner}, Worker: {share.Worker}, Source: {share.Source}");
+
+        // Soumission et vérification de bloc candidat
         if (share.IsBlockCandidate)
         {
-            logger.Info($"elva Info SubmitShareAsync ---> Daemon accepted block {share.BlockHeight} block [{share.BlockHash}] submitted by {context.Miner}");
-            OnBlockFound();
-            share.TransactionConfirmationData = nonce;
-            logger.Debug($"elva Debug SubmitShareAsync ---> Nonce persisted for block unlocking: {nonce}");
+            logger.Info($"elva Info SubmitShareAsync ---> Submitting block {share.BlockHeight} [{share.BlockHash}] Pw [{powHashHexString}]");
+
+            string nonceString = nonce.Replace("0x", "");
+            if (!ulong.TryParse(nonceString, System.Globalization.NumberStyles.HexNumber, null, out ulong nonceValue))
+            {
+                throw new FormatException($"Invalid nonce format: {nonce}");
+            }
+
+            var acceptResponse = await SubmitBlockAsync(ct, job.BlockTemplate, powHashHexString, nonceValue);
+            share.IsBlockCandidate = acceptResponse;
+
+            if (share.IsBlockCandidate)
+            {
+                logger.Info($"elva Info SubmitShareAsync ---> Daemon accepted block {share.BlockHeight} block [{share.BlockHash}] submitted by {context.Miner}");
+                OnBlockFound();
+                share.TransactionConfirmationData = nonce;
+                logger.Debug($"elva Debug SubmitShareAsync ---> Nonce persisted for block unlocking: {nonce}");
+            }
+            else
+            {
+                share.TransactionConfirmationData = null;
+                logger.Debug("elva Debug SubmitShareAsync ---> Block candidate not accepted by daemon, cleared TransactionConfirmationData");
+            }
         }
-        else
-        {
-            share.TransactionConfirmationData = null;
-            logger.Debug("elva Debug SubmitShareAsync ---> Block candidate not accepted by daemon, cleared TransactionConfirmationData");
-        }
+
+        logger.Debug("elva Debug SubmitShareAsync ---> Completed successfully, returning share");
+        return share;
     }
+    private byte[] ConvertHexStringToByteArray(string hexString)
+    {
+        hexString = hexString.Replace("0x", "").Replace("-", "");
+        byte[] bytes = new byte[hexString.Length / 2];
+        for (int i = 0; i < hexString.Length; i += 2)
+            bytes[i / 2] = Convert.ToByte(hexString.Substring(i, 2), 16);
+        return bytes;
+    }
+    private BigInteger ConvertBitsToBigInteger(uint bits)
+    {
+        // Extraction de l'exposant et de la mantisse
+        int exponent = (int)((bits >> 24) & 0xFF);
+        BigInteger mantissa = bits & 0xFFFFFF;
 
-    logger.Debug("elva Debug SubmitShareAsync ---> Completed successfully, returning share");
-    return share;
-}
-private byte[] ConvertHexStringToByteArray(string hexString)
-{
-    hexString = hexString.Replace("0x", "").Replace("-", "");
-    byte[] bytes = new byte[hexString.Length / 2];
-    for (int i = 0; i < hexString.Length; i += 2)
-        bytes[i / 2] = Convert.ToByte(hexString.Substring(i, 2), 16);
-    return bytes;
-}
-private BigInteger ConvertBitsToBigInteger(uint bits)
-{
-    // Extraction de l'exposant et de la mantisse
-    int exponent = (int)((bits >> 24) & 0xFF);
-    BigInteger mantissa = bits & 0xFFFFFF;
+        // Si la mantisse dépasse 0x800000, la cible est divisée par deux
+        if ((mantissa & 0x800000) != 0)
+            mantissa = mantissa >> 1;
 
-    // Si la mantisse dépasse 0x800000, la cible est divisée par deux
-    if ((mantissa & 0x800000) != 0)
-        mantissa = mantissa >> 1;
-
-    // Calcul du target en BigInteger
-    BigInteger target = mantissa * BigInteger.Pow(2, (8 * (exponent - 3)));
-    return target;
-}
+        // Calcul du target en BigInteger
+        BigInteger target = mantissa * BigInteger.Pow(2, (8 * (exponent - 3)));
+        return target;
+    }
     #region API-Surface
 
     public IObservable<object[]> Jobs { get; private set; }
     public BlockchainStats BlockchainStats { get; } = new();
     public string Network => network;
 
-   // public HoosatCoinTemplate Coin => coin;
+    // public HoosatCoinTemplate Coin => coin;
 
     public object[] GetSubscriberData(StratumConnection worker)
     {
@@ -673,19 +677,19 @@ private BigInteger ConvertBitsToBigInteger(uint bits)
 
     public int GetExtraNonce1Size()
     {
-//        return extraPoolConfig?.ExtraNonce1Size ?? 0;
-                return extraPoolConfig?.ExtraNonce1Size ?? 2;
+        //        return extraPoolConfig?.ExtraNonce1Size ?? 0;
+        return extraPoolConfig?.ExtraNonce1Size ?? 2;
 
     }
     public bool ValidateIsLargeJob(string userAgent)
     {
-        if(string.IsNullOrEmpty(userAgent))
+        if (string.IsNullOrEmpty(userAgent))
             return false;
 
-        if(ValidateIsBzMiner(userAgent))
+        if (ValidateIsBzMiner(userAgent))
             return true;
 
-        if(ValidateIsIceRiverMiner(userAgent))
+        if (ValidateIsIceRiverMiner(userAgent))
             return true;
 
         return false;
@@ -693,7 +697,7 @@ private BigInteger ConvertBitsToBigInteger(uint bits)
 
     public bool ValidateIsBzMiner(string userAgent)
     {
-        if(string.IsNullOrEmpty(userAgent))
+        if (string.IsNullOrEmpty(userAgent))
             return false;
 
         // Find matches
@@ -703,7 +707,7 @@ private BigInteger ConvertBitsToBigInteger(uint bits)
 
     public bool ValidateIsGodMiner(string userAgent)
     {
-        if(string.IsNullOrEmpty(userAgent))
+        if (string.IsNullOrEmpty(userAgent))
             return false;
 
         // Find matches
@@ -713,7 +717,7 @@ private BigInteger ConvertBitsToBigInteger(uint bits)
 
     public bool ValidateIsIceRiverMiner(string userAgent)
     {
-        if(string.IsNullOrEmpty(userAgent))
+        if (string.IsNullOrEmpty(userAgent))
             return false;
 
         // Find matches
@@ -728,7 +732,7 @@ private BigInteger ConvertBitsToBigInteger(uint bits)
     protected override async Task PostStartInitAsync(CancellationToken ct)
     {
         // validate pool address
-        if(string.IsNullOrEmpty(poolConfig.Address))
+        if (string.IsNullOrEmpty(poolConfig.Address))
             throw new PoolStartupException($"Pool address is not configured", poolConfig.Id);
 
         // we need a stream to communicate with htnd
@@ -737,10 +741,10 @@ private BigInteger ConvertBitsToBigInteger(uint bits)
         var request = new htnd.HtndMessage();
         request.GetCurrentNetworkRequest = new htnd.GetCurrentNetworkRequestMessage();
         await Guard(() => stream.RequestStream.WriteAsync(request),
-            ex=> throw new PoolStartupException($"Error writing a request in the communication stream '{ex.GetType().Name}' : {ex}", poolConfig.Id));
+            ex => throw new PoolStartupException($"Error writing a request in the communication stream '{ex.GetType().Name}' : {ex}", poolConfig.Id));
         await foreach (var currentNetwork in stream.ResponseStream.ReadAllAsync(ct))
         {
-            if(!string.IsNullOrEmpty(currentNetwork.GetCurrentNetworkResponse.Error?.Message))
+            if (!string.IsNullOrEmpty(currentNetwork.GetCurrentNetworkResponse.Error?.Message))
                 throw new PoolStartupException($"Daemon reports: {currentNetwork.GetCurrentNetworkResponse.Error?.Message}", poolConfig.Id);
 
             network = currentNetwork.GetCurrentNetworkResponse.CurrentNetwork;
@@ -748,7 +752,7 @@ private BigInteger ConvertBitsToBigInteger(uint bits)
         }
 
         var (HoosatAddressUtility, errorHoosatAddressUtility) = HoosatUtils.ValidateAddress(poolConfig.Address, network, coin.Symbol);
-        if(errorHoosatAddressUtility != null)
+        if (errorHoosatAddressUtility != null)
             throw new PoolStartupException($"Pool address: {poolConfig.Address} is invalid for network [{network}]: {errorHoosatAddressUtility}", poolConfig.Id);
         else
             logger.Info(() => $"Pool address: {poolConfig.Address} => {HoosatConstants.HoosatAddressType[HoosatAddressUtility.HoosatAddress.Version()]}");
@@ -760,32 +764,32 @@ private BigInteger ConvertBitsToBigInteger(uint bits)
         request = new htnd.HtndMessage();
         request.GetInfoRequest = new htnd.GetInfoRequestMessage();
         await Guard(() => stream.RequestStream.WriteAsync(request),
-            ex=> throw new PoolStartupException($"Error writing a request in the communication stream '{ex.GetType().Name}' : {ex}", poolConfig.Id));
+            ex => throw new PoolStartupException($"Error writing a request in the communication stream '{ex.GetType().Name}' : {ex}", poolConfig.Id));
         await foreach (var info in stream.ResponseStream.ReadAllAsync(ct))
         {
-            if(!string.IsNullOrEmpty(info.GetInfoResponse.Error?.Message))
+            if (!string.IsNullOrEmpty(info.GetInfoResponse.Error?.Message))
                 throw new PoolStartupException($"Daemon reports: {info.GetInfoResponse.Error?.Message}", poolConfig.Id);
 
-            if(info.GetInfoResponse.IsUtxoIndexed != true)
+            if (info.GetInfoResponse.IsUtxoIndexed != true)
                 throw new PoolStartupException("UTXO index is disabled", poolConfig.Id);
 
-            extraData = (string) info.GetInfoResponse.ServerVersion + (!string.IsNullOrEmpty(extraData) ? "." + extraData : "");
+            extraData = (string)info.GetInfoResponse.ServerVersion + (!string.IsNullOrEmpty(extraData) ? "." + extraData : "");
             break;
         }
         await stream.RequestStream.CompleteAsync();
 
         // Payment-processing setup
-        if(clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
+        if (clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
         {
             // we need a call to communicate with htndWallet
             var call = walletRpc.ShowAddressesAsync(new htnWalletd.ShowAddressesRequest(), null, null, ct);
 
             // check configured address belongs to wallet
             var walletAddresses = await Guard(() => call.ResponseAsync,
-                ex=> throw new PoolStartupException($"Error validating pool address '{ex.GetType().Name}' : {ex}", poolConfig.Id));
+                ex => throw new PoolStartupException($"Error validating pool address '{ex.GetType().Name}' : {ex}", poolConfig.Id));
             call.Dispose();
 
-            if(!walletAddresses.Address.Contains(poolConfig.Address))
+            if (!walletAddresses.Address.Contains(poolConfig.Address))
                 throw new PoolStartupException($"Pool address: {poolConfig.Address} is not controlled by pool wallet", poolConfig.Id);
         }
 
@@ -794,8 +798,8 @@ private BigInteger ConvertBitsToBigInteger(uint bits)
         // Periodically update network stats
         Observable.Interval(TimeSpan.FromMinutes(1))
             .Select(via => Observable.FromAsync(() =>
-                Guard(()=> UpdateNetworkStatsAsync(ct),
-                    ex=> logger.Error(ex))))
+                Guard(() => UpdateNetworkStatsAsync(ct),
+                    ex => logger.Error(ex))))
             .Concat()
             .Subscribe();
 
@@ -817,14 +821,14 @@ private BigInteger ConvertBitsToBigInteger(uint bits)
             .Where(x => string.IsNullOrEmpty(x.Category))
             .ToArray();
 
-        if(cc.PaymentProcessing?.Enabled == true && pc.PaymentProcessing?.Enabled == true)
+        if (cc.PaymentProcessing?.Enabled == true && pc.PaymentProcessing?.Enabled == true)
         {
             // extract wallet daemon endpoints
             walletDaemonEndpoints = pc.Daemons
                 .Where(x => x.Category?.ToLower() == HoosatConstants.WalletDaemonCategory)
                 .ToArray();
 
-            if(walletDaemonEndpoints.Length == 0)
+            if (walletDaemonEndpoints.Length == 0)
                 throw new PoolStartupException("Wallet-RPC daemon is not configured (Daemon configuration for Hoosat-pools require an additional entry of category 'wallet' pointing to the wallet daemon)", pc.Id);
         }
 
@@ -838,7 +842,7 @@ private BigInteger ConvertBitsToBigInteger(uint bits)
         rpc = HoosatClientFactory.CreateHtndRPCClient(daemonEndpoints, extraPoolConfig?.ProtobufDaemonRpcServiceName ?? HoosatConstants.ProtobufDaemonRpcServiceName);
 
         // Payment-processing setup
-        if(clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
+        if (clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
         {
             logger.Debug(() => $"ProtobufWalletRpcServiceName: {extraPoolConfig?.ProtobufWalletRpcServiceName ?? HoosatConstants.ProtobufWalletRpcServiceName}");
 
@@ -849,17 +853,17 @@ private BigInteger ConvertBitsToBigInteger(uint bits)
     protected override async Task<bool> AreDaemonsHealthyAsync(CancellationToken ct)
     {
         // Payment-processing setup
-        if(clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
+        if (clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
         {
             // we need a call to communicate with htndWallet
             var call = walletRpc.ShowAddressesAsync(new htnWalletd.ShowAddressesRequest(), null, null, ct);
 
             // check configured address belongs to wallet
             var walletAddresses = await Guard(() => call.ResponseAsync,
-                ex=> logger.Debug(ex));
+                ex => logger.Debug(ex));
             call.Dispose();
 
-            if(walletAddresses == null)
+            if (walletAddresses == null)
                 return false;
         }
 
@@ -869,22 +873,22 @@ private BigInteger ConvertBitsToBigInteger(uint bits)
         var request = new htnd.HtndMessage();
         request.GetInfoRequest = new htnd.GetInfoRequestMessage();
         await Guard(() => stream.RequestStream.WriteAsync(request),
-            ex=> logger.Debug(ex));
+            ex => logger.Debug(ex));
         bool areDaemonsHealthy = false;
         await foreach (var info in stream.ResponseStream.ReadAllAsync(ct))
         {
-            if(!string.IsNullOrEmpty(info.GetInfoResponse.Error?.Message))
+            if (!string.IsNullOrEmpty(info.GetInfoResponse.Error?.Message))
             {
                 logger.Debug(info.GetInfoResponse.Error?.Message);
                 return false;
             }
 
-            if(info.GetInfoResponse.IsUtxoIndexed != true)
+            if (info.GetInfoResponse.IsUtxoIndexed != true)
                 throw new PoolStartupException("UTXO index is disabled", poolConfig.Id);
 
             // update stats
-            if(info.GetInfoResponse.ServerVersion != null)
-                BlockchainStats.NodeVersion = (string) info.GetInfoResponse.ServerVersion;
+            if (info.GetInfoResponse.ServerVersion != null)
+                BlockchainStats.NodeVersion = (string)info.GetInfoResponse.ServerVersion;
 
             areDaemonsHealthy = true;
             break;
@@ -897,17 +901,17 @@ private BigInteger ConvertBitsToBigInteger(uint bits)
     protected override async Task<bool> AreDaemonsConnectedAsync(CancellationToken ct)
     {
         // Payment-processing setup
-        if(clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
+        if (clusterConfig.PaymentProcessing?.Enabled == true && poolConfig.PaymentProcessing?.Enabled == true)
         {
             // we need a call to communicate with htndWallet
             var call = walletRpc.ShowAddressesAsync(new htnWalletd.ShowAddressesRequest(), null, null, ct);
 
             // check if daemon responds
             var walletAddresses = await Guard(() => call.ResponseAsync,
-                ex=> logger.Debug(ex));
+                ex => logger.Debug(ex));
             call.Dispose();
 
-            if(walletAddresses == null)
+            if (walletAddresses == null)
                 return false;
         }
 
@@ -917,11 +921,11 @@ private BigInteger ConvertBitsToBigInteger(uint bits)
         var request = new htnd.HtndMessage();
         request.GetConnectedPeerInfoRequest = new htnd.GetConnectedPeerInfoRequestMessage();
         await Guard(() => stream.RequestStream.WriteAsync(request),
-            ex=> logger.Debug(ex));
+            ex => logger.Debug(ex));
         int totalPeers = 0;
         await foreach (var info in stream.ResponseStream.ReadAllAsync(ct))
         {
-            if(!string.IsNullOrEmpty(info.GetConnectedPeerInfoResponse.Error?.Message))
+            if (!string.IsNullOrEmpty(info.GetConnectedPeerInfoResponse.Error?.Message))
             {
                 logger.Debug(info.GetConnectedPeerInfoResponse.Error?.Message);
                 return false;
@@ -952,10 +956,10 @@ private BigInteger ConvertBitsToBigInteger(uint bits)
             var request = new htnd.HtndMessage();
             request.GetInfoRequest = new htnd.GetInfoRequestMessage();
             await Guard(() => stream.RequestStream.WriteAsync(request),
-                ex=> logger.Debug(ex));
+                ex => logger.Debug(ex));
             await foreach (var info in stream.ResponseStream.ReadAllAsync(ct))
             {
-                if(!string.IsNullOrEmpty(info.GetInfoResponse.Error?.Message))
+                if (!string.IsNullOrEmpty(info.GetInfoResponse.Error?.Message))
                     logger.Debug(info.GetInfoResponse.Error?.Message);
 
                 isSynched = (info.GetInfoResponse.IsSynced == true && info.GetInfoResponse.IsUtxoIndexed == true);
@@ -963,20 +967,20 @@ private BigInteger ConvertBitsToBigInteger(uint bits)
             }
             await stream.RequestStream.CompleteAsync();
 
-            if(isSynched)
+            if (isSynched)
             {
                 logger.Info(() => "Daemon is synced with blockchain");
                 break;
             }
 
-            if(!syncPendingNotificationShown)
+            if (!syncPendingNotificationShown)
             {
                 logger.Info(() => "Daemon is still syncing with network. Manager will be started once synced.");
                 syncPendingNotificationShown = true;
             }
 
             await ShowDaemonSyncProgressAsync(ct);
-        } while(await timer.WaitForNextTickAsync(ct));
+        } while (await timer.WaitForNextTickAsync(ct));
     }
 
     private object[] GetJobParamsForStratum()

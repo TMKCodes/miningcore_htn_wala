@@ -1,4 +1,5 @@
 using Autofac;
+using Miningcore.Blockchain.Bitcoin.AuxPow;
 using Miningcore.Blockchain.Bitcoin.Configuration;
 using Miningcore.Blockchain.Bitcoin.DaemonResponses;
 using Miningcore.Configuration;
@@ -13,6 +14,8 @@ using Miningcore.Time;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
+using NBitcoin;
+using Miningcore.Mining;
 using Org.BouncyCastle.Crypto.Parameters;
 
 namespace Miningcore.Blockchain.Bitcoin;
@@ -29,6 +32,39 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
     }
 
     private BitcoinTemplate coin;
+    private Dictionary<string, RpcClient> auxRpcs;
+    private string lastAuxWorkId;
+
+    protected override void ConfigureDaemons()
+    {
+        base.ConfigureDaemons();
+
+        // Optional AuxPoW daemons: add additional daemon entries with { "category": "aux", "coin": "dogecoin" }
+        var auxDaemonEndpoints = poolConfig.Daemons
+            .Where(x => string.Equals(x.Category, "aux", StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+
+        if (auxDaemonEndpoints.Length == 0)
+            return;
+
+        var jsonSerializerSettings = ctx.Resolve<JsonSerializerSettings>();
+
+        auxRpcs = auxDaemonEndpoints
+            .Select(x =>
+            {
+                var coinId = x.Extra != null && x.Extra.TryGetValue("coin", out var val) ? val?.ToString() : null;
+                return (coinId, endpoint: x);
+            })
+            .Where(x => !string.IsNullOrWhiteSpace(x.coinId))
+            .GroupBy(x => x.coinId, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => new RpcClient(g.First().endpoint, jsonSerializerSettings, messageBus, poolConfig.Id),
+                StringComparer.OrdinalIgnoreCase);
+
+        if (auxRpcs.Count == 0)
+            logger.Warn(() => "AuxPoW daemons configured but none had an extra field 'coin'. Example: { category: 'aux', coin: 'dogecoin' }");
+        else
+            logger.Info(() => $"AuxPoW merge-mining enabled for: {string.Join(", ", auxRpcs.Keys)}");
+    }
 
     protected override object[] GetBlockTemplateParams()
     {
@@ -141,6 +177,24 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
             var blockTemplate = response.Response;
             var job = currentJob;
 
+            // fetch aux work (AuxPoW)
+            AuxPowJobData auxPowData = null;
+            var auxWorkId = (string)null;
+
+            if (auxRpcs?.Count > 0)
+            {
+                auxPowData = await GetAuxPowJobDataAsync(ct);
+                auxWorkId = auxPowData != null ?
+                    string.Join("|", auxPowData.Chains
+                        .OrderBy(x => x.CoinId, StringComparer.OrdinalIgnoreCase)
+                        .Select(x => $"{x.CoinId}:{x.AuxBlockHash}")) :
+                    null;
+
+                // If aux work changes, we must rebuild the parent coinbase -> new job.
+                if (auxWorkId != lastAuxWorkId)
+                    forceUpdate = true;
+            }
+
             var isNew = job == null ||
                 (blockTemplate != null &&
                     (job.BlockTemplate?.PreviousBlockhash != blockTemplate.PreviousBlockhash ||
@@ -156,7 +210,10 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
                 job.Init(blockTemplate, NextJobId(),
                     poolConfig, extraPoolConfig, clusterConfig, clock, poolAddressDestination, network, isPoS,
                     ShareMultiplier, coin.CoinbaseHasherValue, coin.HeaderHasherValue,
-                    !isPoS ? coin.BlockHasherValue : coin.PoSBlockHasherValue ?? coin.BlockHasherValue);
+                    !isPoS ? coin.BlockHasherValue : coin.PoSBlockHasherValue ?? coin.BlockHasherValue,
+                    auxPowData);
+
+                lastAuxWorkId = auxWorkId;
 
                 lock (jobLock)
                 {
@@ -207,6 +264,44 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
         }
 
         return (false, forceUpdate);
+    }
+
+    private async Task<AuxPowJobData> GetAuxPowJobDataAsync(CancellationToken ct)
+    {
+        // Deterministic merkle nonce so jobs don't churn when aux hashes are unchanged.
+        const uint baseNonce = 0;
+
+        var chainWork = new List<(string CoinId, string AuxHashHex, uint ChainId, uint256 TargetValue)>();
+
+        foreach (var (coinId, rpcClient) in auxRpcs)
+        {
+            var response = await rpcClient.ExecuteAsync<GetAuxBlockResponse>(logger, BitcoinCommands.GetAuxBlock, ct);
+
+            if (response.Error != null)
+                throw new PoolStartupException($"AuxPoW daemon for '{coinId}' reports: {response.Error.Message}", poolConfig.Id);
+
+            var work = response.Response;
+            if (work == null || string.IsNullOrEmpty(work.Hash))
+                throw new PoolStartupException($"AuxPoW daemon for '{coinId}' returned empty getauxblock response", poolConfig.Id);
+
+            if (!work.ChainId.HasValue)
+                throw new PoolStartupException($"AuxPoW daemon for '{coinId}' did not return chainid in getauxblock response", poolConfig.Id);
+
+            uint256 targetValue;
+            if (!string.IsNullOrEmpty(work.Target))
+                targetValue = new uint256(work.Target);
+            else if (!string.IsNullOrEmpty(work.Bits))
+                targetValue = new Target(work.Bits.HexToByteArray()).ToUInt256();
+            else
+                throw new PoolStartupException($"AuxPoW daemon for '{coinId}' returned neither target nor bits", poolConfig.Id);
+
+            chainWork.Add((coinId, work.Hash, work.ChainId.Value, targetValue));
+        }
+
+        if (chainWork.Count == 0)
+            return null;
+
+        return AuxPowUtils.BuildAuxPowJobData(chainWork, baseNonce);
     }
 
     protected override object GetJobParamsForStratum(bool isNew)
@@ -283,7 +378,7 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
             throw new StratumException(StratumError.JobNotFound, "job not found");
 
         // validate & process
-        var (share, blockHex) = job.ProcessShare(worker, extraNonce2, nTime, nonce, versionBits);
+        var (share, blockHex, auxPowSubmissions) = job.ProcessShare(worker, extraNonce2, nTime, nonce, versionBits);
 
         // enrich share with common data
         share.PoolId = poolConfig.Id;
@@ -322,7 +417,65 @@ public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
             }
         }
 
+        // submit aux blocks (AuxPoW merged mining)
+        if (auxPowSubmissions is { Count: > 0 })
+        {
+            foreach (var aux in auxPowSubmissions)
+            {
+                if (auxRpcs != null && auxRpcs.TryGetValue(aux.CoinId, out var auxRpc))
+                {
+                    var accepted = await SubmitAuxBlockAsync(auxRpc, aux, ct);
+                    if (accepted)
+                        logger.Info(() => $"AuxPoW accepted by {aux.CoinId}: {aux.AuxBlockHash}");
+                }
+            }
+        }
+
         return share;
+    }
+
+    private async Task<bool> SubmitAuxBlockAsync(RpcClient auxRpc, AuxPowSubmission submission, CancellationToken ct)
+    {
+        try
+        {
+            // Common pattern: getauxblock <hash> <auxpow>
+            var payload = new object[] { submission.AuxBlockHash, submission.AuxPowHex };
+
+            var response = await auxRpc.ExecuteAsync<JToken>(logger, BitcoinCommands.GetAuxBlock, ct, payload);
+
+            if (response.Error != null)
+            {
+                // Some daemons use submitauxblock instead
+                var fallback = await auxRpc.ExecuteAsync<JToken>(logger, BitcoinCommands.SubmitAuxBlock, ct, payload);
+
+                if (fallback.Error != null)
+                {
+                    logger.Warn(() => $"AuxPoW submission to {submission.CoinId} failed: {response.Error.Message}");
+                    logger.Warn(() => $"AuxPoW submission (fallback submitauxblock) to {submission.CoinId} failed: {fallback.Error.Message}");
+                    return false;
+                }
+
+                response = fallback;
+            }
+
+            // Some daemons return boolean, others a string like "accepted".
+            var token = response.Response;
+            if (token == null)
+                return false;
+
+            if (token.Type == JTokenType.Boolean)
+                return token.Value<bool>();
+
+            if (token.Type == JTokenType.String)
+                return token.Value<string>()?.IndexOf("accept", StringComparison.OrdinalIgnoreCase) >= 0;
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.Warn(ex, () => $"AuxPoW submission to {submission.CoinId} errored");
+            return false;
+        }
     }
 
     public double ShareMultiplier => coin.ShareMultiplier;

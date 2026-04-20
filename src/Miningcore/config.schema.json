@@ -267,6 +267,13 @@
             "null"
           ]
         },
+        "coin": {
+          "description": "Optional identifier for this daemon endpoint. Used for AuxPoW merged mining when category is set to 'aux' (e.g. 'dogecoin', 'namecoin').",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "host": {
           "type": [
             "string",

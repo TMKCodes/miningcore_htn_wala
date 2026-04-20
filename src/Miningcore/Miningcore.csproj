@@ -127,7 +127,7 @@
     </ItemGroup>
 
     <!-- Build library binaries from source on Linux -->
-    <Target Name="BuildNativeLibsLinux" AfterTargets="AfterBuild" Condition="'$(IsLinux)' == 'true'">
+    <Target Name="BuildNativeLibsLinux" AfterTargets="AfterBuild" Condition="'$(IsLinux)' == 'true' and '$(SkipNativeLibs)' != 'true'">
         <Exec Command="(cd $(ProjectDir) &amp;&amp; sh build-libs-linux.sh $(OutDir))" />
     </Target>
 

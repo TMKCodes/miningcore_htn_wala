@@ -156,6 +156,10 @@ public static class BitcoinCommands
     public const string WalletPassphrase = "walletpassphrase";
     public const string WalletLock = "walletlock";
 
+    // AuxPoW / merged mining
+    public const string GetAuxBlock = "getauxblock";
+    public const string SubmitAuxBlock = "submitauxblock";
+
     // Legacy commands
     public const string GetInfo = "getinfo";
 

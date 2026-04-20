@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.Text;
+using Miningcore.Blockchain.Bitcoin.AuxPow;
 using Miningcore.Blockchain.Bitcoin.Configuration;
 using Miningcore.Blockchain.Bitcoin.DaemonResponses;
 using Miningcore.Configuration;
@@ -41,6 +42,8 @@ public class BitcoinJob
     protected string coinbaseInitialHex;
     protected string[] merkleBranchesHex;
     protected MerkleTree mt;
+
+    protected AuxPowJobData auxPowJobData;
 
     ///////////////////////////////////////////
     // GetJobParams related properties
@@ -325,7 +328,7 @@ public class BitcoinJob
         return blockHeader.ToBytes();
     }
 
-    protected virtual (Share Share, string BlockHex) ProcessShareInternal(
+    protected virtual (Share Share, string BlockHex, IReadOnlyList<AuxPowSubmission> AuxPowSubmissions) ProcessShareInternal(
         StratumConnection worker, string extraNonce2, uint nTime, uint nonce, uint? versionBits)
     {
         var context = worker.ContextAs<BitcoinWorkerContext>();
@@ -350,8 +353,42 @@ public class BitcoinJob
         // check if the share meets the much harder block difficulty (block candidate)
         var isBlockCandidate = headerValue <= blockTargetValue;
 
+        // aux block candidates (merged mining)
+        List<AuxPowSubmission> auxSubmissions = null;
+        var isAuxCandidate = false;
+
+        if (auxPowJobData?.Chains?.Count > 0)
+        {
+            foreach (var chain in auxPowJobData.Chains)
+            {
+                if (headerValue <= chain.TargetValue)
+                {
+                    isAuxCandidate = true;
+                    auxSubmissions ??= new List<AuxPowSubmission>();
+
+                    var auxPowBytes = AuxPowUtils.SerializeAuxPow(
+                        coinbase,
+                        mt.Steps,
+                        0,
+                        headerBytes,
+                        chain.MerkleBranch,
+                        unchecked((int)chain.MerkleIndex));
+
+                    auxSubmissions.Add(new AuxPowSubmission
+                    {
+                        CoinId = chain.CoinId,
+                        AuxBlockHash = chain.AuxBlockHash,
+                        AuxPowHex = auxPowBytes.ToHexString(),
+                    });
+                }
+            }
+        }
+
+        var isAnyBlockCandidate = isBlockCandidate || isAuxCandidate;
+
         // test if share meets at least workers current difficulty
-        if (!isBlockCandidate && ratio < 0.99)
+        // Note: accept shares below stratum diff if they are block candidates for parent OR any aux chain.
+        if (!isAnyBlockCandidate && ratio < 0.99)
         {
             // check if share matched the previous difficulty from before a vardiff retarget
             if (context.VarDiff?.LastUpdate != null && context.PreviousDifficulty.HasValue)
@@ -387,10 +424,10 @@ public class BitcoinJob
             var blockBytes = SerializeBlock(headerBytes, coinbase);
             var blockHex = blockBytes.ToHexString();
 
-            return (result, blockHex);
+            return (result, blockHex, auxSubmissions);
         }
 
-        return (result, null);
+        return (result, null, auxSubmissions);
     }
 
     protected virtual byte[] SerializeCoinbase(string extraNonce1, string extraNonce2)
@@ -665,6 +702,18 @@ public class BitcoinJob
         bool isPoS, double shareMultiplier, IHashAlgorithm coinbaseHasher,
         IHashAlgorithm headerHasher, IHashAlgorithm blockHasher)
     {
+        Init(blockTemplate, jobId, pc, extraPoolConfig, cc, clock, poolAddressDestination, network,
+            isPoS, shareMultiplier, coinbaseHasher, headerHasher, blockHasher, null);
+    }
+
+    public void Init(BlockTemplate blockTemplate, string jobId,
+        PoolConfig pc, BitcoinPoolConfigExtra extraPoolConfig,
+        ClusterConfig cc, IMasterClock clock,
+        IDestination poolAddressDestination, Network network,
+        bool isPoS, double shareMultiplier, IHashAlgorithm coinbaseHasher,
+        IHashAlgorithm headerHasher, IHashAlgorithm blockHasher,
+        AuxPowJobData auxPowData)
+    {
         Contract.RequiresNonNull(blockTemplate);
         Contract.RequiresNonNull(pc);
         Contract.RequiresNonNull(cc);
@@ -693,7 +742,21 @@ public class BitcoinJob
         var coinbaseString = !string.IsNullOrEmpty(cc.PaymentProcessing?.CoinbaseString) ?
             cc.PaymentProcessing?.CoinbaseString.Trim() : "Miningcore";
 
-        scriptSigFinalBytes = new Script(Op.GetPushOp(Encoding.UTF8.GetBytes(coinbaseString))).ToBytes();
+        auxPowJobData = auxPowData;
+
+        if (auxPowJobData != null)
+        {
+            var commitment = AuxPowUtils.BuildCoinbaseCommitment(auxPowJobData.ChainMerkleRoot, auxPowJobData.MerkleTreeSize, auxPowJobData.MerkleNonce);
+            scriptSigFinalBytes = new Script(new[]
+            {
+                Op.GetPushOp(Encoding.UTF8.GetBytes(coinbaseString)),
+                Op.GetPushOp(commitment)
+            }).ToBytes();
+        }
+        else
+        {
+            scriptSigFinalBytes = new Script(Op.GetPushOp(Encoding.UTF8.GetBytes(coinbaseString))).ToBytes();
+        }
 
         Difficulty = new Target(System.Numerics.BigInteger.Parse(BlockTemplate.Target, NumberStyles.HexNumber)).Difficulty;
 
@@ -794,7 +857,7 @@ public class BitcoinJob
         return jobParams;
     }
 
-    public virtual (Share Share, string BlockHex) ProcessShare(StratumConnection worker,
+    public virtual (Share Share, string BlockHex, IReadOnlyList<AuxPowSubmission> AuxPowSubmissions) ProcessShare(StratumConnection worker,
         string extraNonce2, string nTime, string nonce, string versionBits = null)
     {
         Contract.RequiresNonNull(worker);

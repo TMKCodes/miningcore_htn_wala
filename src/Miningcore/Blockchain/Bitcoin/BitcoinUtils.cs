@@ -17,12 +17,21 @@ public static class BitcoinUtils
     /// </summary>
     public static IDestination AddressToDestination(string address, Network expectedNetwork)
     {
-        var decoded = Encoders.Base58Check.DecodeData(address);
-        var networkVersionBytes = expectedNetwork.GetVersionBytes(Base58Type.PUBKEY_ADDRESS, true);
-        decoded = decoded.Skip(networkVersionBytes.Length).ToArray();
-        var result = new KeyId(decoded);
+        if (string.IsNullOrWhiteSpace(address))
+            throw new FormatException("Address is empty");
 
-        return result;
+        var parsed = BitcoinAddress.Create(address, expectedNetwork);
+
+        // Return the underlying destination-hash, preserving address type.
+        // This supports Base58 (P2PKH/P2SH) and Bech32 (SegWit).
+        return parsed switch
+        {
+            BitcoinPubKeyAddress p2pkh => p2pkh.Hash,
+            BitcoinScriptAddress p2sh => p2sh.Hash,
+            BitcoinWitPubKeyAddress p2wpkh => p2wpkh.Hash,
+            BitcoinWitScriptAddress p2wsh => p2wsh.Hash,
+            _ => throw new FormatException($"Unsupported address type: {parsed.GetType().Name}")
+        };
     }
 
     public static IDestination BechSegwitAddressToDestination(string address, Network expectedNetwork)

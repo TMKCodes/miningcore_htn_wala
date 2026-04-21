@@ -544,7 +544,8 @@
             "PPBS",
             "PPLNS10",
             "PPLNS70",
-            "PPLNSBF"
+            "PPLNSBF",
+            "FPPS"
           ]
         },
         "payoutSchemeConfig": {}

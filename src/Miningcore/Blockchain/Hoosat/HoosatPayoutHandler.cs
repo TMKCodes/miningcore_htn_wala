@@ -124,12 +124,12 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
 
         for (var i = 0; i < pageCount; i++)
         {
-            logger.Debug(() => $"Debug HoosatJob -----> HoosatPayoutHandler [{LogCategory}] Processing page {i + 1}/{pageCount}");
+            logger.Debug(() => $"[{LogCategory}] Processing page {i + 1}/{pageCount}");
             var page = blocks.Skip(i * pageSize).Take(pageSize).ToArray();
 
             foreach (var block in page)
             {
-                logger.Debug(() => $"Debug HoosatJob -----> HoosatPayoutHandler [{LogCategory}] Checking block {block.BlockHeight}");
+                logger.Debug(() => $"[{LogCategory}] Checking block {block.BlockHeight}");
 
                 uint totalDuplicateBlockBefore = await cf.Run(con =>
                     blockRepo.GetPoolDuplicateBlockBeforeCountByPoolHeightNoTypeAndStatusAsync(con, poolConfig.Id,
@@ -152,11 +152,11 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
                 result.Add(block);
                 messageBus.NotifyBlockConfirmationProgress(poolConfig.Id, block, coin);
 
-                logger.Debug(() => $"Debug HoosatJob -----> HoosatPayoutHandler block.ConfirmationProgress height : {block.BlockHeight} / confirmation progess : {block.ConfirmationProgress}");
+                logger.Debug(() => $"block.ConfirmationProgress height : {block.BlockHeight} / confirmation progess : {block.ConfirmationProgress}");
 
                 if (block.ConfirmationProgress < 1)
                 {
-                    logger.Debug(() => $"Debug HoosatJob -----> HoosatPayoutHandler [{LogCategory}] Block {block.BlockHeight} NOT confirmed yet ({block.ConfirmationProgress * 100}%)");
+                    logger.Debug(() => $"[{LogCategory}] Block {block.BlockHeight} NOT confirmed yet ({block.ConfirmationProgress * 100}%)");
                     continue;
                 }
 
@@ -180,16 +180,16 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
     private async Task<decimal> ProcessChildrenAndRedBlocks(Block block, htnd.GetBlockResponseMessage blockInfo,
         AsyncDuplexStreamingCall<htnd.HtndMessage, htnd.HtndMessage> stream, PoolConfig poolConfig)
     {
-        logger.Debug(() => $"Debug HoosatJob -----> HoosatPayoutHandler [{LogCategory}] Searching for rewards in children of block {block.BlockHeight}");
+        logger.Debug(() => $"[{LogCategory}] Searching for rewards in children of block {block.BlockHeight}");
 
         foreach (var childHash in blockInfo.Block.VerboseData.ChildrenHashes)
         {
-            logger.Debug(() => $"Debug HoosatJob -----> HoosatPayoutHandler [{LogCategory}] Checking child {childHash}");
+            logger.Debug(() => $"[{LogCategory}] Checking child {childHash}");
 
             var childInfo = await GetBlockInfo(childHash, stream);
             if (childInfo == null)
             {
-                logger.Warn(() => $"Debug HoosatJob -----> HoosatPayoutHandler [{LogCategory}] Child {childHash} not found, skipping.");
+                logger.Warn(() => $"[{LogCategory}] Child {childHash} not found, skipping.");
                 continue;
             }
 
@@ -199,38 +199,38 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
 
             if (coinbaseTransactions.Count == 0)
             {
-                logger.Warn(() => $"Debug HoosatJob -----> HoosatPayoutHandler [{LogCategory}] No coinbase transactions found in child {childHash}");
+                logger.Warn(() => $"[{LogCategory}] No coinbase transactions found in child {childHash}");
                 continue;
             }
 
             foreach (var transaction in coinbaseTransactions)
             {
-                logger.Debug(() => $"Debug HoosatJob -----> HoosatPayoutHandler [{LogCategory}] Coinbase transaction {transaction.VerboseData.TransactionId} found in child {childHash}");
+                logger.Debug(() => $"[{LogCategory}] Coinbase transaction {transaction.VerboseData.TransactionId} found in child {childHash}");
 
                 foreach (var output in transaction.Outputs)
                 {
                     string outputAddress = output.VerboseData.ScriptPublicKeyAddress;
                     decimal reward = (decimal)(output.Amount / HoosatConstants.SmallestUnit);
 
-                    logger.Debug(() => $"Debug HoosatJob -----> HoosatPayoutHandler [{LogCategory}] Checking output: Tx={transaction.VerboseData.TransactionId}, Address={outputAddress}, Amount={FormatAmount(reward)}");
+                    logger.Debug(() => $"[{LogCategory}] Checking output: Tx={transaction.VerboseData.TransactionId}, Address={outputAddress}, Amount={FormatAmount(reward)}");
 
                     if (outputAddress == poolConfig.Address)
                     {
-                        logger.Info(() => $"Debug HoosatJob -----> HoosatPayoutHandler [{LogCategory}] Reward found! Child {childHash} provides {FormatAmount(reward)} to pool {poolConfig.Address}");
+                        logger.Info(() => $"[{LogCategory}] Reward found! Child {childHash} provides {FormatAmount(reward)} to pool {poolConfig.Address}");
                         return reward;
                     }
                 }
             }
         }
 
-        logger.Warn(() => $"Debug HoosatJob -----> HoosatPayoutHandler [{LogCategory}] No rewards found in children of block {block.BlockHeight}");
+        logger.Warn(() => $"[{LogCategory}] No rewards found in children of block {block.BlockHeight}");
         return 0.0m;
     }
 
 
     private async Task<htnd.GetBlockResponseMessage> GetBlockInfo(string blockHash, AsyncDuplexStreamingCall<htnd.HtndMessage, htnd.HtndMessage> stream)
     {
-        logger.Debug(() => $"Debug HoosatJob -----> HoosatPayoutHandler [{LogCategory}] Fetching block info for {blockHash}");
+        logger.Debug(() => $"[{LogCategory}] Fetching block info for {blockHash}");
 
         var request = new htnd.GetBlockRequestMessage { Hash = blockHash, IncludeTransactions = true };
         await Guard(() => stream.RequestStream.WriteAsync(new htnd.HtndMessage { GetBlockRequest = request }), ex => logger.Debug(ex));
@@ -239,21 +239,21 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
         {
             if (response == null || response.GetBlockResponse == null || response.GetBlockResponse.Block == null)
             {
-                logger.Warn(() => $"Debug HoosatJob -----> HoosatPayoutHandler [{LogCategory}] Block {blockHash} not found or invalid response.");
+                logger.Warn(() => $"[{LogCategory}] Block {blockHash} not found or invalid response.");
                 return null;
             }
 
             return response.GetBlockResponse;
         }
 
-        logger.Warn(() => $"Debug HoosatJob -----> HoosatPayoutHandler [{LogCategory}] No response received for block {blockHash}");
+        logger.Warn(() => $"[{LogCategory}] No response received for block {blockHash}");
         return null;
     }
 
 
     private async Task<double> GetBlockConfirmations(string blockHash, int minConfirmations, AsyncDuplexStreamingCall<htnd.HtndMessage, htnd.HtndMessage> stream)
     {
-        logger.Debug(() => $"Debug HoosatJob -----> HoosatPayoutHandler [{LogCategory}] Checking confirmations for block {blockHash}");
+        logger.Debug(() => $"[{LogCategory}] Checking confirmations for block {blockHash}");
 
         var request = new htnd.GetBlocksRequestMessage { LowHash = blockHash, IncludeBlocks = false, IncludeTransactions = false };
         await Guard(() => stream.RequestStream.WriteAsync(new htnd.HtndMessage { GetBlocksRequest = request }), ex => logger.Debug(ex));
@@ -267,7 +267,7 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
 
     private async Task MarkBlockAsOrphaned(Block block, string poolId, CoinTemplate coin, IBlockRepository blockRepo)
     {
-        logger.Warn(() => $"Debug HoosatJob -----> HoosatPayoutHandler [{LogCategory}] Marking block {block.BlockHeight} as orphaned");
+        logger.Warn(() => $"[{LogCategory}] Marking block {block.BlockHeight} as orphaned");
 
         block.Status = BlockStatus.Orphaned;
         block.Reward = 0;
@@ -287,7 +287,7 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
 
         if (coinbaseTransaction == null)
         {
-            logger.Warn(() => $"Debug HoosatJob -----> No coinbase transaction found in block {blockInfo.Block.VerboseData.Hash}");
+            logger.Warn(() => $"No coinbase transaction found in block {blockInfo.Block.VerboseData.Hash}");
             return 0.0m;
         }
 
@@ -295,13 +295,13 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
 
         if (firstOutput == null)
         {
-            logger.Warn(() => $"Debug HoosatJob -----> No outputs found in coinbase transaction of block {blockInfo.Block.VerboseData.Hash}");
+            logger.Warn(() => $"No outputs found in coinbase transaction of block {blockInfo.Block.VerboseData.Hash}");
             return 0.0m;
         }
 
         decimal reward = (decimal)(firstOutput.Amount / HoosatConstants.SmallestUnit);
 
-        logger.Info(() => $"Debug HoosatJob -----> Reward found! Block {blockInfo.Block.VerboseData.Hash} provides {FormatAmount(reward)} as block reward");
+        logger.Info(() => $"Reward found! Block {blockInfo.Block.VerboseData.Hash} provides {FormatAmount(reward)} as block reward");
 
         return reward;
     }
@@ -310,7 +310,7 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
     {
         decimal blockReward = GetFirstCoinbaseReward(blockInfo);
 
-        logger.Info(() => $"Debug HoosatJob -----> HoosatPayoutHandler [{LogCategory}] Finalizing block {block.BlockHeight} with reward {FormatAmount(blockReward)}");
+        logger.Info(() => $"[{LogCategory}] Finalizing block {block.BlockHeight} with reward {FormatAmount(blockReward)}");
 
         block.Reward = blockReward;
         block.Status = BlockStatus.Confirmed;
@@ -330,23 +330,22 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
         Contract.RequiresNonNull(balances);
 
         // build args
-        var amounts = balances
+        var balanceMap = balances
             .Where(x => x.Amount > 0)
-            .ToDictionary(x => x.Address, x => x.Amount);
+            .ToDictionary(x => x.Address, x => x);
 
-
-        if (amounts.Count == 0)
+        if (balanceMap.Count == 0)
             return;
 
-        var balancesTotal = amounts.Sum(x => x.Value);
+        var balancesTotal = balanceMap.Values.Sum(x => x.Amount);
 
         logger.Info(() => $"Base --- PayoutAsync - Initiating payout of {FormatAmount(balances.Sum(x => x.Amount))} to {balances.Length} addresses");
 
         logger.Info(() => $"Base - Validating addresses...");
         var coin = poolConfig.Template.As<HoosatCoinTemplate>();
-        foreach (var pair in amounts)
+        foreach (var pair in balanceMap)
         {
-            logger.Debug(() => $"Base --- PayoutAsync - Address {pair.Key} with amount [{FormatAmount(pair.Value)}]");
+            logger.Debug(() => $"Base --- PayoutAsync - Address {pair.Key} with amount [{FormatAmount(pair.Value.Amount)}]");
             var (hoosatAddressUtility, errorHoosatAddressUtility) = HoosatUtils.ValidateAddress(pair.Key, network, coin.Symbol);
 
             if (errorHoosatAddressUtility != null)
@@ -378,48 +377,67 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
             CancellationToken = ct
         };
 
-        await Parallel.ForEachAsync(amounts, parallelOptions, async (x, _ct) =>
+        await Parallel.ForEachAsync(balanceMap.Values, parallelOptions, async (balance, _ct) =>
         {
-            var (address, amount) = x;
+            var address = balance.Address;
+            var amount = balance.Amount;
+            int maxAttempts = 5;
+            int attempt = 0;
+            bool success = false;
+            Exception lastException = null;
+            string txId = null;
 
-            await Guard(async () =>
+            while (attempt < maxAttempts && !success)
             {
-                // use a common id for all log entries related to this transfer
+                attempt++;
                 var transferId = CorrelationIdGenerator.GetNextId();
-
-                logger.Info(() => $"Base --- PayoutAsync - [{transferId}] Sending {FormatAmount(amount)} to {address}");
-
-                var callSend = walletRpc.SendAsync(new htnWalletd.SendRequest
+                try
                 {
-                    ToAddress = address.ToLower(),
-                    Amount = (ulong)(amount * HoosatConstants.SmallestUnit),
-                    Password = extraPoolPaymentProcessingConfig?.WalletPassword ?? null,
-                    UseExistingChangeAddress = true,
-                    IsSendAll = false,
-                });
-                var sendTransaction = await Guard(() => callSend.ResponseAsync,
-                    ex => throw new PaymentException($"[{transferId}] htnWalletd returned error: {ex}"));
-                callSend.Dispose();
+                    logger.Info(() => $"Base --- PayoutAsync - [{transferId}] Sending {FormatAmount(amount)} to {address} (attempt {attempt})");
 
-                // check result
-                var txId = sendTransaction.TxIDs.First();
+                    var callSend = walletRpc.SendAsync(new htnWalletd.SendRequest
+                    {
+                        ToAddress = address.ToLower(),
+                        Amount = (ulong)(amount * HoosatConstants.SmallestUnit),
+                        Password = extraPoolPaymentProcessingConfig?.WalletPassword ?? null,
+                        UseExistingChangeAddress = true,
+                        IsSendAll = false,
+                    });
+                    var sendTransaction = await Guard(() => callSend.ResponseAsync,
+                        ex => throw new PaymentException($"[{transferId}] htnWalletd returned error: {ex}"));
+                    callSend.Dispose();
 
-                if (string.IsNullOrEmpty(txId))
-                    throw new Exception($"[{transferId}] htnWalletd did not return a transaction id!");
-                else
+                    txId = sendTransaction.TxIDs.First();
+                    if (string.IsNullOrEmpty(txId))
+                        throw new Exception($"[{transferId}] htnWalletd did not return a transaction id!");
+
                     logger.Info(() => $"Base --- PayoutAsync - [{transferId}] Payment transaction id: {txId}");
 
-                successBalances.Add(new Balance
+                    lock (successBalances)
+                    {
+                        successBalances.Add(balance, txId);
+                    }
+                    success = true;
+                }
+                catch (Exception ex)
                 {
-                    PoolId = poolConfig.Id,
-                    Address = address,
-                    Amount = amount,
-                }, txId);
-            }, ex =>
+                    lastException = ex;
+                    logger.Warn(() => $"Base --- PayoutAsync - Failed to send {FormatAmount(amount)} to {address} (attempt {attempt}): {ex.Message}");
+                    if (attempt < maxAttempts)
+                    {
+                        logger.Info(() => $"Base --- PayoutAsync - Waiting 10 seconds before retrying payment to {address}...");
+                        await Task.Delay(TimeSpan.FromSeconds(10), ct);
+                    }
+                }
+            }
+
+            if (!success)
             {
-                txFailures.Add(Tuple.Create(x, ex));
-                logger.Warn(() => $"Base --- PayoutAsync - Failed to send {FormatAmount(amount)} to {address}: {ex.Message}");
-            });
+                lock (txFailures)
+                {
+                    txFailures.Add(Tuple.Create(new KeyValuePair<string, decimal>(address, amount), lastException));
+                }
+            }
         });
 
         if (successBalances.Any())

@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Net.Sockets;
 using System.Linq;
+using System.Net.Sockets;
 using Miningcore.Extensions;
 using Miningcore.Mining;
 using Miningcore.Persistence;
@@ -17,11 +18,11 @@ namespace Miningcore.Payments.PaymentSchemes;
 
 /// <summary>
 /// FPPS (Full Pay Per Share) payout scheme implementation.
-///
-/// NOTE: Miningcore's payout processing is block-driven. This implementation
-/// credits shares when a block gets confirmed by paying each share its expected
-/// value based on the block reward (including transaction fees) and the share's
-/// network difficulty at submission time.
+/// 
+/// Miningcore's payout processing is block-driven.
+/// Each confirmed block triggers crediting of all unpaid shares with their
+/// proportional expected value: (shareDiff / block.NetworkDifficulty) * netBlockReward.
+/// The pool absorbs all variance.
 /// </summary>
 // ReSharper disable once InconsistentNaming
 public class FPPSPaymentScheme : IPayoutScheme
@@ -45,138 +46,161 @@ public class FPPSPaymentScheme : IPayoutScheme
   private readonly IConnectionFactory cf;
   private readonly IShareRepository shareRepo;
   private readonly IBalanceRepository balanceRepo;
-  private static readonly ILogger logger = LogManager.GetLogger("FPPS Payment");
 
+  private static readonly ILogger logger = LogManager.GetLogger("FPPS Payment");
   private const int RetryCount = 4;
   private IAsyncPolicy shareReadFaultPolicy;
 
   #region IPayoutScheme
 
   public async Task UpdateBalancesAsync(IDbConnection con, IDbTransaction tx, IMiningPool pool, IPayoutHandler payoutHandler,
-      Block block, decimal blockReward, CancellationToken ct)
+    Block block, decimal blockReward, CancellationToken ct)
   {
     var poolConfig = pool.Config;
 
     if (blockReward <= 0)
     {
-      logger.Info(() => $"Block reward for pool {poolConfig.Id}, block {block.BlockHeight} is {blockReward}. Skipping FPPS payout.");
+      logger.Info(() => $"Payout: Block reward for pool {poolConfig.Id}, block {block.BlockHeight} is {blockReward}. Skipping.");
       return;
     }
 
-    // calculate rewards
+    decimal totalFeePercent = poolConfig.RewardRecipients?.Sum(x => x.Percentage) ?? 0m;
+    var netBlockReward = blockReward * (1m - (totalFeePercent / 100m));
+
+    logger.Info(() => $"Payout: Block {block.BlockHeight} | Gross: {payoutHandler.FormatAmount(blockReward)} | " +
+                      $"Fee: {totalFeePercent:0.##}% | Net: {payoutHandler.FormatAmount(netBlockReward)}");
+
+    if (netBlockReward <= 0 || block.NetworkDifficulty <= 0)
+    {
+      logger.Warn(() => $"Payout: Invalid reward or difficulty for block {block.BlockHeight}. Skipping.");
+      return;
+    }
+
     var shares = new Dictionary<string, double>();
     var rewards = new Dictionary<string, decimal>();
-    var shareCutOffDate = await CalculateRewardsAsync(pool, payoutHandler, block, blockReward, shares, rewards, ct);
 
-    // update balances
-    foreach (var address in rewards.Keys)
+    var shareCutOffDate = await CalculateRewardsAsync(pool, payoutHandler, block, netBlockReward, shares, rewards, ct);
+
+    // === CREDIT BALANCES ===
+    var totalCredited = 0m;
+    foreach (var address in rewards.Keys.OrderByDescending(a => rewards[a]))
     {
       var amount = rewards[address];
+      var shareCount = shares.GetValueOrDefault(address);
 
       if (amount > 0)
       {
-        logger.Info(() => $"Crediting {address} with {payoutHandler.FormatAmount(amount)} for {FormatUtil.FormatQuantity(shares[address])} ({shares[address]}) shares for block {block.BlockHeight}");
+        logger.Info(() => $"Payout: Crediting {address} with {payoutHandler.FormatAmount(amount)} " +
+                          $"for {FormatUtil.FormatQuantity(shareCount)} shares (block {block.BlockHeight})");
+
         await balanceRepo.AddAmountAsync(con, tx, poolConfig.Id, address, amount,
-            $"Reward for {FormatUtil.FormatQuantity(shares[address])} shares for block {block.BlockHeight}");
+            $"FPPS reward for {FormatUtil.FormatQuantity(shareCount)} shares - block {block.BlockHeight}");
+
+        totalCredited += amount;
       }
     }
 
-    // delete paid shares
-    if (shareCutOffDate.HasValue)
-    {
-      // ShareRepository deletes shares using a strict "created < before" predicate.
-      // For FPPS we want to delete *all* shares we just paid, including those whose
-      // Created timestamp equals the newest processed share. Use an exclusive cutoff
-      // (cutoff + 1 microsecond) to avoid leaving (and thus re-paying) the last batch.
-      var deleteBefore = shareCutOffDate.Value.AddTicks(10); // 1µs (Postgres TIMESTAMPTZ resolution)
+    logger.Info(() => $"Payout: Total credited to balances for block {block.BlockHeight}: {payoutHandler.FormatAmount(totalCredited)}");
 
-      var cutOffCount = await shareRepo.CountSharesBeforeAsync(con, tx, poolConfig.Id, deleteBefore, ct);
+    // === DELETE SHARES ONLY IF WE ACTUALLY PROCESSED SOME ===
+    if (shareCutOffDate.HasValue && totalCredited > 0)
+    {
+      var cutOffCount = await shareRepo.CountSharesBeforeAsync(con, tx, poolConfig.Id, shareCutOffDate.Value, ct);
 
       if (cutOffCount > 0)
       {
-        logger.Info(() => $"Deleting {cutOffCount} paid shares before {deleteBefore:O}");
-        await shareRepo.DeleteSharesBeforeAsync(con, tx, poolConfig.Id, deleteBefore, ct);
+        logger.Info(() => $"Payout: Deleting {cutOffCount} processed shares before {shareCutOffDate.Value:O}");
+        await shareRepo.DeleteSharesBeforeAsync(con, tx, poolConfig.Id, shareCutOffDate.Value, ct);
       }
     }
+    else if (shareCutOffDate.HasValue)
+    {
+      logger.Warn(() => $"Payout: No rewards calculated for block {block.BlockHeight} — shares will NOT be deleted yet.");
+    }
 
-    // diagnostics
-    var totalShareCount = shares.Values.ToList().Sum(x => new decimal(x));
-    var totalRewards = rewards.Values.ToList().Sum(x => x);
+    // Diagnostics
+    var totalShareCount = shares.Values.Sum(x => (decimal)x);
+    var totalRewards = rewards.Values.Sum();
 
     if (totalRewards > 0)
     {
+      var percentageOfGross = (totalRewards / blockReward) * 100;
       logger.Info(() =>
-          $"{FormatUtil.FormatQuantity((double)totalShareCount)} ({Math.Round(totalShareCount, 2)}) shares contributed to a total payout of {payoutHandler.FormatAmount(totalRewards)} " +
-          $"({(blockReward > 0 ? (totalRewards / blockReward) * 100 : 0):0.00}% of block reward) to {rewards.Keys.Count} addresses");
+          $"{FormatUtil.FormatQuantity((double)totalShareCount)} shares contributed to " +
+          $"{payoutHandler.FormatAmount(totalRewards)} ({percentageOfGross:0.00}% of gross) " +
+          $"across {rewards.Count} addresses");
     }
   }
+  #endregion
 
-  #endregion // IPayoutScheme
-
-  private async Task<DateTime?> CalculateRewardsAsync(IMiningPool pool, IPayoutHandler payoutHandler, Block block, decimal blockReward,
-      Dictionary<string, double> shares, Dictionary<string, decimal> rewards, CancellationToken ct)
+  private async Task<DateTime?> CalculateRewardsAsync(IMiningPool pool, IPayoutHandler payoutHandler, Block block,
+    decimal netBlockReward, Dictionary<string, double> sharesDict, Dictionary<string, decimal> rewards, CancellationToken ct)
   {
     var poolConfig = pool.Config;
-    var done = false;
     var before = block.Created;
     var inclusive = true;
-    var pageSize = 100000;
+    const int pageSize = 100000;
     var currentPage = 0;
     DateTime? shareCutOffDate = null;
-    var accumulatedScore = 0.0m;
+    long totalSharesProcessed = 0;
+    double totalShareSum = 0.0;
 
-    while (!done && !ct.IsCancellationRequested)
+    var blockNetworkDifficulty = block.NetworkDifficulty > 0 ? block.NetworkDifficulty : 1.0;
+
+    logger.Info(() => $"Starting FPPS calculation for block {block.BlockHeight} | " +
+                      $"Net reward: {payoutHandler.FormatAmount(netBlockReward)} | " +
+                      $"NetworkDifficulty: {blockNetworkDifficulty:0.##}");
+
+    while (!ct.IsCancellationRequested)
     {
-      logger.Info(() => $"Fetching page {currentPage} of shares for pool {poolConfig.Id}, block {block.BlockHeight}");
-
       var page = await shareReadFaultPolicy.ExecuteAsync(() =>
           cf.Run(c => shareRepo.ReadSharesBeforeAsync(c, poolConfig.Id, before, inclusive, pageSize, ct)));
 
       inclusive = false;
       currentPage++;
 
-      for (var i = 0; i < page.Length; i++)
+      if (page.Length == 0)
+        break;
+
+      foreach (var share in page)
       {
-        var share = page[i];
+        totalSharesProcessed++;
         var address = share.Miner;
         var shareDiffAdjusted = payoutHandler.AdjustShareDifficulty(share.Difficulty);
 
-        // record attributed shares for diagnostic purposes
-        if (!shares.ContainsKey(address))
-          shares[address] = shareDiffAdjusted;
-        else
-          shares[address] += shareDiffAdjusted;
+        sharesDict[address] = sharesDict.GetValueOrDefault(address) + shareDiffAdjusted;
+        totalShareSum += shareDiffAdjusted;
 
-        // expected block fraction contributed by this share
-        var score = (decimal)(shareDiffAdjusted / share.NetworkDifficulty);
-        accumulatedScore += score;
-
-        // FPPS payout: expected value per share based on this block's reward (incl. tx fees)
-        var reward = score * blockReward;
-
-        if (reward > 0)
-        {
-          if (!rewards.ContainsKey(address))
-            rewards[address] = reward;
-          else
-            rewards[address] += reward;
-        }
-
-        // track newest share we included so we can delete processed shares afterwards
-        if (shareCutOffDate == null || share.Created > shareCutOffDate)
+        if (shareCutOffDate == null || share.Created > shareCutOffDate.Value)
           shareCutOffDate = share.Created;
       }
 
       if (page.Length < pageSize)
         break;
 
-      if (page.Length <= 0)
-        done = true;
-      else
-        before = page[^1].Created;
+      before = page[^1].Created;
     }
 
-    logger.Info(() => $"Balance-calculation for pool {poolConfig.Id}, block {block.BlockHeight} completed with accumulated score {accumulatedScore:0.####} (expected blocks)");
+    // === PROPORTIONAL DISTRIBUTION (correct for Hoosat) ===
+    if (totalShareSum > 0)
+    {
+      foreach (var kvp in sharesDict)
+      {
+        var minerShare = kvp.Value;
+        var proportion = (decimal)(minerShare / totalShareSum);
+        var reward = proportion * netBlockReward;
+
+        if (reward > 0)
+          rewards[kvp.Key] = reward;
+      }
+    }
+
+    var totalPayout = rewards.Values.Sum();
+
+    logger.Info(() => $"FPPS calc for block {block.BlockHeight} | " +
+                      $"Processed shares: {totalSharesProcessed} | " +
+                      $"Total share sum: {totalShareSum:F2} | " +
+                      $"Calculated total payout: {payoutHandler.FormatAmount(totalPayout)}");
 
     return shareCutOffDate;
   }
@@ -194,6 +218,6 @@ public class FPPSPaymentScheme : IPayoutScheme
 
   private static void OnPolicyRetry(Exception ex, int retry, object context)
   {
-    logger.Warn(() => $"Retry {retry} due to {ex.Source}: {ex.GetType().Name} ({ex.Message})");
+    logger.Warn(() => $"Payout: Retry {retry} due to {ex.GetType().Name}: {ex.Message}");
   }
 }

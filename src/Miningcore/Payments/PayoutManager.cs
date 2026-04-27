@@ -150,15 +150,6 @@ public class PayoutManager : BackgroundService
         return family;
     }
 
-
-
-
-
-
-
-
-
-
     private async Task UpdatePoolBalancesAsync(IMiningPool pool, PoolConfig poolConfig, IPayoutHandler handler, IPayoutScheme scheme, CancellationToken ct)
     {
         // get pending blockRepo for pool

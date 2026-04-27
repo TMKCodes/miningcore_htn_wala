@@ -52,7 +52,7 @@ public class StatsRecorder : BackgroundService
 
         updateInterval = TimeSpan.FromSeconds(clusterConfig.Statistics?.UpdateInterval ?? 120);
         gcInterval = TimeSpan.FromHours(clusterConfig.Statistics?.GcInterval ?? 4);
-        hashrateCalculationWindow = TimeSpan.FromMinutes(clusterConfig.Statistics?.HashrateCalculationWindow ?? 10);
+        hashrateCalculationWindow = TimeSpan.FromMinutes(clusterConfig.Statistics?.HashrateCalculationWindow ?? 1440);
         cleanupDays = TimeSpan.FromDays(clusterConfig.Statistics?.CleanupDays ?? 180);
 
         BuildFaultHandlingPolicy();

@@ -811,7 +811,7 @@ public class HoosatJobManager : JobManagerBase<HoosatJob>
         extraPoolPaymentProcessingConfig = pc.PaymentProcessing.Extra.SafeExtensionDataAs<HoosatPaymentProcessingConfigExtra>();
 
         maxActiveJobs = extraPoolConfig?.MaxActiveJobs ?? 8;
-        extraData = extraPoolConfig?.ExtraData ?? "Hoohash - pools4mining.com[\"@elvalere\"]";
+        extraData = extraPoolConfig?.ExtraData ?? "Zenithpool.net";
 
         // extract standard daemon endpoints
         daemonEndpoints = pc.Daemons

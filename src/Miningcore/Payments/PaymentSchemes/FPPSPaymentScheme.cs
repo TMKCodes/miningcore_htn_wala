@@ -64,13 +64,9 @@ public class FPPSPaymentScheme : IPayoutScheme
       return;
     }
 
-    decimal totalFeePercent = poolConfig.RewardRecipients?.Sum(x => x.Percentage) ?? 0m;
-    var netBlockReward = blockReward * (1m - (totalFeePercent / 100m));
+    logger.Info(() => $"Payout: Block {block.BlockHeight} | Reward for FPPS distribution: {payoutHandler.FormatAmount(blockReward)}");
 
-    logger.Info(() => $"Payout: Block {block.BlockHeight} | Gross: {payoutHandler.FormatAmount(blockReward)} | " +
-                      $"Fee: {totalFeePercent:0.##}% | Net: {payoutHandler.FormatAmount(netBlockReward)}");
-
-    if (netBlockReward <= 0 || block.NetworkDifficulty <= 0)
+    if (blockReward <= 0 || block.NetworkDifficulty <= 0)
     {
       logger.Warn(() => $"Payout: Invalid reward or difficulty for block {block.BlockHeight}. Skipping.");
       return;
@@ -79,7 +75,7 @@ public class FPPSPaymentScheme : IPayoutScheme
     var shares = new Dictionary<string, double>();
     var rewards = new Dictionary<string, decimal>();
 
-    var shareCutOffDate = await CalculateRewardsAsync(pool, payoutHandler, block, netBlockReward, shares, rewards, ct);
+    var shareCutOffDate = await CalculateRewardsAsync(pool, payoutHandler, block, blockReward, shares, rewards, ct);
 
     // === CREDIT BALANCES ===
     var totalCredited = 0m;
@@ -144,6 +140,7 @@ public class FPPSPaymentScheme : IPayoutScheme
     DateTime? shareCutOffDate = null;
     long totalSharesProcessed = 0;
     double totalShareSum = 0.0;
+    decimal totalExpectedScore = 0m;
 
     var blockNetworkDifficulty = block.NetworkDifficulty > 0 ? block.NetworkDifficulty : 1.0;
 
@@ -167,9 +164,16 @@ public class FPPSPaymentScheme : IPayoutScheme
         totalSharesProcessed++;
         var address = share.Miner;
         var shareDiffAdjusted = payoutHandler.AdjustShareDifficulty(share.Difficulty);
+        var shareNetworkDifficulty = share.NetworkDifficulty > 0 ? share.NetworkDifficulty : blockNetworkDifficulty;
+        var score = (decimal)(shareDiffAdjusted / shareNetworkDifficulty);
+        var reward = score * netBlockReward;
 
         sharesDict[address] = sharesDict.GetValueOrDefault(address) + shareDiffAdjusted;
         totalShareSum += shareDiffAdjusted;
+        totalExpectedScore += score;
+
+        if (reward > 0)
+          rewards[address] = rewards.GetValueOrDefault(address) + reward;
 
         if (shareCutOffDate == null || share.Created > shareCutOffDate.Value)
           shareCutOffDate = share.Created;
@@ -181,25 +185,12 @@ public class FPPSPaymentScheme : IPayoutScheme
       before = page[^1].Created;
     }
 
-    // === PROPORTIONAL DISTRIBUTION (correct for Hoosat) ===
-    if (totalShareSum > 0)
-    {
-      foreach (var kvp in sharesDict)
-      {
-        var minerShare = kvp.Value;
-        var proportion = (decimal)(minerShare / totalShareSum);
-        var reward = proportion * netBlockReward;
-
-        if (reward > 0)
-          rewards[kvp.Key] = reward;
-      }
-    }
-
     var totalPayout = rewards.Values.Sum();
 
     logger.Info(() => $"FPPS calc for block {block.BlockHeight} | " +
                       $"Processed shares: {totalSharesProcessed} | " +
                       $"Total share sum: {totalShareSum:F2} | " +
+                      $"Expected score: {totalExpectedScore:F8} | " +
                       $"Calculated total payout: {payoutHandler.FormatAmount(totalPayout)}");
 
     return shareCutOffDate;

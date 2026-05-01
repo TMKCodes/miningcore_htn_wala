@@ -243,7 +243,6 @@ public class HoosatJobManager : JobManagerBase<HoosatJob>
 
         string coinSymbol = coin.Symbol;
 
-
         Console.WriteLine("[DEBUG] Initializing default hashers for Hoosat.");
         customBlockHeaderHasher = InitializeHasher<Blake3>(
             customBlockHeaderHasher,
@@ -262,8 +261,6 @@ public class HoosatJobManager : JobManagerBase<HoosatJob>
             () => new Blake3(),
             "Share Hasher"
         );
-
-
 
         Console.WriteLine("[DEBUG] Creating HoosatJob instance.");
         var job = new HoosatJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);

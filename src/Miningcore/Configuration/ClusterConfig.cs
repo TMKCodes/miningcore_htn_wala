@@ -1370,6 +1370,10 @@ public class Statistics
     /// </summary>
     public int? CleanupDays { get; set; }
 
+    /// <summary>
+    /// Minimum active time of miners in seconds 
+    /// </summary>
+    public double? MinActiveTimeSeconds { get; set; }
 }
 
 public class NicehashClusterConfig

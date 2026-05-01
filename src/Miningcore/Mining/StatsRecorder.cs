@@ -54,6 +54,7 @@ public class StatsRecorder : BackgroundService
         gcInterval = TimeSpan.FromHours(clusterConfig.Statistics?.GcInterval ?? 4);
         hashrateCalculationWindow = TimeSpan.FromMinutes(clusterConfig.Statistics?.HashrateCalculationWindow ?? 30);
         cleanupDays = TimeSpan.FromDays(clusterConfig.Statistics?.CleanupDays ?? 180);
+        minActiveTimeSeconds = clusterConfig.Statistics?.MinActiveTimeSeconds ?? 300.0;
 
         BuildFaultHandlingPolicy();
     }
@@ -71,6 +72,7 @@ public class StatsRecorder : BackgroundService
     private readonly TimeSpan cleanupDays;
     private readonly TimeSpan gcInterval;
     private readonly TimeSpan hashrateCalculationWindow;
+    private readonly double minActiveTimeSeconds;
     private const int RetryCount = 4;
     private IAsyncPolicy readFaultPolicy;
 
@@ -107,35 +109,41 @@ public class StatsRecorder : BackgroundService
             logger.Info(() => $"[{poolId}] Updating Statistics for pool");
 
             var pool = pools[poolId];
-
             // Fetch accumulated shares for the window
             var result = await readFaultPolicy.ExecuteAsync(() =>
                 cf.Run(con => shareRepo.GetHashAccumulationBetweenAsync(con, poolId, timeFrom, now, ct)));
-
             var byMiner = result.GroupBy(x => x.Miner).ToArray();
 
             if (result.Length > 0)
             {
-                // Pool miners count
-                pool.PoolStats.ConnectedMiners = byMiner.Length;
+                // ====================== POOL HASHRATE - SAME LOGIC AS MINERS ======================
+                var firstShareOverall = result.Min(x => x.FirstShare);
+                var lastShareOverall = result.Max(x => x.LastShare);
+                var poolActiveSeconds = (lastShareOverall - firstShareOverall).TotalSeconds;
 
-                // ====================== POOL HASHRATE ======================
-                var poolHashTimeFrame = hashrateCalculationWindow.TotalSeconds; // Fixed full window = most stable
+                // Clamp to reasonable range (same as miners)
+                var poolEffectiveSeconds = Math.Clamp(poolActiveSeconds, 30.0, hashrateCalculationWindow.TotalSeconds);
+                if (poolEffectiveSeconds < 1)
+                    poolEffectiveSeconds = 1;
+
                 var poolHashesAccumulated = result.Sum(x => x.Sum);
-
-                var poolHashrate = pool.HashrateFromShares(poolHashesAccumulated, poolHashTimeFrame);
+                var poolHashrate = pool.HashrateFromShares(poolHashesAccumulated, poolEffectiveSeconds);
                 poolHashrate = Math.Floor(poolHashrate);
+
+                // Pool miners count
+
+                pool.PoolStats.ConnectedMiners = byMiner.Length;
 
                 pool.PoolStats.PoolHashrate = (ulong)poolHashrate;
 
-                // Pool shares per second
+                // Pool shares per second (using same effective window)
                 var poolHashesCountAccumulated = result.Sum(x => x.Count);
-                pool.PoolStats.SharesPerSecond = (int)(poolHashesCountAccumulated / poolHashTimeFrame);
+                pool.PoolStats.SharesPerSecond = (int)(poolHashesCountAccumulated / poolEffectiveSeconds);
 
                 messageBus.NotifyHashrateUpdated(pool.Config.Id, poolHashrate);
 
                 logger.Info(() => $"[{poolId}] Pool hashrate: {FormatUtil.FormatHashrate(poolHashrate)} " +
-                                  $"({pool.PoolStats.ConnectedMiners} miners)");
+                                  $"({pool.PoolStats.ConnectedMiners} miners, effective {poolEffectiveSeconds:F0}s)");
             }
             else
             {
@@ -149,7 +157,7 @@ public class StatsRecorder : BackgroundService
                 logger.Info(() => $"[{poolId}] Reset performance stats for pool (no shares)");
             }
 
-            // Persist pool stats
+            // Persist pool stats (unchanged)
             await cf.RunTx(async (con, tx) =>
             {
                 var mapped = new Persistence.Model.PoolStats { PoolId = poolId, Created = now };
@@ -158,7 +166,7 @@ public class StatsRecorder : BackgroundService
                 await statsRepo.InsertPoolStatsAsync(con, tx, mapped, ct);
             });
 
-            // ====================== MINER / WORKER HASHRATES ======================
+            // ====================== MINER / WORKER HASHRATES (unchanged) ======================
             var previousMinerWorkerHashrates = await cf.Run(con =>
                 statsRepo.GetPoolMinerWorkerHashratesAsync(con, poolId, ct));
 
@@ -172,6 +180,8 @@ public class StatsRecorder : BackgroundService
 
             var currentNonZero = new HashSet<string>();
 
+            double totalMinerHashratesSum = 0; // optional: for logging
+
             foreach (var minerGroup in byMiner)
             {
                 if (ct.IsCancellationRequested)
@@ -184,47 +194,47 @@ public class StatsRecorder : BackgroundService
                 {
                     stats.Miner = miner;
 
-                    foreach (var item in minerGroup) // per worker
+                    foreach (var item in minerGroup)
                     {
                         stats.Worker = item.Worker;
                         currentNonZero.Add(BuildKey(miner, item.Worker));
 
-                        // === Better effective time window calculation ===
+                        // === Updated effective time logic ===
                         var firstShare = minerGroup.Min(x => x.FirstShare);
                         var lastShare = minerGroup.Max(x => x.LastShare);
                         var activeSeconds = (lastShare - firstShare).TotalSeconds;
 
-                        // Clamp to reasonable range
-                        var effectiveSeconds = Math.Clamp(activeSeconds, 30.0, hashrateCalculationWindow.TotalSeconds);
-
-                        // Fallback for edge cases
+                        // NEW: Higher minimum active time
+                        var effectiveSeconds = Math.Clamp(activeSeconds, minActiveTimeSeconds, hashrateCalculationWindow.TotalSeconds);
                         if (effectiveSeconds < 1)
                             effectiveSeconds = 1;
 
-                        // Calculate hashrate
                         var workerHashrate = pool.HashrateFromShares(item.Sum, effectiveSeconds);
                         workerHashrate = Math.Floor(workerHashrate);
 
                         minerTotalHashrate += workerHashrate;
+                        totalMinerHashratesSum += workerHashrate;
 
                         stats.Hashrate = workerHashrate;
                         stats.SharesPerSecond = Math.Round(item.Count / effectiveSeconds, 3);
 
-                        // Persist + broadcast
                         await statsRepo.InsertMinerWorkerPerformanceStatsAsync(con, tx, stats, ct);
                         messageBus.NotifyHashrateUpdated(pool.Config.Id, workerHashrate, miner, item.Worker);
 
                         logger.Info(() => $"[{poolId}] Worker {miner}{(!string.IsNullOrEmpty(item.Worker) ? $".{item.Worker}" : "")}: " +
-                                          $"{FormatUtil.FormatHashrate(workerHashrate)}  ({stats.SharesPerSecond} shares/sec)");
+                                          $"{FormatUtil.FormatHashrate(workerHashrate)}  ({stats.SharesPerSecond} shares/sec, active ~{activeSeconds:F0}s)");
                     }
                 });
 
-                // Miner total (without worker)
                 messageBus.NotifyHashrateUpdated(pool.Config.Id, minerTotalHashrate, miner, null);
                 logger.Info(() => $"[{poolId}] Miner {miner}: {FormatUtil.FormatHashrate(minerTotalHashrate)}");
             }
 
-            // Reset orphaned (disconnected) miners/workers
+            // Optional: Log comparison
+            logger.Info(() => $"[{poolId}] Pool HR = {FormatUtil.FormatHashrate(pool.PoolStats.PoolHashrate)} | " +
+                              $"Sum of miner HRs = {FormatUtil.FormatHashrate(totalMinerHashratesSum)}");
+
+            // Reset orphaned (unchanged)
             var orphaned = previousNonZero.Except(currentNonZero).ToArray();
             if (orphaned.Any())
             {

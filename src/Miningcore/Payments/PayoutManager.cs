@@ -152,9 +152,12 @@ public class PayoutManager : BackgroundService
 
     private async Task UpdatePoolBalancesAsync(IMiningPool pool, PoolConfig poolConfig, IPayoutHandler handler, IPayoutScheme scheme, CancellationToken ct)
     {
-        // get pending blockRepo for pool
-        Console.WriteLine($"elva Debug HoosatJobManager -----> Retrieving pending blocks for pool {poolConfig.Id}");
-        var pendingBlocks = await cf.Run(con => blockRepo.GetPendingBlocksForPoolAsync(con, poolConfig.Id));
+        var blockStates = poolConfig.Template.Family == CoinFamily.Hoosat ?
+            new[] { BlockStatus.Pending, BlockStatus.Orphaned } :
+            new[] { BlockStatus.Pending };
+
+        Console.WriteLine($"elva Debug HoosatJobManager -----> Retrieving {string.Join(", ", blockStates).ToLowerInvariant()} blocks for pool {poolConfig.Id}");
+        var pendingBlocks = await cf.Run(con => blockRepo.GetBlocksForPoolAsync(con, poolConfig.Id, blockStates));
 
         // classify
         Console.WriteLine($"elva Debug HoosatJobManager -----> Classifying blocks for pool {poolConfig.Id}");

@@ -164,7 +164,7 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
 
                 if (blockReward > 0)
                 {
-                    await FinalizeBlockProcessing(block, poolConfig.Id, coin, blockRepo, blockInfo);
+                    await FinalizeBlockProcessing(block, poolConfig.Id, coin, blockRepo, blockReward);
                 }
                 else
                 {
@@ -181,6 +181,8 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
         AsyncDuplexStreamingCall<htnd.HtndMessage, htnd.HtndMessage> stream, PoolConfig poolConfig)
     {
         logger.Debug(() => $"[{LogCategory}] Searching for rewards in children of block {block.BlockHeight}");
+
+        var totalReward = 0m;
 
         foreach (var childHash in blockInfo.Block.VerboseData.ChildrenHashes)
         {
@@ -207,23 +209,40 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
             {
                 logger.Debug(() => $"[{LogCategory}] Coinbase transaction {transaction.VerboseData.TransactionId} found in child {childHash}");
 
+                var matchingOutputs = transaction.Outputs
+                    .Where(output => output.VerboseData.ScriptPublicKeyAddress == poolConfig.Address)
+                    .ToArray();
+
                 foreach (var output in transaction.Outputs)
                 {
                     string outputAddress = output.VerboseData.ScriptPublicKeyAddress;
                     decimal reward = (decimal)(output.Amount / HoosatConstants.SmallestUnit);
 
                     logger.Debug(() => $"[{LogCategory}] Checking output: Tx={transaction.VerboseData.TransactionId}, Address={outputAddress}, Amount={FormatAmount(reward)}");
+                }
 
-                    if (outputAddress == poolConfig.Address)
-                    {
-                        logger.Info(() => $"[{LogCategory}] Reward found! Child {childHash} provides {FormatAmount(reward)} to pool {poolConfig.Address}");
-                        return reward;
-                    }
+                if (matchingOutputs.Length > 0)
+                {
+                    var childReward = matchingOutputs.Sum(output => (decimal)(output.Amount / HoosatConstants.SmallestUnit));
+                    totalReward += childReward;
+
+                    logger.Info(() => $"[{LogCategory}] Reward found! Child {childHash} provides {FormatAmount(childReward)} to pool {poolConfig.Address}");
                 }
             }
         }
 
-        logger.Warn(() => $"[{LogCategory}] No rewards found in children of block {block.BlockHeight}");
+        if (totalReward > 0)
+            return totalReward;
+
+        var directBlockReward = GetPoolCoinbaseReward(blockInfo, poolConfig.Address);
+
+        if (directBlockReward > 0)
+        {
+            logger.Info(() => $"[{LogCategory}] Direct coinbase reward found for block {block.BlockHeight}: {FormatAmount(directBlockReward)}");
+            return directBlockReward;
+        }
+
+        logger.Warn(() => $"[{LogCategory}] No rewards found in children or direct coinbase outputs of block {block.BlockHeight}");
         return 0.0m;
     }
 
@@ -277,7 +296,7 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
         messageBus.NotifyBlockUnlocked(poolId, block, coin);
     }
 
-    private decimal GetFirstCoinbaseReward(htnd.GetBlockResponseMessage blockInfo)
+    private decimal GetPoolCoinbaseReward(htnd.GetBlockResponseMessage blockInfo, string poolAddress)
     {
         if (blockInfo.Block.Transactions == null || blockInfo.Block.Transactions.Count == 0)
             return 0.0m;
@@ -291,25 +310,25 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
             return 0.0m;
         }
 
-        var firstOutput = coinbaseTransaction.Outputs.FirstOrDefault();
+        var poolOutputs = coinbaseTransaction.Outputs
+            .Where(output => output.VerboseData.ScriptPublicKeyAddress == poolAddress)
+            .ToArray();
 
-        if (firstOutput == null)
+        if (poolOutputs.Length == 0)
         {
-            logger.Warn(() => $"No outputs found in coinbase transaction of block {blockInfo.Block.VerboseData.Hash}");
+            logger.Warn(() => $"No pool outputs found in coinbase transaction of block {blockInfo.Block.VerboseData.Hash}");
             return 0.0m;
         }
 
-        decimal reward = (decimal)(firstOutput.Amount / HoosatConstants.SmallestUnit);
+        decimal reward = poolOutputs.Sum(output => (decimal)(output.Amount / HoosatConstants.SmallestUnit));
 
-        logger.Info(() => $"Reward found! Block {blockInfo.Block.VerboseData.Hash} provides {FormatAmount(reward)} as block reward");
+        logger.Info(() => $"Reward found! Block {blockInfo.Block.VerboseData.Hash} provides {FormatAmount(reward)} to pool {poolAddress}");
 
         return reward;
     }
 
-    private async Task FinalizeBlockProcessing(Block block, string poolId, CoinTemplate coin, IBlockRepository blockRepo, htnd.GetBlockResponseMessage blockInfo)
+    private async Task FinalizeBlockProcessing(Block block, string poolId, CoinTemplate coin, IBlockRepository blockRepo, decimal blockReward)
     {
-        decimal blockReward = GetFirstCoinbaseReward(blockInfo);
-
         logger.Info(() => $"[{LogCategory}] Finalizing block {block.BlockHeight} with reward {FormatAmount(blockReward)}");
 
         block.Reward = blockReward;

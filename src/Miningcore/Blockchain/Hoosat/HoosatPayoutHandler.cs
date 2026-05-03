@@ -171,6 +171,7 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
         logger.Debug(() => $"[{LogCategory}] Searching for rewards in children of block {block.BlockHeight}");
 
         var totalReward = 0m;
+        var childrenProvideRewards = false;
 
         foreach (var childHash in blockInfo.Block.VerboseData.ChildrenHashes)
         {
@@ -193,34 +194,60 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
                 continue;
             }
 
-            foreach (var transaction in coinbaseTransactions)
+            var mergeSetRedsHashes = childInfo.Block.VerboseData.MergeSetRedsHashes
+                .Where(x => x.Contains(block.Hash))
+                .ToList();
+
+            var mergeSetBluesHashes = childInfo.Block.VerboseData.MergeSetBluesHashes
+                .Where(x => x.Contains(block.Hash))
+                .ToList();
+
+            if (mergeSetRedsHashes.Count > 0)
             {
-                logger.Debug(() => $"[{LogCategory}] Coinbase transaction {transaction.VerboseData.TransactionId} found in child {childHash}");
+                logger.Debug(() => $"[{LogCategory}] Block {block.BlockHeight} - child {childInfo.Block.Header.DaaScore} [{childHash}] provides {FormatAmount(0.0m)} because block is in merge-set reds");
+                continue;
+            }
 
-                var matchingOutputs = transaction.Outputs
-                    .Where(output => output.VerboseData.ScriptPublicKeyAddress == poolConfig.Address)
-                    .ToArray();
+            if (mergeSetBluesHashes.Count == 0 || !childInfo.Block.VerboseData.IsChainBlock)
+            {
+                logger.Debug(() => $"[{LogCategory}] Block {block.BlockHeight} - child {childInfo.Block.Header.DaaScore} [{childHash}] provides {FormatAmount(0.0m)}");
+                continue;
+            }
 
-                foreach (var output in transaction.Outputs)
-                {
-                    string outputAddress = output.VerboseData.ScriptPublicKeyAddress;
-                    decimal reward = (decimal)(output.Amount / HoosatConstants.SmallestUnit);
+            var childrenPosition = childInfo.Block.VerboseData.MergeSetBluesHashes.IndexOf(block.Hash);
+            var coinbaseTransaction = coinbaseTransactions.First();
 
-                    logger.Debug(() => $"[{LogCategory}] Checking output: Tx={transaction.VerboseData.TransactionId}, Address={outputAddress}, Amount={FormatAmount(reward)}");
-                }
+            if (childrenPosition < 0 || childrenPosition >= coinbaseTransaction.Outputs.Count)
+            {
+                logger.Warn(() => $"[{LogCategory}] Block {block.BlockHeight} - child {childInfo.Block.Header.DaaScore} [{childHash}] has no reward output at merge-set index {childrenPosition}");
+                continue;
+            }
 
-                if (matchingOutputs.Length > 0)
-                {
-                    var childReward = matchingOutputs.Sum(output => (decimal)(output.Amount / HoosatConstants.SmallestUnit));
-                    totalReward += childReward;
+            var rewardOutput = coinbaseTransaction.Outputs[childrenPosition];
 
-                    logger.Info(() => $"[{LogCategory}] Reward found! Child {childHash} provides {FormatAmount(childReward)} to pool {poolConfig.Address}");
-                }
+            if (rewardOutput.VerboseData.ScriptPublicKeyAddress == poolConfig.Address)
+            {
+                childrenProvideRewards = true;
+
+                var childReward = (decimal)(rewardOutput.Amount / HoosatConstants.SmallestUnit);
+                totalReward += childReward;
+
+                logger.Debug(() => $"[{LogCategory}] Block {block.BlockHeight} - child {childInfo.Block.Header.DaaScore} [{childHash}] provides {FormatAmount(childReward)} => {poolConfig.Template.As<HoosatCoinTemplate>().Symbol} address: {rewardOutput.VerboseData.ScriptPublicKeyAddress} [{poolConfig.Address}]");
+            }
+            else
+            {
+                logger.Debug(() => $"[{LogCategory}] Block {block.BlockHeight} - child {childInfo.Block.Header.DaaScore} [{childHash}] provides {FormatAmount(0.0m)}");
             }
         }
 
         if (totalReward > 0)
             return totalReward;
+
+        if (!blockInfo.Block.VerboseData.IsChainBlock || childrenProvideRewards)
+        {
+            logger.Warn(() => $"[{LogCategory}] No rewards found for block {block.BlockHeight} in eligible child reward outputs");
+            return 0.0m;
+        }
 
         var directBlockReward = GetPoolCoinbaseReward(blockInfo, poolConfig.Address);
 

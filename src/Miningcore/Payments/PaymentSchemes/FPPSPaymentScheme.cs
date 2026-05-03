@@ -77,6 +77,20 @@ public class FPPSPaymentScheme : IPayoutScheme
 
     var shareCutOffDate = await CalculateRewardsAsync(pool, payoutHandler, block, blockReward, shares, rewards, ct);
 
+    if (shares.Count == 0)
+    {
+      if (!string.IsNullOrWhiteSpace(block.Miner))
+      {
+        rewards[block.Miner] = blockReward;
+
+        logger.Warn(() => $"Payout: No FPPS shares found for block {block.BlockHeight}. Crediting full reward {payoutHandler.FormatAmount(blockReward)} to block finder {block.Miner}");
+      }
+      else
+      {
+        logger.Warn(() => $"Payout: No FPPS shares found for block {block.BlockHeight} and block finder is empty. Reward cannot be credited automatically");
+      }
+    }
+
     // === CREDIT BALANCES ===
     var totalCredited = 0m;
     foreach (var address in rewards.Keys.OrderByDescending(a => rewards[a]))

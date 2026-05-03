@@ -120,8 +120,6 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
         var result = new List<Block>();
 
         int minConfirmations = extraPoolPaymentProcessingConfig?.MinimumConfirmations ?? (network == "mainnet" ? 120 : 110);
-        var stream = rpc.MessageStream(null, null, ct);
-
         for (var i = 0; i < pageCount; i++)
         {
             logger.Debug(() => $"[{LogCategory}] Processing page {i + 1}/{pageCount}");
@@ -131,23 +129,14 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
             {
                 logger.Debug(() => $"[{LogCategory}] Checking block {block.BlockHeight}");
 
-                uint totalDuplicateBlockBefore = await cf.Run(con =>
-                    blockRepo.GetPoolDuplicateBlockBeforeCountByPoolHeightNoTypeAndStatusAsync(con, poolConfig.Id,
-                        Convert.ToInt64(block.BlockHeight), new[]
-                        {
-                            BlockStatus.Confirmed,
-                            BlockStatus.Orphaned,
-                            BlockStatus.Pending
-                        }, block.Created));
-
-                var blockInfo = await GetBlockInfo(block.Hash, stream);
-                if (blockInfo == null || totalDuplicateBlockBefore > 0)
+                var blockInfo = await GetBlockInfo(block.Hash, ct);
+                if (blockInfo == null)
                 {
                     await MarkBlockAsOrphaned(block, poolConfig.Id, coin, blockRepo);
                     continue;
                 }
 
-                block.ConfirmationProgress = await GetBlockConfirmations(block.Hash, minConfirmations, stream);
+                block.ConfirmationProgress = await GetBlockConfirmations(block.Hash, minConfirmations, ct);
 
                 result.Add(block);
                 messageBus.NotifyBlockConfirmationProgress(poolConfig.Id, block, coin);
@@ -160,7 +149,7 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
                     continue;
                 }
 
-                decimal blockReward = await ProcessChildrenAndRedBlocks(block, blockInfo, stream, poolConfig);
+                decimal blockReward = await ProcessChildrenAndRedBlocks(block, blockInfo, poolConfig, ct);
 
                 if (blockReward > 0)
                 {
@@ -173,12 +162,11 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
             }
         }
 
-        await stream.RequestStream.CompleteAsync();
         return result.ToArray();
     }
 
     private async Task<decimal> ProcessChildrenAndRedBlocks(Block block, htnd.GetBlockResponseMessage blockInfo,
-        AsyncDuplexStreamingCall<htnd.HtndMessage, htnd.HtndMessage> stream, PoolConfig poolConfig)
+        PoolConfig poolConfig, CancellationToken ct)
     {
         logger.Debug(() => $"[{LogCategory}] Searching for rewards in children of block {block.BlockHeight}");
 
@@ -188,7 +176,7 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
         {
             logger.Debug(() => $"[{LogCategory}] Checking child {childHash}");
 
-            var childInfo = await GetBlockInfo(childHash, stream);
+            var childInfo = await GetBlockInfo(childHash, ct);
             if (childInfo == null)
             {
                 logger.Warn(() => $"[{LogCategory}] Child {childHash} not found, skipping.");
@@ -247,15 +235,28 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
     }
 
 
-    private async Task<htnd.GetBlockResponseMessage> GetBlockInfo(string blockHash, AsyncDuplexStreamingCall<htnd.HtndMessage, htnd.HtndMessage> stream)
+    private async Task<htnd.GetBlockResponseMessage> GetBlockInfo(string blockHash, CancellationToken ct)
     {
         logger.Debug(() => $"[{LogCategory}] Fetching block info for {blockHash}");
 
+        using var stream = rpc.MessageStream(null, null, ct);
         var request = new htnd.GetBlockRequestMessage { Hash = blockHash, IncludeTransactions = true };
         await Guard(() => stream.RequestStream.WriteAsync(new htnd.HtndMessage { GetBlockRequest = request }), ex => logger.Debug(ex));
+        await Guard(() => stream.RequestStream.CompleteAsync(), ex => logger.Debug(ex));
 
-        await foreach (var response in stream.ResponseStream.ReadAllAsync())
+        while (await stream.ResponseStream.MoveNext(ct))
         {
+            var response = stream.ResponseStream.Current;
+
+            if (response?.GetBlockResponse == null)
+                continue;
+
+            if (!string.IsNullOrEmpty(response.GetBlockResponse.Error?.Message))
+            {
+                logger.Warn(() => $"[{LogCategory}] Daemon returned an error for block {blockHash}: {response.GetBlockResponse.Error.Message}");
+                return null;
+            }
+
             if (response == null || response.GetBlockResponse == null || response.GetBlockResponse.Block == null)
             {
                 logger.Warn(() => $"[{LogCategory}] Block {blockHash} not found or invalid response.");
@@ -270,17 +271,31 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
     }
 
 
-    private async Task<double> GetBlockConfirmations(string blockHash, int minConfirmations, AsyncDuplexStreamingCall<htnd.HtndMessage, htnd.HtndMessage> stream)
+    private async Task<double> GetBlockConfirmations(string blockHash, int minConfirmations, CancellationToken ct)
     {
         logger.Debug(() => $"[{LogCategory}] Checking confirmations for block {blockHash}");
 
+        using var stream = rpc.MessageStream(null, null, ct);
         var request = new htnd.GetBlocksRequestMessage { LowHash = blockHash, IncludeBlocks = false, IncludeTransactions = false };
         await Guard(() => stream.RequestStream.WriteAsync(new htnd.HtndMessage { GetBlocksRequest = request }), ex => logger.Debug(ex));
+        await Guard(() => stream.RequestStream.CompleteAsync(), ex => logger.Debug(ex));
 
-        await foreach (var response in stream.ResponseStream.ReadAllAsync())
+        while (await stream.ResponseStream.MoveNext(ct))
         {
+            var response = stream.ResponseStream.Current;
+
+            if (response?.GetBlocksResponse == null)
+                continue;
+
+            if (!string.IsNullOrEmpty(response.GetBlocksResponse.Error?.Message))
+            {
+                logger.Warn(() => $"[{LogCategory}] Daemon returned a confirmation error for block {blockHash}: {response.GetBlocksResponse.Error.Message}");
+                return 0.0d;
+            }
+
             return Math.Min(1.0d, (double)response.GetBlocksResponse.BlockHashes.Count / minConfirmations);
         }
+
         return 0.0d;
     }
 

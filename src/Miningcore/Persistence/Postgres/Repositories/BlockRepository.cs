@@ -96,14 +96,9 @@ public class BlockRepository : IBlockRepository
 
     public async Task<Block[]> GetPendingBlocksForPoolAsync(IDbConnection con, string poolId)
     {
-        return await GetBlocksForPoolAsync(con, poolId, new[] { BlockStatus.Pending });
-    }
+        const string query = @"SELECT * FROM blocks WHERE poolid = @poolid AND status = @status";
 
-    public async Task<Block[]> GetBlocksForPoolAsync(IDbConnection con, string poolId, BlockStatus[] status)
-    {
-        const string query = @"SELECT * FROM blocks WHERE poolid = @poolid AND status = ANY(@status)";
-
-        return (await con.QueryAsync<Entities.Block>(query, new { poolid = poolId, status = status.Select(x => x.ToString().ToLower()).ToArray() }))
+        return (await con.QueryAsync<Entities.Block>(query, new { status = BlockStatus.Pending.ToString().ToLower(), poolid = poolId }))
             .Select(mapper.Map<Block>)
             .ToArray();
     }

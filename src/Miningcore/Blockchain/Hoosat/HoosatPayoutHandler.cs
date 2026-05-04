@@ -196,7 +196,7 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
     private async Task<decimal?> ProcessChildrenAndRedBlocks(Block block, htnd.GetBlockResponseMessage blockInfo,
         PoolConfig poolConfig, CancellationToken ct)
     {
-        logger.Debug(() => $"[{LogCategory}] Searching for rewards in children of block {block.BlockHeight}");
+        logger.Debug(() => $"[{LogCategory}] Calculating reward for block {block.BlockHeight}");
 
         var totalReward = 0m;
 
@@ -214,40 +214,40 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
 
             var childInfo = childInfoResult.BlockInfo;
 
-            var coinbaseTransactions = childInfo.Block.Transactions
-                .Where(tx => tx.Inputs.Count == 0)
-                .ToList();
-
-            if (coinbaseTransactions.Count == 0)
-            {
-                logger.Warn(() => $"[{LogCategory}] No coinbase transactions found in child {childHash}");
-                continue;
-            }
-
-            var mergeSetRedsHashes = childInfo.Block.VerboseData.MergeSetRedsHashes
-                .Where(x => x.Contains(block.Hash))
-                .ToList();
-
-            var mergeSetBluesHashes = childInfo.Block.VerboseData.MergeSetBluesHashes
-                .Where(x => x.Contains(block.Hash))
-                .ToList();
-
-            if (mergeSetRedsHashes.Count > 0)
-            {
-                logger.Debug(() => $"[{LogCategory}] Block {block.BlockHeight} - child {childInfo.Block.Header.DaaScore} [{childHash}] provides {FormatAmount(0.0m)} because block is in merge-set reds");
-                continue;
-            }
-
-            if (mergeSetBluesHashes.Count == 0 || !childInfo.Block.VerboseData.IsChainBlock)
+            if (!childInfo.Block.VerboseData.IsChainBlock)
             {
                 logger.Debug(() => $"[{LogCategory}] Block {block.BlockHeight} - child {childInfo.Block.Header.DaaScore} [{childHash}] provides {FormatAmount(0.0m)}");
                 continue;
             }
 
-            var childrenPosition = childInfo.Block.VerboseData.MergeSetBluesHashes.IndexOf(block.Hash);
-            var coinbaseTransaction = coinbaseTransactions.First();
+            if (childInfo.Block.VerboseData.MergeSetRedsHashes.Contains(block.Hash))
+            {
+                logger.Debug(() => $"[{LogCategory}] Block {block.BlockHeight} - child {childInfo.Block.Header.DaaScore} [{childHash}] provides {FormatAmount(0.0m)} because block is in merge-set reds");
+                continue;
+            }
 
-            if (childrenPosition < 0 || childrenPosition >= coinbaseTransaction.Outputs.Count)
+            var mergeSetBlueIndex = childInfo.Block.VerboseData.MergeSetBluesHashes.IndexOf(block.Hash);
+
+            if (mergeSetBlueIndex < 0)
+            {
+                logger.Debug(() => $"[{LogCategory}] Block {block.BlockHeight} - child {childInfo.Block.Header.DaaScore} [{childHash}] provides {FormatAmount(0.0m)}");
+                continue;
+            }
+
+            var childrenPosition = mergeSetBlueIndex * 2;
+
+            var coinbaseTransaction = childInfo.Block.Transactions
+                .Where(tx => tx.Inputs.Count == 0)
+                .OrderByDescending(tx => tx.Outputs.Count)
+                .FirstOrDefault(tx => tx.Outputs.Count > childrenPosition);
+
+            if (coinbaseTransaction == null)
+            {
+                logger.Warn(() => $"[{LogCategory}] No reward coinbase transaction found in child {childHash}");
+                continue;
+            }
+
+            if (childrenPosition >= coinbaseTransaction.Outputs.Count)
             {
                 logger.Warn(() => $"[{LogCategory}] Block {block.BlockHeight} - child {childInfo.Block.Header.DaaScore} [{childHash}] has no reward output at merge-set index {childrenPosition}");
                 continue;
@@ -269,18 +269,18 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
             }
         }
 
-        var directRedReward = GetPoolRedReward(blockInfo, poolConfig.Address);
+        var directRedReward = GetPoolChainBlockReward(blockInfo, poolConfig.Address);
 
         if (directRedReward > 0)
         {
             totalReward += directRedReward;
-            logger.Info(() => $"[{LogCategory}] Direct red reward found for block {block.BlockHeight}: {FormatAmount(directRedReward)}");
+            logger.Info(() => $"[{LogCategory}] Chain block {block.BlockHeight} rewards itself with {FormatAmount(directRedReward)}");
         }
 
         if (totalReward > 0)
             return totalReward;
 
-        logger.Warn(() => $"[{LogCategory}] No rewards found in children or direct red-reward output of block {block.BlockHeight}");
+        logger.Warn(() => $"[{LogCategory}] No rewards found for block {block.BlockHeight}");
 
         return 0.0m;
     }
@@ -425,7 +425,7 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
         messageBus.NotifyBlockUnlocked(poolId, block, coin);
     }
 
-    private decimal GetPoolRedReward(htnd.GetBlockResponseMessage blockInfo, string poolAddress)
+    private decimal GetPoolChainBlockReward(htnd.GetBlockResponseMessage blockInfo, string poolAddress)
     {
         if (!blockInfo.Block.VerboseData.IsChainBlock)
             return 0.0m;
@@ -434,27 +434,29 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
             return 0.0m;
 
         var coinbaseTransaction = blockInfo.Block.Transactions
-            .FirstOrDefault(tx => tx.Inputs.Count == 0);
+            .Where(tx => tx.Inputs.Count == 0)
+            .OrderByDescending(tx => tx.Outputs.Count)
+            .FirstOrDefault(tx => tx.Outputs.Count > (blockInfo.Block.VerboseData.MergeSetBluesHashes.Count * 2));
 
         if (coinbaseTransaction == null)
         {
-            logger.Warn(() => $"[{LogCategory}] No coinbase transaction found in block {blockInfo.Block.VerboseData.Hash}");
+            logger.Warn(() => $"[{LogCategory}] No self-reward coinbase transaction found in block {blockInfo.Block.VerboseData.Hash}");
             return 0.0m;
         }
 
-        var expectedBlueOutputs = blockInfo.Block.VerboseData.MergeSetBluesHashes.Count;
+        var blueRewardOutputs = blockInfo.Block.VerboseData.MergeSetBluesHashes.Count * 2;
 
-        if (coinbaseTransaction.Outputs.Count <= expectedBlueOutputs)
+        if (coinbaseTransaction.Outputs.Count <= blueRewardOutputs)
             return 0.0m;
 
-        var redRewardOutput = coinbaseTransaction.Outputs.Last();
+        var rewardOutput = coinbaseTransaction.Outputs[blueRewardOutputs];
 
-        if (redRewardOutput.VerboseData.ScriptPublicKeyAddress != poolAddress)
+        if (rewardOutput.VerboseData.ScriptPublicKeyAddress != poolAddress)
             return 0.0m;
 
-        decimal reward = (decimal)(redRewardOutput.Amount / HoosatConstants.SmallestUnit);
+        decimal reward = (decimal)(rewardOutput.Amount / HoosatConstants.SmallestUnit);
 
-        logger.Info(() => $"[{LogCategory}] Red reward found in coinbase of block {blockInfo.Block.VerboseData.Hash}: {FormatAmount(reward)} to pool {poolAddress}");
+        logger.Info(() => $"[{LogCategory}] Chain block reward found in coinbase of block {blockInfo.Block.VerboseData.Hash}: {FormatAmount(reward)} to pool {poolAddress}");
 
         return reward;
     }

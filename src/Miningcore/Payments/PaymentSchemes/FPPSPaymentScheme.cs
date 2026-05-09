@@ -49,6 +49,7 @@ public class FPPSPaymentScheme : IPayoutScheme
 
   private static readonly ILogger logger = LogManager.GetLogger("FPPS Payment");
   private const int RetryCount = 4;
+  private const long PostgresTimestampPrecisionTicks = 10;
   private IAsyncPolicy shareReadFaultPolicy;
 
   #region IPayoutScheme
@@ -112,15 +113,23 @@ public class FPPSPaymentScheme : IPayoutScheme
 
     logger.Info(() => $"Payout: Total credited to balances for block {block.BlockHeight}: {payoutHandler.FormatAmount(totalCredited)}");
 
+    if (totalCredited > blockReward)
+    {
+      var warningMessage = $"Payout: Total credited {payoutHandler.FormatAmount(totalCredited)} exceeds block reward {payoutHandler.FormatAmount(blockReward)} for block {block.BlockHeight}";
+      logger.Warn(() => warningMessage);
+      Console.WriteLine($"[FPPS Payment] {warningMessage}");
+    }
+
     // === DELETE SHARES ONLY IF WE ACTUALLY PROCESSED SOME ===
     if (shareCutOffDate.HasValue && totalCredited > 0)
     {
-      var cutOffCount = await shareRepo.CountSharesBeforeAsync(con, tx, poolConfig.Id, shareCutOffDate.Value, ct);
+      var deleteCutOffDate = shareCutOffDate.Value.AddTicks(PostgresTimestampPrecisionTicks);
+      var cutOffCount = await shareRepo.CountSharesBeforeAsync(con, tx, poolConfig.Id, deleteCutOffDate, ct);
 
       if (cutOffCount > 0)
       {
-        logger.Info(() => $"Payout: Deleting {cutOffCount} processed shares before {shareCutOffDate.Value:O}");
-        await shareRepo.DeleteSharesBeforeAsync(con, tx, poolConfig.Id, shareCutOffDate.Value, ct);
+        logger.Info(() => $"Payout: Deleting {cutOffCount} processed shares through {shareCutOffDate.Value:O}");
+        await shareRepo.DeleteSharesBeforeAsync(con, tx, poolConfig.Id, deleteCutOffDate, ct);
       }
     }
     else if (shareCutOffDate.HasValue)
@@ -178,8 +187,7 @@ public class FPPSPaymentScheme : IPayoutScheme
         totalSharesProcessed++;
         var address = share.Miner;
         var shareDiffAdjusted = payoutHandler.AdjustShareDifficulty(share.Difficulty);
-        var shareNetworkDifficulty = share.NetworkDifficulty > 0 ? share.NetworkDifficulty : blockNetworkDifficulty;
-        var score = (decimal)(shareDiffAdjusted / shareNetworkDifficulty);
+        var score = (decimal)(shareDiffAdjusted / blockNetworkDifficulty);
         var reward = score * netBlockReward;
 
         sharesDict[address] = sharesDict.GetValueOrDefault(address) + shareDiffAdjusted;

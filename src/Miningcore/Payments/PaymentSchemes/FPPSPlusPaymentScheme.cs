@@ -17,17 +17,16 @@ using Contract = Miningcore.Contracts.Contract;
 namespace Miningcore.Payments.PaymentSchemes;
 
 /// <summary>
-/// FPPS (Full Pay Per Share) payout scheme implementation.
+/// FPPS+ payout scheme implementation.
 /// 
 /// Miningcore's payout processing is block-driven.
 /// Each confirmed block triggers crediting of all unpaid shares with their
 /// proportional expected value: (shareDiff / block.NetworkDifficulty) * netBlockReward.
 /// The pool absorbs all variance.
 /// </summary>
-// ReSharper disable once InconsistentNaming
-public class FPPSPaymentScheme : IPayoutScheme
+public class FPPSPlusPaymentScheme : IPayoutScheme
 {
-  public FPPSPaymentScheme(
+  public FPPSPlusPaymentScheme(
       IConnectionFactory cf,
       IShareRepository shareRepo,
       IBalanceRepository balanceRepo)
@@ -47,7 +46,7 @@ public class FPPSPaymentScheme : IPayoutScheme
   private readonly IShareRepository shareRepo;
   private readonly IBalanceRepository balanceRepo;
 
-  private static readonly ILogger logger = LogManager.GetLogger("FPPS Payment");
+  private static readonly ILogger logger = LogManager.GetLogger("FPPS+ Payment");
   private const int RetryCount = 4;
   private const long PostgresTimestampPrecisionTicks = 10;
   private IAsyncPolicy shareReadFaultPolicy;
@@ -65,7 +64,7 @@ public class FPPSPaymentScheme : IPayoutScheme
       return;
     }
 
-    logger.Info(() => $"Payout: Block {block.BlockHeight} | Reward for FPPS distribution: {payoutHandler.FormatAmount(blockReward)}");
+    logger.Info(() => $"Payout: Block {block.BlockHeight} | Reward for FPPS+ distribution: {payoutHandler.FormatAmount(blockReward)}");
 
     if (blockReward <= 0 || block.NetworkDifficulty <= 0)
     {
@@ -84,11 +83,11 @@ public class FPPSPaymentScheme : IPayoutScheme
       {
         rewards[block.Miner] = blockReward;
 
-        logger.Warn(() => $"Payout: No FPPS shares found for block {block.BlockHeight}. Crediting full reward {payoutHandler.FormatAmount(blockReward)} to block finder {block.Miner}");
+        logger.Warn(() => $"Payout: No FPPS+ shares found for block {block.BlockHeight}. Crediting full reward {payoutHandler.FormatAmount(blockReward)} to block finder {block.Miner}");
       }
       else
       {
-        logger.Warn(() => $"Payout: No FPPS shares found for block {block.BlockHeight} and block finder is empty. Reward cannot be credited automatically");
+        logger.Warn(() => $"Payout: No FPPS+ shares found for block {block.BlockHeight} and block finder is empty. Reward cannot be credited automatically");
       }
     }
 
@@ -105,7 +104,7 @@ public class FPPSPaymentScheme : IPayoutScheme
                           $"for {FormatUtil.FormatQuantity(shareCount)} shares (block {block.BlockHeight})");
 
         await balanceRepo.AddAmountAsync(con, tx, poolConfig.Id, address, amount,
-            $"FPPS reward for {FormatUtil.FormatQuantity(shareCount)} shares - block {block.BlockHeight}");
+            $"FPPS+ reward for {FormatUtil.FormatQuantity(shareCount)} shares - block {block.BlockHeight}");
 
         totalCredited += amount;
       }
@@ -117,7 +116,7 @@ public class FPPSPaymentScheme : IPayoutScheme
     {
       var warningMessage = $"Payout: Total credited {payoutHandler.FormatAmount(totalCredited)} exceeds block reward {payoutHandler.FormatAmount(blockReward)} for block {block.BlockHeight}";
       logger.Warn(() => warningMessage);
-      Console.WriteLine($"[FPPS Payment] {warningMessage}");
+      Console.WriteLine($"[FPPS+ Payment] {warningMessage}");
     }
 
     // === DELETE SHARES ONLY IF WE ACTUALLY PROCESSED SOME ===
@@ -167,7 +166,7 @@ public class FPPSPaymentScheme : IPayoutScheme
 
     var blockNetworkDifficulty = block.NetworkDifficulty > 0 ? block.NetworkDifficulty : 1.0;
 
-    logger.Info(() => $"Starting FPPS calculation for block {block.BlockHeight} | " +
+    logger.Info(() => $"Starting FPPS+ calculation for block {block.BlockHeight} | " +
                       $"Net reward: {payoutHandler.FormatAmount(netBlockReward)} | " +
                       $"NetworkDifficulty: {blockNetworkDifficulty:0.##}");
 
@@ -209,7 +208,7 @@ public class FPPSPaymentScheme : IPayoutScheme
 
     var totalPayout = rewards.Values.Sum();
 
-    logger.Info(() => $"FPPS calc for block {block.BlockHeight} | " +
+    logger.Info(() => $"FPPS+ calc for block {block.BlockHeight} | " +
                       $"Processed shares: {totalSharesProcessed} | " +
                       $"Total share sum: {totalShareSum:F2} | " +
                       $"Expected score: {totalExpectedScore:F8} | " +

@@ -199,8 +199,8 @@ public class AutofacModule : Module
             .Keyed<IPayoutScheme>(PayoutScheme.PPLNSBF)
             .SingleInstance();
 
-        builder.RegisterType<FPPSPaymentScheme>()
-            .Keyed<IPayoutScheme>(PayoutScheme.FPPS)
+        builder.RegisterType<FPPSPlusPaymentScheme>()
+            .Keyed<IPayoutScheme>(PayoutScheme.FPPSPlus)
             .SingleInstance();
 
         //////////////////////

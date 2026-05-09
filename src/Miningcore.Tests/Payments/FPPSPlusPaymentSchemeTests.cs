@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Miningcore.Tests.Payments;
 
-public class FPPSPaymentSchemeTests
+public class FPPSPlusPaymentSchemeTests
 {
     [Fact]
     public async Task UpdateBalancesAsync_PaysExpectedValueWithoutSubtractingFeeTwice()
@@ -65,7 +65,7 @@ public class FPPSPaymentSchemeTests
         payoutHandler.FormatAmount(Arg.Any<decimal>())
             .Returns(callInfo => ((decimal)callInfo[0]).ToString(CultureInfo.InvariantCulture));
 
-        var subject = new FPPSPaymentScheme(cf, shareRepo, balanceRepo);
+        var subject = new FPPSPlusPaymentScheme(cf, shareRepo, balanceRepo);
 
         await subject.UpdateBalancesAsync(con, tx, pool, payoutHandler, block, 970m, CancellationToken.None);
 
@@ -124,7 +124,7 @@ public class FPPSPaymentSchemeTests
         payoutHandler.FormatAmount(Arg.Any<decimal>())
             .Returns(callInfo => ((decimal)callInfo[0]).ToString(CultureInfo.InvariantCulture));
 
-        var subject = new FPPSPaymentScheme(cf, shareRepo, balanceRepo);
+        var subject = new FPPSPlusPaymentScheme(cf, shareRepo, balanceRepo);
 
         await subject.UpdateBalancesAsync(con, tx, pool, payoutHandler, block, 990m, CancellationToken.None);
 
@@ -183,12 +183,12 @@ public class FPPSPaymentSchemeTests
             payoutHandler.FormatAmount(Arg.Any<decimal>())
                 .Returns(callInfo => ((decimal)callInfo[0]).ToString(CultureInfo.InvariantCulture));
 
-            var subject = new FPPSPaymentScheme(cf, shareRepo, balanceRepo);
+            var subject = new FPPSPlusPaymentScheme(cf, shareRepo, balanceRepo);
 
             await subject.UpdateBalancesAsync(con, tx, pool, payoutHandler, block, 990m, CancellationToken.None);
 
             var output = consoleOutput.ToString();
-            Assert.Contains("[FPPS Payment] Payout: Total credited", output);
+            Assert.Contains("[FPPS+ Payment] Payout: Total credited", output);
             Assert.Contains("exceeds block reward 990", output);
             Assert.Contains("for block 126", output);
 
@@ -247,7 +247,7 @@ public class FPPSPaymentSchemeTests
         payoutHandler.FormatAmount(Arg.Any<decimal>())
             .Returns(callInfo => ((decimal)callInfo[0]).ToString(CultureInfo.InvariantCulture));
 
-        var subject = new FPPSPaymentScheme(cf, shareRepo, balanceRepo);
+        var subject = new FPPSPlusPaymentScheme(cf, shareRepo, balanceRepo);
 
         await subject.UpdateBalancesAsync(con, tx, pool, payoutHandler, block, 1000m, CancellationToken.None);
 
@@ -298,7 +298,7 @@ public class FPPSPaymentSchemeTests
         payoutHandler.FormatAmount(Arg.Any<decimal>())
             .Returns(callInfo => ((decimal)callInfo[0]).ToString(CultureInfo.InvariantCulture));
 
-        var subject = new FPPSPaymentScheme(cf, shareRepo, balanceRepo);
+        var subject = new FPPSPlusPaymentScheme(cf, shareRepo, balanceRepo);
 
         await subject.UpdateBalancesAsync(con, tx, pool, payoutHandler, block, 1000m, CancellationToken.None);
 

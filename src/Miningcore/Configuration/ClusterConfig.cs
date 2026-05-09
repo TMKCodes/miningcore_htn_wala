@@ -976,7 +976,8 @@ public enum PayoutScheme
     PPLNS10 = 6,
     PPLNS70 = 7,
     PPLNSBF = 8,
-    FPPS = 9,
+    [EnumMember(Value = "FPPS+")]
+    FPPSPlus = 9,
 }
 
 public partial class ClusterLoggingConfig

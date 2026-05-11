@@ -1,0 +1,26 @@
+# Test-runner image for Miningcore
+# Installs native deps + builds the solution; tests are executed at container runtime.
+
+FROM mcr.microsoft.com/dotnet/sdk:6.0-jammy AS test
+WORKDIR /src
+
+ENV DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+  DOTNET_CLI_TELEMETRY_OPTOUT=1
+
+# Native build dependencies (mirrors Dockerfile builder deps)
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends \
+  cmake ninja-build build-essential \
+  libssl-dev pkg-config libboost-all-dev \
+  libsodium-dev libzmq3-dev \
+  libgmp-dev golang-go && \
+  rm -rf /var/lib/apt/lists/*
+
+COPY . .
+
+# Build once during image build to catch compile errors early.
+RUN dotnet restore src/Miningcore.Tests/Miningcore.Tests.csproj \
+  && dotnet build src/Miningcore.Tests/Miningcore.Tests.csproj -c Release --no-restore
+
+# Default: run tests (allow passing additional args like --filter)
+ENTRYPOINT ["dotnet", "test", "src/Miningcore.Tests/Miningcore.Tests.csproj", "-c", "Release", "--no-build"]

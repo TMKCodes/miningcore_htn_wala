@@ -160,6 +160,7 @@ public class PPLNSPaymentScheme : IPayoutScheme
         var before = block.Created;
         var inclusive = true;
         var pageSize = 50000;
+        var pageOffset = 0;
         var currentPage = 0;
         var accumulatedScore = 0.0m;
         var blockRewardRemaining = blockReward;
@@ -170,9 +171,8 @@ public class PPLNSPaymentScheme : IPayoutScheme
             logger.Info(() => $"Fetching page {currentPage} of shares for pool {poolConfig.Id}, block {block.BlockHeight}");
 
             var page = await shareReadFaultPolicy.ExecuteAsync(() =>
-                cf.Run(con => shareRepo.ReadSharesBeforeAsync(con, poolConfig.Id, before, inclusive, pageSize, ct))); //, sw, logger));
+                cf.Run(con => shareRepo.ReadSharesBeforeAsync(con, poolConfig.Id, before, inclusive, pageSize, pageOffset, ct))); //, sw, logger));
 
-            inclusive = false;
             currentPage++;
 
             for (var i = 0; !done && i < page.Length; i++)
@@ -220,7 +220,9 @@ public class PPLNSPaymentScheme : IPayoutScheme
             if (page.Length < pageSize)
                 break;
 
-            before = page[^1].Created;
+            // Use offset-based paging instead of timestamp keyset paging.
+            // This prevents silently skipping rows when many shares share the same 'created' value at the page boundary.
+            pageOffset += page.Length;
         }
 
         logger.Info(() => $"Balance-calculation for pool {poolConfig.Id}, block {block.BlockHeight} completed with accumulated score {accumulatedScore:0.####} ({(accumulatedScore / window) * 100:0.#}%)");

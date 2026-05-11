@@ -91,6 +91,8 @@ public class ShareRecorder : BackgroundService
             await shareRepo.BatchInsertAsync(con, tx, mapped, CancellationToken.None);
 
             // Insert blocks
+            var insertedBlockHashes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
             foreach (var share in shares)
             {
                 if (!share.IsBlockCandidate)
@@ -98,6 +100,16 @@ public class ShareRecorder : BackgroundService
 
                 var blockEntity = mapper.Map<Block>(share);
                 blockEntity.Status = BlockStatus.Pending;
+
+                if (!string.IsNullOrEmpty(blockEntity.Hash))
+                {
+                    if (!insertedBlockHashes.Add(blockEntity.Hash) || await blockRepo.BlockExistsAsync(con, share.PoolId, blockEntity.Hash, CancellationToken.None))
+                    {
+                        logger.Info(() => $"Skipping duplicate block candidate {blockEntity.Hash} for pool {share.PoolId} at height {blockEntity.BlockHeight}");
+                        continue;
+                    }
+                }
+
                 await blockRepo.InsertAsync(con, tx, blockEntity);
 
                 if (pools.TryGetValue(share.PoolId, out var poolConfig))

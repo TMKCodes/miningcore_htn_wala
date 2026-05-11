@@ -61,6 +61,17 @@ public class ShareRepository : IShareRepository
             .ToArray();
     }
 
+    public async Task<Share[]> ReadSharesBeforeAsync(IDbConnection con, string poolId, DateTime before,
+        bool inclusive, int pageSize, int pageOffset, CancellationToken ct)
+    {
+        var query = @$"SELECT * FROM shares WHERE poolid = @poolId AND created {(inclusive ? " <= " : " < ")} @before
+            ORDER BY created DESC OFFSET @pageOffset FETCH NEXT @pageSize ROWS ONLY";
+
+        return (await con.QueryAsync<Entities.Share>(new CommandDefinition(query, new { poolId, before, pageSize, pageOffset }, cancellationToken: ct)))
+            .Select(mapper.Map<Share>)
+            .ToArray();
+    }
+
     public Task<long> CountSharesBeforeAsync(IDbConnection con, IDbTransaction tx, string poolId, DateTime before, CancellationToken ct)
     {
         const string query = "SELECT count(*) FROM shares WHERE poolid = @poolId AND created < @before";

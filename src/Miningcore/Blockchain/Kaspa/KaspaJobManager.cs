@@ -318,7 +318,7 @@ public class KaspaJobManager : JobManagerBase<KaspaJob>
                 }
                 else
                     if (customShareHasher is not CShake256)
-                    customShareHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseHeavyHash));
+                        customShareHasher = new CShake256(null, Encoding.UTF8.GetBytes(KaspaConstants.CoinbaseHeavyHash));
 
                 return new KarlsencoinJob(customBlockHeaderHasher, customCoinbaseHasher, customShareHasher);
             case "NTL":
@@ -848,7 +848,7 @@ public class KaspaJobManager : JobManagerBase<KaspaJob>
         extraPoolPaymentProcessingConfig = pc.PaymentProcessing.Extra.SafeExtensionDataAs<KaspaPaymentProcessingConfigExtra>();
 
         maxActiveJobs = extraPoolConfig?.MaxActiveJobs ?? 8;
-        extraData = extraPoolConfig?.ExtraData ?? "pools4mining.com[\"@elvalere\"]";
+        extraData = extraPoolConfig?.ExtraData ?? "zenithpool.net";
 
         // extract standard daemon endpoints
         daemonEndpoints = pc.Daemons

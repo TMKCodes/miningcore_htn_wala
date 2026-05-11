@@ -207,6 +207,17 @@ public class BlockRepository : IBlockRepository
             .FirstOrDefault();
     }
 
+    public Task<bool> BlockExistsAsync(IDbConnection con, string poolId, string blockHash, CancellationToken ct)
+    {
+        const string query = @"SELECT EXISTS(SELECT 1 FROM blocks WHERE poolid = @poolId AND hash = @blockHash)";
+
+        return con.ExecuteScalarAsync<bool>(new CommandDefinition(query, new
+        {
+            poolId,
+            blockHash,
+        }, cancellationToken: ct));
+    }
+
     public async Task<uint> GetPoolDuplicateBlockCountByPoolHeightNoTypeAndStatusAsync(IDbConnection con, string poolId, long height, BlockStatus[] status)
     {
         const string query = @"SELECT COUNT(id) FROM blocks WHERE poolid = @poolId AND blockheight = @height AND status = ANY(@status)";

@@ -976,7 +976,8 @@ public enum PayoutScheme
     PPLNS10 = 6,
     PPLNS70 = 7,
     PPLNSBF = 8,
-    FPPS = 9,
+    [EnumMember(Value = "DFPPS+")]
+    DFPPSPlus = 9,
 }
 
 public partial class ClusterLoggingConfig
@@ -1195,6 +1196,8 @@ public partial class PoolPaymentProcessingConfig
 {
     public bool Enabled { get; set; }
     public decimal MinimumPayment { get; set; } // in pool-base-currency (ie. Bitcoin, not Satoshis)
+
+    [JsonConverter(typeof(PayoutSchemeJsonConverter))]
     public PayoutScheme PayoutScheme { get; set; }
     public JToken PayoutSchemeConfig { get; set; }
 

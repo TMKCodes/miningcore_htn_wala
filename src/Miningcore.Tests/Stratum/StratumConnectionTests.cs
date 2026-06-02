@@ -1,9 +1,12 @@
 using System;
 using System.Buffers;
+using System.IO;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using Autofac;
 using Microsoft.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -126,4 +129,45 @@ public class StratumConnectionTests : TestBase
     //
     //     Assert.True(result);
     // }
+
+    [Fact]
+    public async Task RespondErrorAsync_Emits_StratumV1_ErrorArray_With_Id()
+    {
+        var connection = new StratumConnection(logger, rmsm, clock, ConnectionId, false);
+
+        await connection.RespondErrorAsync(StratumError.MinusOne, "Stale", 1, false);
+
+        var sendQueueField = typeof(StratumConnection)
+            .GetField("sendQueue", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        Assert.NotNull(sendQueueField);
+
+        var sendQueue = (BufferBlock<object>) sendQueueField!.GetValue(connection);
+        var msg = await sendQueue.ReceiveAsync();
+
+        var serializerField = typeof(StratumConnection)
+            .GetField("serializer", BindingFlags.NonPublic | BindingFlags.Static);
+
+        Assert.NotNull(serializerField);
+
+        var serializer = (JsonSerializer) serializerField!.GetValue(null);
+
+        using var sw = new StringWriter();
+        using(var jw = new JsonTextWriter(sw))
+        {
+            serializer.Serialize(jw, msg);
+        }
+
+        var json = sw.ToString();
+        var token = JToken.Parse(json);
+
+        Assert.Equal(false, token["result"]!.Value<bool>());
+        Assert.Equal(1, token["id"]!.Value<int>());
+
+        var error = token["error"] as JArray;
+        Assert.NotNull(error);
+        Assert.Equal((int) StratumError.MinusOne, error![0]!.Value<int>());
+        Assert.Equal("Stale", error[1]!.Value<string>());
+        Assert.Equal(JTokenType.Null, error[2]!.Type);
+    }
 }

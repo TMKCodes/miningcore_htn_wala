@@ -148,17 +148,17 @@ public abstract class PoolBase : StratumServer,
 
         if (context.VarDiff != null)
         {
-            logger.Debug(() => $"[{connection.ConnectionId}] Updating VarDiff{(idle ? " [IDLE]" : "")}");
-
             var poolEndpoint = poolConfig.Ports[connection.LocalEndpoint.Port];
 
             var newDiff = !idle ?
                 VarDiffManager.Update(context, poolEndpoint.VarDiff, clock) :
                 VarDiffManager.IdleUpdate(context, poolEndpoint.VarDiff, clock);
 
+            logger.Debug(() => $"[{connection.ConnectionId}] Updating VarDiff{(idle ? " [IDLE]" : "")} current={Math.Round(context.Difficulty, 3).ToString(CultureInfo.InvariantCulture)}, candidate={(newDiff != null ? Math.Round(newDiff.Value, 3).ToString(CultureInfo.InvariantCulture) : "(no change)")}");
+
             if (newDiff != null)
             {
-                logger.Info(() => $"[{connection.ConnectionId}] VarDiff update to {Math.Round(newDiff.Value, 3)}{(idle ? " [IDLE]" : "")}");
+                logger.Info(() => $"[{connection.ConnectionId}] VarDiff update to {Math.Round(newDiff.Value, 3)}{(idle ? " [IDLE]" : "")}\n");
 
                 await OnVarDiffUpdateAsync(connection, newDiff.Value, ct);
             }

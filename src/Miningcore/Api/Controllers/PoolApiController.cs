@@ -52,7 +52,7 @@ public class PoolApiController : ApiControllerBase
     #region Actions
 
     [HttpGet]
-    public async Task<GetPoolsResponse> Get(CancellationToken ct, [FromQuery] uint topMinersRange = 24)
+    public async Task<GetPoolsResponse> Get(CancellationToken ct, [FromQuery(Name = "topMinersRange")] uint topMinersRange = 24)
     {
         var response = new GetPoolsResponse
         {
@@ -125,7 +125,7 @@ public class PoolApiController : ApiControllerBase
     }
 
     [HttpGet("{poolId}")]
-    public async Task<GetPoolResponse> GetPoolInfoAsync(string poolId, CancellationToken ct, [FromQuery] uint topMinersRange = 24)
+    public async Task<GetPoolResponse> GetPoolInfoAsync(string poolId, CancellationToken ct, [FromQuery(Name = "topMinersRange")] uint topMinersRange = 24)
     {
         var pool = GetPool(poolId);
 
@@ -169,8 +169,8 @@ public class PoolApiController : ApiControllerBase
 
     [HttpGet("{poolId}/performance")]
     public async Task<GetPoolStatsResponse> GetPoolPerformanceAsync(string poolId,
-        [FromQuery(Name = "r")] SampleRange range = SampleRange.Day,
-        [FromQuery(Name = "i")] SampleInterval interval = SampleInterval.Hour)
+        [FromQuery(Name = "mode")] SampleRange range = SampleRange.Day,
+        [FromQuery(Name = "interval")] SampleInterval interval = SampleInterval.Hour)
     {
         var pool = GetPool(poolId);
         var ct = HttpContext.RequestAborted;
@@ -181,16 +181,18 @@ public class PoolApiController : ApiControllerBase
 
         switch (range)
         {
+            case SampleRange.Hour:
+                start = end.AddHours(-1);
+                break;
             case SampleRange.Day:
                 start = end.AddDays(-1);
                 break;
-
             case SampleRange.Month:
                 start = end.AddDays(-30);
                 break;
-
             default:
-                throw new ApiException("invalid interval");
+                start = end.AddDays(-30);
+                break;
         }
 
         var stats = await cf.Run(con => statsRepo.GetPoolPerformanceBetweenAsync(con, pool.Id, interval, start, end, ct));
@@ -205,7 +207,7 @@ public class PoolApiController : ApiControllerBase
 
     [HttpGet("{poolId}/miners")]
     public async Task<MinerPerformanceStats[]> PagePoolMinersAsync(
-        string poolId, [FromQuery] int page, [FromQuery] int pageSize = 15, [FromQuery] uint topMinersRange = 24)
+        string poolId, [FromQuery(Name = "page")] int page = 0, [FromQuery(Name = "pageSize")] int pageSize = 15, [FromQuery(Name = "topMinersRange")] uint topMinersRange = 24)
     {
         var pool = GetPool(poolId);
         var ct = HttpContext.RequestAborted;
@@ -223,7 +225,7 @@ public class PoolApiController : ApiControllerBase
 
     [HttpGet("{poolId}/blocks")]
     public async Task<Responses.Block[]> PagePoolBlocksAsync(
-        string poolId, [FromQuery] int page, [FromQuery] int pageSize = 15, [FromQuery] BlockStatus[] state = null)
+        string poolId, [FromQuery(Name = "page")] int page = 0, [FromQuery(Name = "pageSize")] int pageSize = 15, [FromQuery(Name = "state")] BlockStatus[] state = null)
     {
         var pool = GetPool(poolId);
         var ct = HttpContext.RequestAborted;
@@ -261,7 +263,7 @@ public class PoolApiController : ApiControllerBase
 
     [HttpGet("/api/v2/pools/{poolId}/blocks")]
     public async Task<PagedResultResponse<Responses.Block[]>> PagePoolBlocksV2Async(
-        string poolId, [FromQuery] int page, [FromQuery] int pageSize = 15, [FromQuery] BlockStatus[] state = null)
+        string poolId, [FromQuery(Name = "page")] int page = 0, [FromQuery(Name = "pageSize")] int pageSize = 15, [FromQuery(Name = "state")] BlockStatus[] state = null)
     {
         var pool = GetPool(poolId);
         var ct = HttpContext.RequestAborted;
@@ -303,7 +305,7 @@ public class PoolApiController : ApiControllerBase
 
     [HttpGet("{poolId}/payments")]
     public async Task<Responses.Payment[]> PagePoolPaymentsAsync(
-        string poolId, [FromQuery] int page, [FromQuery] int pageSize = 15)
+        string poolId, [FromQuery(Name = "page")] int page = 0, [FromQuery(Name = "pageSize")] int pageSize = 15)
     {
         var pool = GetPool(poolId);
         var ct = HttpContext.RequestAborted;
@@ -333,7 +335,7 @@ public class PoolApiController : ApiControllerBase
 
     [HttpGet("/api/v2/pools/{poolId}/payments")]
     public async Task<PagedResultResponse<Responses.Payment[]>> PagePoolPaymentsV2Async(
-        string poolId, [FromQuery] int page, [FromQuery] int pageSize = 15)
+        string poolId, [FromQuery(Name = "page")] int page = 0, [FromQuery(Name = "pageSize")] int pageSize = 15)
     {
         var pool = GetPool(poolId);
         var ct = HttpContext.RequestAborted;
@@ -435,7 +437,7 @@ public class PoolApiController : ApiControllerBase
 
     [HttpGet("{poolId}/miners/{address}")]
     public async Task<Responses.MinerStats> GetMinerInfoAsync(
-        string poolId, string address, [FromQuery] SampleRange perfMode = SampleRange.Day)
+        string poolId, string address, [FromQuery(Name = "mode")] SampleRange perfMode = SampleRange.Day)
     {
         try
         {
@@ -596,7 +598,7 @@ public class PoolApiController : ApiControllerBase
 
     [HttpGet("{poolId}/miners/{address}/blocks")]
     public async Task<Responses.Block[]> PageMinerBlocksAsync(
-        string poolId, string address, [FromQuery] int page, [FromQuery] int pageSize = 15, [FromQuery] BlockStatus[] state = null)
+        string poolId, string address, [FromQuery(Name = "page")] int page = 0, [FromQuery(Name = "pageSize")] int pageSize = 15, [FromQuery(Name = "state")] BlockStatus[] state = null)
     {
         var pool = GetPool(poolId);
         var ct = HttpContext.RequestAborted;
@@ -640,7 +642,7 @@ public class PoolApiController : ApiControllerBase
 
     [HttpGet("/api/v2/pools/{poolId}/miners/{address}/blocks")]
     public async Task<PagedResultResponse<Responses.Block[]>> PageMinerBlocksV2Async(
-        string poolId, string address, [FromQuery] int page, [FromQuery] int pageSize = 15, [FromQuery] BlockStatus[] state = null)
+        string poolId, string address, [FromQuery(Name = "page")] int page = 0, [FromQuery(Name = "pageSize")] int pageSize = 15, [FromQuery(Name = "state")] BlockStatus[] state = null)
     {
         var pool = GetPool(poolId);
         var ct = HttpContext.RequestAborted;
@@ -688,7 +690,7 @@ public class PoolApiController : ApiControllerBase
 
     [HttpGet("{poolId}/miners/{address}/payments")]
     public async Task<Responses.Payment[]> PageMinerPaymentsAsync(
-        string poolId, string address, [FromQuery] int page, [FromQuery] int pageSize = 15)
+        string poolId, string address, [FromQuery(Name = "page")] int page = 0, [FromQuery(Name = "pageSize")] int pageSize = 15)
     {
         var pool = GetPool(poolId);
         var ct = HttpContext.RequestAborted;
@@ -724,7 +726,7 @@ public class PoolApiController : ApiControllerBase
 
     [HttpGet("/api/v2/pools/{poolId}/miners/{address}/payments")]
     public async Task<PagedResultResponse<Responses.Payment[]>> PageMinerPaymentsV2Async(
-        string poolId, string address, [FromQuery] int page, [FromQuery] int pageSize = 15)
+        string poolId, string address, [FromQuery(Name = "page")] int page = 0, [FromQuery(Name = "pageSize")] int pageSize = 15)
     {
         var pool = GetPool(poolId);
         var ct = HttpContext.RequestAborted;
@@ -764,7 +766,7 @@ public class PoolApiController : ApiControllerBase
 
     [HttpGet("{poolId}/miners/{address}/balancechanges")]
     public async Task<Responses.BalanceChange[]> PageMinerBalanceChangesAsync(
-        string poolId, string address, [FromQuery] int page, [FromQuery] int pageSize = 15)
+        string poolId, string address, [FromQuery(Name = "page")] int page = 0, [FromQuery(Name = "pageSize")] int pageSize = 15)
     {
         var pool = GetPool(poolId);
         var ct = HttpContext.RequestAborted;
@@ -785,7 +787,7 @@ public class PoolApiController : ApiControllerBase
 
     [HttpGet("/api/v2/pools/{poolId}/miners/{address}/balancechanges")]
     public async Task<PagedResultResponse<Responses.BalanceChange[]>> PageMinerBalanceChangesV2Async(
-        string poolId, string address, [FromQuery] int page, [FromQuery] int pageSize = 15)
+        string poolId, string address, [FromQuery(Name = "page")] int page = 0, [FromQuery(Name = "pageSize")] int pageSize = 15)
     {
         var pool = GetPool(poolId);
         var ct = HttpContext.RequestAborted;
@@ -810,7 +812,7 @@ public class PoolApiController : ApiControllerBase
 
     [HttpGet("{poolId}/miners/{address}/earnings/daily")]
     public async Task<AmountByDate[]> PageMinerEarningsByDayAsync(
-        string poolId, string address, [FromQuery] int page, [FromQuery] int pageSize = 15)
+        string poolId, string address, [FromQuery(Name = "page")] int page = 0, [FromQuery(Name = "pageSize")] int pageSize = 15)
     {
         var pool = GetPool(poolId);
         var ct = HttpContext.RequestAborted;
@@ -830,7 +832,7 @@ public class PoolApiController : ApiControllerBase
 
     [HttpGet("/api/v2/pools/{poolId}/miners/{address}/earnings/daily")]
     public async Task<PagedResultResponse<AmountByDate[]>> PageMinerEarningsByDayV2Async(
-        string poolId, string address, [FromQuery] int page, [FromQuery] int pageSize = 15)
+        string poolId, string address, [FromQuery(Name = "page")] int page = 0, [FromQuery(Name = "pageSize")] int pageSize = 15)
     {
         var pool = GetPool(poolId);
         var ct = HttpContext.RequestAborted;
@@ -854,7 +856,7 @@ public class PoolApiController : ApiControllerBase
 
     [HttpGet("{poolId}/miners/{address}/performance")]
     public async Task<Responses.WorkerPerformanceStatsContainer[]> GetMinerPerformanceAsync(
-        string poolId, string address, [FromQuery] SampleRange mode = SampleRange.Day)
+        string poolId, string address, [FromQuery(Name = "mode")] SampleRange mode = SampleRange.Day)
     {
         var pool = GetPool(poolId);
         var ct = HttpContext.RequestAborted;

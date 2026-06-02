@@ -272,7 +272,7 @@ namespace Miningcore.Configuration
             return Ethash?.AlgoName ?? "Unknown";
         }
 
-        public string Symbol { get; set; } = "ETH";
+        public new string Symbol { get; set; } = "ETH";
         //   public string Ethasher { get; set; } = "ethash";
     }
 

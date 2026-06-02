@@ -19,8 +19,8 @@ public class BalanceRepository : IBalanceRepository
     {
         var now = DateTime.UtcNow;
 
-        // record balance change
-        var query = @"INSERT INTO balance_changes(poolid, address, amount, usage, tags, created)
+        // record balance change (kept as individual record)
+        var insertBalanceChange = @"INSERT INTO balance_changes(poolid, address, amount, usage, tags, created)
             VALUES(@poolid, @address, @amount, @usage, @tags, @created)";
 
         var balanceChange = new Entities.BalanceChange
@@ -33,43 +33,15 @@ public class BalanceRepository : IBalanceRepository
             Tags = tags
         };
 
-        await con.ExecuteAsync(query, balanceChange, tx);
+        await con.ExecuteAsync(insertBalanceChange, balanceChange, tx);
 
-        // update balance
-        query = "SELECT * FROM balances WHERE poolid = @poolId AND address = @address";
+        // Upsert balance in a single statement to avoid an extra SELECT
+        var upsert = @"INSERT INTO balances(poolid, address, amount, created, updated)
+            VALUES(@poolid, @address, @amount, @created, @updated)
+            ON CONFLICT (poolid, address) DO UPDATE
+            SET amount = balances.amount + EXCLUDED.amount, updated = EXCLUDED.updated";
 
-        var balance = (await con.QueryAsync<Entities.Balance>(query, new { poolId, address }, tx))
-            .FirstOrDefault();
-
-        if(balance == null)
-        {
-            balance = new Entities.Balance
-            {
-                PoolId = poolId,
-                Created = now,
-                Address = address,
-                Amount = amount,
-                Updated = now
-            };
-
-            query = @"INSERT INTO balances(poolid, address, amount, created, updated)
-                VALUES(@poolid, @address, @amount, @created, @updated)";
-
-            return await con.ExecuteAsync(query, balance, tx);
-        }
-
-        else
-        {
-            query = @"UPDATE balances SET amount = amount + @amount, updated = now() at time zone 'utc'
-                WHERE poolid = @poolId AND address = @address";
-
-            return await con.ExecuteAsync(query, new
-            {
-                poolId,
-                address,
-                amount
-            }, tx);
-        }
+        return await con.ExecuteAsync(upsert, new { poolId, address, amount, created = now, updated = now }, tx);
     }
 
     public async Task<decimal> GetBalanceAsync(IDbConnection con, IDbTransaction tx, string poolId, string address)

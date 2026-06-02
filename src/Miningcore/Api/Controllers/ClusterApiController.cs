@@ -36,7 +36,7 @@ public class ClusterApiController : ApiControllerBase
 
     [HttpGet("blocks")]
     public async Task<Responses.Block[]> PageBlocksPagedAsync(
-        [FromQuery] int page, [FromQuery] int pageSize = 15, [FromQuery] BlockStatus[] state = null)
+        [FromQuery(Name = "page")] int page = 0, [FromQuery(Name = "pageSize")] int pageSize = 15, [FromQuery(Name = "state")] BlockStatus[] state = null)
     {
         var ct = HttpContext.RequestAborted;
         var blockStates = state is { Length: > 0 } ?
@@ -51,27 +51,27 @@ public class ClusterApiController : ApiControllerBase
         // enrich blocks
         var blocksByPool = blocks.GroupBy(x => x.PoolId);
 
-        foreach(var poolBlocks in blocksByPool)
+        foreach (var poolBlocks in blocksByPool)
         {
             var pool = GetPoolNoThrow(poolBlocks.Key);
 
-            if(pool == null)
+            if (pool == null)
                 continue;
 
             var blockInfobaseDict = pool.Template.ExplorerBlockLinks;
 
             // compute infoLink
-            if(blockInfobaseDict != null)
+            if (blockInfobaseDict != null)
             {
-                foreach(var block in poolBlocks)
+                foreach (var block in poolBlocks)
                 {
                     blockInfobaseDict.TryGetValue(!string.IsNullOrEmpty(block.Type) ? block.Type : "block", out var blockInfobaseUrl);
 
-                    if(!string.IsNullOrEmpty(blockInfobaseUrl))
+                    if (!string.IsNullOrEmpty(blockInfobaseUrl))
                     {
-                        if(blockInfobaseUrl.Contains(CoinMetaData.BlockHeightPH))
+                        if (blockInfobaseUrl.Contains(CoinMetaData.BlockHeightPH))
                             block.InfoLink = blockInfobaseUrl.Replace(CoinMetaData.BlockHeightPH, block.BlockHeight.ToString(CultureInfo.InvariantCulture));
-                        else if(blockInfobaseUrl.Contains(CoinMetaData.BlockHashPH) && !string.IsNullOrEmpty(block.Hash))
+                        else if (blockInfobaseUrl.Contains(CoinMetaData.BlockHashPH) && !string.IsNullOrEmpty(block.Hash))
                             block.InfoLink = blockInfobaseUrl.Replace(CoinMetaData.BlockHashPH, block.Hash);
                     }
                 }

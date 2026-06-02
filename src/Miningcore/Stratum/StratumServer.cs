@@ -46,7 +46,7 @@ public abstract class StratumServer
 
     static StratumServer()
     {
-        if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             ignoredSocketErrors = new HashSet<int>
             {
@@ -56,7 +56,7 @@ public abstract class StratumServer
             };
         }
 
-        else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
             // see: http://www.virtsync.com/c-error-codes-include-errno
             ignoredSocketErrors = new HashSet<int>
@@ -109,7 +109,7 @@ public abstract class StratumServer
     {
         var cert = GetTlsCert(port);
 
-        while(!ct.IsCancellationRequested)
+        while (!ct.IsCancellationRequested)
         {
             try
             {
@@ -118,19 +118,19 @@ public abstract class StratumServer
                 AcceptConnection(socket, port, cert, ct);
             }
 
-            catch(OperationCanceledException)
+            catch (OperationCanceledException)
             {
                 // ignored
                 break;
             }
 
-            catch(ObjectDisposedException)
+            catch (ObjectDisposedException)
             {
                 // ignored
                 break;
             }
 
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.Error(ex);
             }
@@ -141,9 +141,9 @@ public abstract class StratumServer
     {
         Task.Run(() => Guard(() =>
         {
-            var remoteEndpoint = (IPEndPoint) socket.RemoteEndPoint;
+            var remoteEndpoint = (IPEndPoint)socket.RemoteEndPoint;
 
-            if(remoteEndpoint == null)
+            if (remoteEndpoint == null)
             {
                 socket.Close();
                 return;
@@ -162,7 +162,7 @@ public abstract class StratumServer
             OnConnect(connection, port.IPEndPoint);
 
             connection.DispatchAsync(socket, ct, port, remoteEndpoint, cert, OnRequestAsync, OnConnectionComplete, OnConnectionError);
-        }, ex=> logger.Error(ex)), ct);
+        }, ex => logger.Error(ex)), ct);
     }
 
     protected void RegisterConnection(StratumConnection connection)
@@ -186,7 +186,7 @@ public abstract class StratumServer
     protected async Task OnRequestAsync(StratumConnection connection, JsonRpcRequest request, CancellationToken ct)
     {
         // boot pre-connected clients
-        if(banManager?.IsBanned(connection.RemoteEndpoint.Address) == true)
+        if (banManager?.IsBanned(connection.RemoteEndpoint.Address) == true)
         {
             logger.Info(() => $"[{connection.ConnectionId}] Disconnecting banned client @ {connection.RemoteEndpoint.Address}");
             Disconnect(connection);
@@ -204,16 +204,16 @@ public abstract class StratumServer
 
     protected void OnConnectionError(StratumConnection connection, Exception ex)
     {
-        if(ex is AggregateException)
+        if (ex is AggregateException)
             ex = ex.InnerException;
 
-        if(ex is IOException && ex.InnerException != null)
+        if (ex is IOException && ex.InnerException != null)
             ex = ex.InnerException;
 
-        switch(ex)
+        switch (ex)
         {
             case SocketException sockEx:
-                if(!ignoredSocketErrors.Contains(sockEx.ErrorCode))
+                if (!ignoredSocketErrors.Contains(sockEx.ErrorCode))
                     logger.Error(() => $"[{connection.ConnectionId}] Connection error: {ex}");
                 break;
 
@@ -222,39 +222,31 @@ public abstract class StratumServer
                 break;
 
             case JsonException jsonEx:
-                // junk received (invalid json)
+                // junk received (invalid json) — often caused by non-JSON protocols (eg. Stratum v2 binary frames)
                 logger.Error(() => $"[{connection.ConnectionId}] Connection json error: {jsonEx.Message}");
 
-                if(clusterConfig.Banning?.BanOnJunkReceive.HasValue == false || clusterConfig.Banning?.BanOnJunkReceive == true)
-                {
-                    logger.Info(() => $"[{connection.ConnectionId}] Banning client for sending junk");
-                    banManager?.Ban(connection.RemoteEndpoint.Address, TimeSpan.FromMinutes(3));
-                }
+                // Do NOT ban clients for garbled/non-JSON data. Close the connection instead.
+                logger.Info(() => $"[{connection.ConnectionId}] Closing connection due to non-JSON data (ban disabled)");
                 break;
 
             case AuthenticationException authEx:
-                // junk received (SSL handshake)
-                logger.Error(() => $"[{connection.ConnectionId}] Connection json error: {authEx.Message}");
+                // SSL/TLS handshake failure — may be caused by a client attempting TLS on a non-TLS port
+                logger.Error(() => $"[{connection.ConnectionId}] Connection auth error: {authEx.Message}");
 
-                if(clusterConfig.Banning?.BanOnJunkReceive.HasValue == false || clusterConfig.Banning?.BanOnJunkReceive == true)
-                {
-                    logger.Info(() => $"[{connection.ConnectionId}] Banning client for failing SSL handshake");
-                    banManager?.Ban(connection.RemoteEndpoint.Address, TimeSpan.FromMinutes(3));
-                }
+                // Close the connection, do not ban.
+                logger.Info(() => $"[{connection.ConnectionId}] Closing connection due to SSL/TLS handshake failure (ban disabled)");
                 break;
 
             case IOException ioEx:
-                // junk received (SSL handshake)
-                logger.Error(() => $"[{connection.ConnectionId}] Connection json error: {ioEx.Message}");
+                // IO exceptions (possible SSL/TLS handshake failures)
+                logger.Error(() => $"[{connection.ConnectionId}] Connection IO error: {ioEx.Message}");
 
-                if(ioEx.Source == "System.Net.Security")
+                if (ioEx.Source == "System.Net.Security")
                 {
-                    if(clusterConfig.Banning?.BanOnJunkReceive.HasValue == false || clusterConfig.Banning?.BanOnJunkReceive == true)
-                    {
-                        logger.Info(() => $"[{connection.ConnectionId}] Banning client for failing SSL handshake");
-                        banManager?.Ban(connection.RemoteEndpoint.Address, TimeSpan.FromMinutes(3));
-                    }
+                    // Close the connection, do not ban.
+                    logger.Info(() => $"[{connection.ConnectionId}] Closing connection due to SSL/TLS error (ban disabled)");
                 }
+
                 break;
 
             case ObjectDisposedException:
@@ -262,7 +254,7 @@ public abstract class StratumServer
                 break;
 
             case ArgumentException argEx:
-                if(argEx.TargetSite != streamWriterCtor || argEx.ParamName != "stream")
+                if (argEx.TargetSite != streamWriterCtor || argEx.ParamName != "stream")
                     logger.Error(() => $"[{connection.ConnectionId}] Connection error: {ex}");
                 break;
 
@@ -294,12 +286,12 @@ public abstract class StratumServer
 
     private X509Certificate2 GetTlsCert(StratumEndpoint port)
     {
-        if(!port.PoolEndpoint.Tls)
+        if (!port.PoolEndpoint.Tls)
             return null;
 
-        if(!certs.TryGetValue(port.PoolEndpoint.TlsPfxFile, out var cert))
+        if (!certs.TryGetValue(port.PoolEndpoint.TlsPfxFile, out var cert))
         {
-            cert = Guard(()=> new X509Certificate2(port.PoolEndpoint.TlsPfxFile, port.PoolEndpoint.TlsPfxPassword), ex =>
+            cert = Guard(() => new X509Certificate2(port.PoolEndpoint.TlsPfxFile, port.PoolEndpoint.TlsPfxPassword), ex =>
             {
                 logger.Info(() => $"Failed to load TLS certificate {port.PoolEndpoint.TlsPfxFile}: {ex.Message}");
                 throw ex;
@@ -313,7 +305,7 @@ public abstract class StratumServer
 
     private bool DisconnectIfBanned(Socket socket, IPEndPoint remoteEndpoint)
     {
-        if(remoteEndpoint == null || banManager == null)
+        if (remoteEndpoint == null || banManager == null)
             return false;
 
         if (banManager.IsBanned(remoteEndpoint.Address))

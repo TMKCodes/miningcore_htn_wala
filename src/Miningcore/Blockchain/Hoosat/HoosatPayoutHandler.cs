@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Net.Http;
 using System.Threading;
 using Autofac;
@@ -58,10 +59,7 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
     private HoosatPoolConfigExtra extraPoolConfig;
     private HoosatPaymentProcessingConfigExtra extraPoolPaymentProcessingConfig;
     private const int BlockFetchMaxAttempts = 5;
-    private static readonly TimeSpan BlockFetchInterval = TimeSpan.FromMilliseconds(50);
     private static readonly TimeSpan BlockFetchRetryDelay = TimeSpan.FromSeconds(2);
-    private readonly SemaphoreSlim blockFetchLock = new(1, 1);
-    private DateTime lastBlockFetchTime = DateTime.MinValue;
 
     protected override string LogCategory => "Hoosat Payout Handler";
 
@@ -130,6 +128,7 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
         var pageSize = 100;
         var pageCount = (int)Math.Ceiling(blocks.Length / (double)pageSize);
         var result = new List<Block>();
+        var blockInfoCache = new ConcurrentDictionary<string, Task<BlockFetchResult>>();
 
         int minConfirmations = extraPoolPaymentProcessingConfig?.MinimumConfirmations ?? (network == "mainnet" ? 120 : 110);
         for (var i = 0; i < pageCount; i++)
@@ -141,7 +140,7 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
             {
                 logger.Debug(() => $"[{LogCategory}] Checking block {block.BlockHeight}");
 
-                var blockInfoResult = await GetBlockInfo(block.Hash, ct);
+                var blockInfoResult = await GetBlockInfoCachedAsync(block.Hash, ct, blockInfoCache);
 
                 if (blockInfoResult.IsRetryable)
                 {
@@ -171,7 +170,7 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
                     continue;
                 }
 
-                var blockReward = await ProcessChildrenAndRedBlocks(block, blockInfo, poolConfig, ct);
+                var blockReward = await ProcessChildrenAndRedBlocks(block, blockInfo, poolConfig, ct, blockInfoCache);
 
                 if (!blockReward.HasValue)
                 {
@@ -194,17 +193,29 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
     }
 
     private async Task<decimal?> ProcessChildrenAndRedBlocks(Block block, htnd.GetBlockResponseMessage blockInfo,
-        PoolConfig poolConfig, CancellationToken ct)
+        PoolConfig poolConfig, CancellationToken ct, ConcurrentDictionary<string, Task<BlockFetchResult>> blockInfoCache)
     {
         logger.Debug(() => $"[{LogCategory}] Calculating reward for block {block.BlockHeight}");
 
         var totalReward = 0m;
 
-        foreach (var childHash in blockInfo.Block.VerboseData.ChildrenHashes)
+        var childInfos = await Task.WhenAll(blockInfo.Block.VerboseData.ChildrenHashes.Select(async childHash =>
         {
             logger.Debug(() => $"[{LogCategory}] Checking child {childHash}");
 
-            var childInfoResult = await GetBlockInfo(childHash, ct);
+            var childInfoResult = await GetBlockInfoCachedAsync(childHash, ct, blockInfoCache);
+
+            return new
+            {
+                ChildHash = childHash,
+                Result = childInfoResult
+            };
+        }));
+
+        foreach (var childInfoEntry in childInfos)
+        {
+            var childHash = childInfoEntry.ChildHash;
+            var childInfoResult = childInfoEntry.Result;
 
             if (childInfoResult.IsRetryable || childInfoResult.BlockInfo == null)
             {
@@ -294,8 +305,6 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
         {
             try
             {
-                await DelayBetweenBlockFetchesAsync(ct);
-
                 using var stream = rpc.MessageStream(null, null, ct);
                 var request = new htnd.GetBlockRequestMessage { Hash = blockHash, IncludeTransactions = true };
 
@@ -357,30 +366,17 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
         return new BlockFetchResult { IsRetryable = true };
     }
 
-    private async Task DelayBetweenBlockFetchesAsync(CancellationToken ct)
+    private async Task<BlockFetchResult> GetBlockInfoCachedAsync(string blockHash, CancellationToken ct,
+        ConcurrentDictionary<string, Task<BlockFetchResult>> blockInfoCache)
     {
-        await blockFetchLock.WaitAsync(ct);
+        var blockInfoTask = blockInfoCache.GetOrAdd(blockHash, _ => GetBlockInfo(blockHash, ct));
+        var blockInfoResult = await blockInfoTask;
 
-        try
-        {
-            var now = DateTime.UtcNow;
+        if (blockInfoResult.IsRetryable)
+            blockInfoCache.TryRemove(blockHash, out _);
 
-            if (lastBlockFetchTime != DateTime.MinValue)
-            {
-                var elapsed = now - lastBlockFetchTime;
-
-                if (elapsed < BlockFetchInterval)
-                    await Task.Delay(BlockFetchInterval - elapsed, ct);
-            }
-
-            lastBlockFetchTime = DateTime.UtcNow;
-        }
-        finally
-        {
-            blockFetchLock.Release();
-        }
+        return blockInfoResult;
     }
-
 
     private async Task<double> GetBlockConfirmations(string blockHash, int minConfirmations, CancellationToken ct)
     {

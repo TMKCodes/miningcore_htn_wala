@@ -53,10 +53,15 @@ public class ShareRepository : IShareRepository
     public async Task<Share[]> ReadSharesBeforeAsync(IDbConnection con, string poolId, DateTime before,
         bool inclusive, int pageSize, CancellationToken ct)
     {
-        var query = @$"SELECT * FROM shares WHERE poolid = @poolId AND created {(inclusive ? " <= " : " < ")} @before
+        // Select only the columns needed for payout calculations to reduce data transfer
+        var query = @$"SELECT poolid, blockheight, miner, difficulty, networkdifficulty, created FROM shares
+            WHERE poolid = @poolId AND created {(inclusive ? " <= " : " < ")} @before
             ORDER BY created DESC FETCH NEXT @pageSize ROWS ONLY";
 
-        return (await con.QueryAsync<Entities.Share>(new CommandDefinition(query, new { poolId, before, pageSize }, cancellationToken: ct)))
+        var entities = await con.QueryAsync<Entities.Share>(new CommandDefinition(query,
+            new { poolId, before, pageSize }, null, null, null, CommandFlags.None, ct));
+
+        return entities
             .Select(mapper.Map<Share>)
             .ToArray();
     }
@@ -64,12 +69,31 @@ public class ShareRepository : IShareRepository
     public async Task<Share[]> ReadSharesBeforeAsync(IDbConnection con, string poolId, DateTime before,
         bool inclusive, int pageSize, int pageOffset, CancellationToken ct)
     {
-        var query = @$"SELECT * FROM shares WHERE poolid = @poolId AND created {(inclusive ? " <= " : " < ")} @before
+        // Select only the columns needed for payout calculations to reduce data transfer
+        var query = @$"SELECT poolid, blockheight, miner, difficulty, networkdifficulty, created FROM shares
+            WHERE poolid = @poolId AND created {(inclusive ? " <= " : " < ")} @before
             ORDER BY created DESC OFFSET @pageOffset FETCH NEXT @pageSize ROWS ONLY";
 
-        return (await con.QueryAsync<Entities.Share>(new CommandDefinition(query, new { poolId, before, pageSize, pageOffset }, cancellationToken: ct)))
+        var entities = await con.QueryAsync<Entities.Share>(new CommandDefinition(query,
+            new { poolId, before, pageSize, pageOffset }, null, null, null, CommandFlags.None, ct));
+
+        return entities
             .Select(mapper.Map<Share>)
             .ToArray();
+    }
+
+    public IEnumerable<Share> StreamSharesBefore(IDbConnection con, string poolId, DateTime before, bool inclusive)
+    {
+        const string query = @"SELECT poolid, blockheight, miner, difficulty, networkdifficulty, created FROM shares
+            WHERE poolid = @poolId AND created {0} @before
+            ORDER BY created DESC";
+
+        var sql = string.Format(query, inclusive ? "<=" : "<");
+
+        var entities = con.Query<Entities.Share>(sql, new { poolId, before }, buffered: false);
+
+        foreach (var entity in entities)
+            yield return mapper.Map<Share>(entity);
     }
 
     public Task<long> CountSharesBeforeAsync(IDbConnection con, IDbTransaction tx, string poolId, DateTime before, CancellationToken ct)

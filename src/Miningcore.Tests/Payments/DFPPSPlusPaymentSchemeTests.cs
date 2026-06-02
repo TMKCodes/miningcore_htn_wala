@@ -48,17 +48,15 @@ public class DFPPSPlusPaymentSchemeTests
 
     var shares = new[]
     {
-            new Share { Miner = "miner-a", Difficulty = 250, NetworkDifficulty = 1000, Created = block.Created.AddSeconds(-2) },
-            new Share { Miner = "miner-b", Difficulty = 750, NetworkDifficulty = 1000, Created = block.Created.AddSeconds(-1) },
-        };
+        new Share { Miner = "miner-a", Difficulty = 250, NetworkDifficulty = 1000, Created = block.Created.AddSeconds(-2) },
+        new Share { Miner = "miner-b", Difficulty = 750, NetworkDifficulty = 1000, Created = block.Created.AddSeconds(-1) },
+    };
 
     pool.Config.Returns(poolConfig);
     cf.OpenConnectionAsync().Returns(Task.FromResult(con));
 
-    shareRepo.ReadSharesBeforeAsync(Arg.Any<IDbConnection>(), poolConfig.Id, Arg.Any<DateTime>(), Arg.Any<bool>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-        .Returns(callInfo => Task.FromResult((bool)callInfo[3] ? shares : Array.Empty<Share>()));
-    shareRepo.CountSharesBeforeAsync(con, tx, poolConfig.Id, Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
-        .Returns(Task.FromResult(0L));
+    shareRepo.StreamSharesBefore(Arg.Any<IDbConnection>(), poolConfig.Id, Arg.Any<DateTime>(), true)
+      .Returns(shares);
 
     payoutHandler.AdjustShareDifficulty(Arg.Any<double>())
         .Returns(callInfo => (double)callInfo[0]);
@@ -114,10 +112,8 @@ public class DFPPSPlusPaymentSchemeTests
     pool.Config.Returns(poolConfig);
     cf.OpenConnectionAsync().Returns(Task.FromResult(con));
 
-    shareRepo.ReadSharesBeforeAsync(Arg.Any<IDbConnection>(), poolConfig.Id, Arg.Any<DateTime>(), Arg.Any<bool>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-        .Returns(callInfo => Task.FromResult((bool)callInfo[3] ? shares : Array.Empty<Share>()));
-    shareRepo.CountSharesBeforeAsync(con, tx, poolConfig.Id, Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
-        .Returns(Task.FromResult(0L));
+    shareRepo.StreamSharesBefore(Arg.Any<IDbConnection>(), poolConfig.Id, Arg.Any<DateTime>(), true)
+      .Returns(shares);
 
     payoutHandler.AdjustShareDifficulty(Arg.Any<double>())
         .Returns(callInfo => (double)callInfo[0]);
@@ -166,10 +162,8 @@ public class DFPPSPlusPaymentSchemeTests
     pool.Config.Returns(poolConfig);
     cf.OpenConnectionAsync().Returns(Task.FromResult(con));
 
-    shareRepo.ReadSharesBeforeAsync(Arg.Any<IDbConnection>(), poolConfig.Id, Arg.Any<DateTime>(), Arg.Any<bool>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-        .Returns(callInfo => Task.FromResult((bool)callInfo[3] ? shares : Array.Empty<Share>()));
-    shareRepo.CountSharesBeforeAsync(con, tx, poolConfig.Id, Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
-        .Returns(Task.FromResult(0L));
+    shareRepo.StreamSharesBefore(Arg.Any<IDbConnection>(), poolConfig.Id, Arg.Any<DateTime>(), true)
+      .Returns(shares);
 
     payoutHandler.AdjustShareDifficulty(Arg.Any<double>())
         .Returns(callInfo => (double)callInfo[0]);

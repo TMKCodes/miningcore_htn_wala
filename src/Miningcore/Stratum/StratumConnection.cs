@@ -92,16 +92,34 @@ public class StratumConnection
 
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
-            using(var disposables = new CompositeDisposable(networkStream))
+            using (var disposables = new CompositeDisposable(networkStream))
             {
                 var tls = endpoint.PoolEndpoint.Tls;
 
-                // auto-detect SSL
-                if(endpoint.PoolEndpoint.TlsAuto)
-                    tls = await DetectSslHandshake(socket, cts.Token);
-
-                if(tls)
+                // Probe for TLS handshake to avoid treating TLS ClientHello as JSON
+                var tlsDetected = false;
+                try
                 {
+                    // Always attempt to peek the first byte — cheap and non-destructive
+                    tlsDetected = await DetectSslHandshake(socket, cts.Token);
+                }
+                catch (Exception ex)
+                {
+                    logger.Debug(() => $"[{ConnectionId}] TLS detection failed: {ex.Message}");
+                }
+
+                // Treat connection as TLS when either explicitly enabled or a TLS ClientHello was detected
+                if (tls || tlsDetected)
+                {
+                    // If server has no certificate, close connection instead of trying to perform a handshake
+                    if (cert == null)
+                    {
+                        logger.Info(() => $"[{ConnectionId}] Client attempted TLS but server has no TLS certificate configured; closing connection");
+                        // close underlying socket/stream gracefully
+                        networkStream.Close();
+                        return;
+                    }
+
                     var sslStream = new SslStream(networkStream, false);
                     disposables.Add(sslStream);
 
@@ -119,7 +137,9 @@ public class StratumConnection
                     logger.Info(() => $"[{ConnectionId}] {sslStream.SslProtocol.ToString().ToUpper()}-{sslStream.CipherAlgorithm.ToString().ToUpper()} Connection from {RemoteEndpoint.Address.CensorOrReturn(gpdrCompliantLogging)}:{RemoteEndpoint.Port} accepted on port {endpoint.IPEndPoint.Port}");
                 }
                 else
+                {
                     logger.Info(() => $"[{ConnectionId}] Connection from {RemoteEndpoint.Address.CensorOrReturn(gpdrCompliantLogging)}:{RemoteEndpoint.Port} accepted on port {endpoint.IPEndPoint.Port}");
+                }
 
                 // Async I/O loop(s)
                 var tasks = new[]
@@ -142,14 +162,14 @@ public class StratumConnection
                 // Signal completion or error
                 var error = tasks.FirstOrDefault(t => t.IsFaulted)?.Exception;
 
-                if(error == null)
+                if (error == null)
                     onCompleted(this);
                 else
                     onError(this, error);
             }
         }
 
-        catch(Exception ex)
+        catch (Exception ex)
         {
             onError(this, ex);
         }
@@ -179,22 +199,53 @@ public class StratumConnection
 
     public T ContextAs<T>() where T : WorkerContextBase
     {
-        return (T) context;
+        return (T)context;
     }
 
     public Task RespondAsync<T>(T payload, object id)
     {
-        return RespondAsync(new JsonRpcResponse<T>(payload, id));
+        // Stratum v1 expects "error" to be either null or an array [code, message, data]
+        // and requires echoing the request "id".
+        return SendAsync(new StratumResponse
+        {
+            Result = payload,
+            Error = null,
+            Id = id,
+        });
     }
 
     public Task RespondErrorAsync(StratumError code, string message, object id, object result = null)
     {
-        return RespondAsync(new JsonRpcResponse(new JsonRpcError((int) code, message, null), id, result));
+        // For errors: result MUST be null, error = array
+        return SendAsync(new StratumResponse
+        {
+            Result = null,                    // ← This is the key fix
+            Error = new object[] { (int)code, message, null },
+            Id = id,
+        });
     }
 
     public Task RespondAsync<T>(JsonRpcResponse<T> response)
     {
-        return SendAsync(response);
+        // BOSminer (and strict Stratum V1) does NOT allow both "result" and "error" in the same message
+        if (response.Error != null)
+        {
+            // Error path: result = null, error = array
+            return SendAsync(new StratumResponse
+            {
+                Result = null,
+                Error = new object[] { response.Error.Code, response.Error.Message, response.Error.Data ?? null },
+                Id = response.Id,
+            });
+        }
+
+        // Success path
+        return SendAsync(new StratumResponse
+        {
+            Result = response.Result,
+            Error = null,
+            Id = response.Id,
+        });
     }
 
     public Task NotifyAsync<T>(string method, T payload)
@@ -206,7 +257,7 @@ public class StratumConnection
     {
         return SendAsync(request);
     }
-    
+
     // Beam stratum API: https://github.com/BeamMW/beam/wiki/Beam-mining-protocol-API-(Stratum)
     public Task NotifyAsync(object request)
     {
@@ -224,7 +275,7 @@ public class StratumConnection
     {
         Contract.RequiresNonNull(payload);
 
-        if(sendQueue.Count >= SendQueueCapacity)
+        if (sendQueue.Count >= SendQueueCapacity)
             throw new IOException("Sendqueue stalled");
 
         return sendQueue.SendAsync(payload);
@@ -232,7 +283,7 @@ public class StratumConnection
 
     private async Task FillReceivePipeAsync(CancellationToken ct)
     {
-        while(!ct.IsCancellationRequested)
+        while (!ct.IsCancellationRequested)
         {
             logger.Debug(() => $"[{ConnectionId}] [NET] Waiting for data ...");
 
@@ -240,7 +291,7 @@ public class StratumConnection
 
             // read from network directly into pipe memory
             var cb = await networkStream.ReadAsync(memory, ct);
-            if(cb == 0)
+            if (cb == 0)
                 break; // EOF
 
             logger.Debug(() => $"[{ConnectionId}] [NET] Received data: {Encoding.GetString(memory.Slice(0, cb).Span)}");
@@ -251,7 +302,7 @@ public class StratumConnection
             receivePipe.Writer.Advance(cb);
 
             var result = await receivePipe.Writer.FlushAsync(ct);
-            if(result.IsCompleted)
+            if (result.IsCompleted)
                 break;
         }
     }
@@ -260,7 +311,7 @@ public class StratumConnection
         TcpProxyProtocolConfig proxyProtocol,
         Func<StratumConnection, JsonRpcRequest, CancellationToken, Task> onRequestAsync)
     {
-        while(!ct.IsCancellationRequested)
+        while (!ct.IsCancellationRequested)
         {
             logger.Debug(() => $"[{ConnectionId}] [PIPE] Waiting for data ...");
 
@@ -269,7 +320,7 @@ public class StratumConnection
             var buffer = result.Buffer;
             SequencePosition? position;
 
-            if(buffer.Length > MaxInboundRequestLength)
+            if (buffer.Length > MaxInboundRequestLength)
                 throw new InvalidDataException($"Incoming data exceeds maximum of {MaxInboundRequestLength}");
 
             logger.Debug(() => $"[{ConnectionId}] [PIPE] Received data: {result.Buffer.AsString(Encoding)}");
@@ -277,23 +328,23 @@ public class StratumConnection
             do
             {
                 // Scan buffer for line terminator
-                position = buffer.PositionOf((byte) '\n');
+                position = buffer.PositionOf((byte)'\n');
 
-                if(position != null)
+                if (position != null)
                 {
                     var slice = buffer.Slice(0, position.Value);
 
-                    if(!expectingProxyHeader || !ProcessProxyHeader(slice, proxyProtocol))
+                    if (!expectingProxyHeader || !ProcessProxyHeader(slice, proxyProtocol))
                         await ProcessRequestAsync(ct, onRequestAsync, slice);
 
                     // Skip consumed section
                     buffer = buffer.Slice(buffer.GetPosition(1, position.Value));
                 }
-            } while(position != null);
+            } while (position != null);
 
             receivePipe.Reader.AdvanceTo(buffer.Start, buffer.End);
 
-            if(result.IsCompleted)
+            if (result.IsCompleted)
                 break;
         }
     }
@@ -310,13 +361,13 @@ public class StratumConnection
         {
             var cb = await socket.ReceiveAsync(buf.AsMemory()[..BufSize], SocketFlags.Peek, ct);
 
-            if(cb == 0)
+            if (cb == 0)
                 return false;   // End of stream
 
-            if(cb < BufSize)
+            if (cb < BufSize)
                 throw new Exception($"Failed to peek at connection's first {BufSize} byte(s)");
 
-            switch(buf[0])
+            switch (buf[0])
             {
                 case 0x16: // TLS 1.0 - 1.3
                     return true;
@@ -333,9 +384,9 @@ public class StratumConnection
 
     private async Task ProcessSendQueueAsync(CancellationToken ct)
     {
-        while(!ct.IsCancellationRequested)
+        while (!ct.IsCancellationRequested)
         {
-            if(sendQueue.Count >= SendQueueCapacity)
+            if (sendQueue.Count >= SendQueueCapacity)
                 throw new IOException($"Send-queue overflow at {sendQueue.Count} of {SendQueueCapacity} items");
 
             var msg = await sendQueue.ReceiveAsync(ct);
@@ -357,7 +408,7 @@ public class StratumConnection
         logger.Debug(() => $"[{ConnectionId}] Sending: {Encoding.GetString(stream.GetReadOnlySequence())}");
 
         // append newline
-        stream.WriteByte((byte) '\n');
+        stream.WriteByte((byte)'\n');
 
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
         cts.CancelAfter(sendTimeout);
@@ -378,7 +429,7 @@ public class StratumConnection
 
         var request = serializer.Deserialize<JsonRpcRequest>(reader);
 
-        if(request == null)
+        if (request == null)
             throw new JsonException("Unable to deserialize request");
 
         await onRequestAsync(this, request, ct);
@@ -394,13 +445,13 @@ public class StratumConnection
         var line = seq.AsString(Encoding);
         var peerAddress = RemoteEndpoint.Address;
 
-        if(line.StartsWith("PROXY "))
+        if (line.StartsWith("PROXY "))
         {
             var proxyAddresses = proxyProtocol.ProxyAddresses?.Select(IPAddress.Parse).ToArray();
-            if(proxyAddresses == null || !proxyAddresses.Any())
+            if (proxyAddresses == null || !proxyAddresses.Any())
                 proxyAddresses = new[] { IPAddress.Loopback, IPUtils.IPv4LoopBackOnIPv6, IPAddress.IPv6Loopback };
 
-            if(proxyAddresses.Any(x => x.Equals(peerAddress)))
+            if (proxyAddresses.Any(x => x.Equals(peerAddress)))
             {
                 logger.Debug(() => $"[{ConnectionId}] Received Proxy-Protocol header: {line}");
 
@@ -422,7 +473,7 @@ public class StratumConnection
             return true;
         }
 
-        if(proxyProtocol.Mandatory)
+        if (proxyProtocol.Mandatory)
         {
             throw new InvalidDataException($"Missing mandatory Proxy-Protocol header from {peerAddress}. Closing connection.");
         }

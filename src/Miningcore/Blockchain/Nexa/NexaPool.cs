@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
@@ -15,6 +16,7 @@ using Miningcore.Persistence.Repositories;
 using Miningcore.Stratum;
 using Miningcore.Time;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NLog;
 using static Miningcore.Util.ActionUtils;
 using Miningcore.Blockchain.Bitcoin;
@@ -229,7 +231,29 @@ public class NexaPool : PoolBase
 
         try
         {
-            var requestedDiff = (double)Convert.ChangeType(request.Params, TypeCode.Double)!;
+            double requestedDiff;
+
+            if (request.Params is JToken token)
+            {
+                if (token.Type == JTokenType.Array)
+                {
+                    var arr = token as JArray;
+                    if (arr != null && arr.Count > 0)
+                        requestedDiff = arr[0].ToObject<double>();
+                    else
+                        throw new InvalidCastException("Missing params");
+                }
+                else
+                    requestedDiff = token.ToObject<double>();
+            }
+            else if (request.Params is object[] objArr && objArr.Length > 0)
+            {
+                requestedDiff = Convert.ToDouble(objArr[0], CultureInfo.InvariantCulture);
+            }
+            else
+            {
+                requestedDiff = Convert.ToDouble(request.Params, CultureInfo.InvariantCulture);
+            }
 
             // client may suggest higher-than-base difficulty, but not a lower one
             var poolEndpoint = poolConfig.Ports[connection.LocalEndpoint.Port];

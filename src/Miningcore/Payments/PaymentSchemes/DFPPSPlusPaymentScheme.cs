@@ -133,12 +133,18 @@ public class DFPPSPlusPaymentScheme : IPayoutScheme
         return grossReward * (1m - feePercentage / 100m);
     }
 
-    private async Task<DateTime?> CalculatePPSRewardsAsync(IDbConnection con, IMiningPool pool,
-        IPayoutHandler payoutHandler, Block block, decimal netReward,
-        Dictionary<string, double> sharesDict, Dictionary<string, decimal> rewardsDict, CancellationToken ct)
+    private async Task<DateTime?> CalculatePPSRewardsAsync(
+        IDbConnection con,
+        IMiningPool pool,
+        IPayoutHandler payoutHandler,
+        Block block,
+        decimal netReward,
+        Dictionary<string, double> sharesDict,
+        Dictionary<string, decimal> rewardsDict,
+        CancellationToken ct)
     {
-        var nd = block.NetworkDifficulty > 0 ? block.NetworkDifficulty : 1.0;
-        var ppsRate = netReward / (decimal)nd;   // Fixed PPS rate per unit of difficulty
+        var networkDifficulty = block.NetworkDifficulty > 0 ? block.NetworkDifficulty : 1.0;
+        var ppsRate = netReward / (decimal)networkDifficulty;
 
         DateTime? shareCutOffDate = null;
         long totalSharesProcessed = 0;
@@ -153,16 +159,14 @@ public class DFPPSPlusPaymentScheme : IPayoutScheme
                 var address = share.Miner;
                 var shareDiffAdjusted = payoutHandler.AdjustShareDifficulty(share.Difficulty);
 
-                // Accumulate share difficulty
                 sharesDict[address] = sharesDict.GetValueOrDefault(address) + shareDiffAdjusted;
                 totalShareDifficulty += shareDiffAdjusted;
 
-                // Calculate fixed PPS reward
-                var reward = (decimal)shareDiffAdjusted * ppsRate;
+                var rawReward = (decimal)shareDiffAdjusted * ppsRate;
 
-                if (reward > 0)
+                if (rawReward > 0)
                 {
-                    rewardsDict[address] = rewardsDict.GetValueOrDefault(address) + reward;
+                    rewardsDict[address] = rewardsDict.GetValueOrDefault(address) + rawReward;
                 }
 
                 if (shareCutOffDate == null || share.Created > shareCutOffDate.Value)
@@ -170,11 +174,33 @@ public class DFPPSPlusPaymentScheme : IPayoutScheme
             }
         });
 
-        logger.Info(() => $"DFPPS+ calculation for block {block.BlockHeight} | " +
-                          $"Processed shares: {totalSharesProcessed} | " +
-                          $"Total share difficulty: {totalShareDifficulty:F2} | " +
-                          $"PPS Rate: {ppsRate} per difficulty unit | " +
-                          $"Total payout: {payoutHandler.FormatAmount(rewardsDict.Values.Sum())}");
+        // === LIMIT TO 100% OF BLOCK REWARD (Critical for high-BPS) ===
+        decimal totalRawReward = rewardsDict.Values.Sum();
+
+        if (totalShareDifficulty > 0 && totalRawReward > netReward)
+        {
+            var normalizationFactor = netReward / totalRawReward;
+
+            foreach (var address in rewardsDict.Keys.ToList())
+            {
+                rewardsDict[address] *= normalizationFactor;
+            }
+
+            logger.Warn(() => $"DFPPS+ overpay protection triggered for block {block.BlockHeight} | " +
+                              $"Raw total: {payoutHandler.FormatAmount(totalRawReward)} → " +
+                              $"Capped to: {payoutHandler.FormatAmount(netReward)} | " +
+                              $"Factor: {normalizationFactor:F6} | " +
+                              $"Total share diff: {totalShareDifficulty:F2} vs NetDiff: {networkDifficulty:F2}");
+        }
+        else if (totalRawReward > 0)
+        {
+            logger.Info(() => $"DFPPS+ payout within limit for block {block.BlockHeight} | " +
+                              $"Total share diff: {totalShareDifficulty:F2} | " +
+                              $"Final total: {payoutHandler.FormatAmount(totalRawReward)}");
+        }
+
+        logger.Info(() => $"DFPPS+ processed {totalSharesProcessed:N0} shares | " +
+                          $"PPS Rate: {ppsRate:F8} per difficulty unit");
 
         return shareCutOffDate;
     }

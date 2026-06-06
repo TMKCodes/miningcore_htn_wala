@@ -269,6 +269,7 @@ psql -U miningcore -d miningcore
 
 ```sql
 CREATE TABLE shares_pool_id PARTITION OF shares FOR VALUES IN ('POOL_ID');
+ALTER TABLE shares_pool_id SET UNLOGGED;
 ```
 
 Change directory to the miningcore folder and build the miningcore container:

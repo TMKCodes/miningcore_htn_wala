@@ -10,8 +10,11 @@ public interface IShareRepository
     Task<Share[]> ReadSharesBeforeAsync(IDbConnection con, string poolId, DateTime before, bool inclusive, int pageSize, CancellationToken ct);
     Task<Share[]> ReadSharesBeforeAsync(IDbConnection con, string poolId, DateTime before, bool inclusive, int pageSize, int pageOffset, CancellationToken ct);
     IEnumerable<Share> StreamSharesBefore(IDbConnection con, string poolId, DateTime before, bool inclusive);
+    IEnumerable<Share> StreamSharesBefore(IDbConnection con, string poolId, DateTime before, bool inclusive, bool ascending);
+    IEnumerable<Share> StreamSharesBetween(IDbConnection con, string poolId, DateTime after, DateTime before, bool beforeInclusive, bool ascending);
     Task<long> CountSharesBeforeAsync(IDbConnection con, IDbTransaction tx, string poolId, DateTime before, CancellationToken ct);
     Task DeleteSharesBeforeAsync(IDbConnection con, IDbTransaction tx, string poolId, DateTime before, CancellationToken ct);
+    Task<int> DeleteSharesBeforeAsync(IDbConnection con, IDbTransaction tx, string poolId, DateTime before, int pageSize, CancellationToken ct);
     Task<long> CountSharesByMinerAsync(IDbConnection con, IDbTransaction tx, string poolId, string miner, CancellationToken ct);
     Task DeleteSharesByMinerAsync(IDbConnection con, IDbTransaction tx, string poolId, string miner, CancellationToken ct);
     Task<double?> GetAccumulatedShareDifficultyBetweenAsync(IDbConnection con, string poolId, DateTime start, DateTime end, CancellationToken ct);

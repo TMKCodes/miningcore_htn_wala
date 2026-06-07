@@ -84,13 +84,32 @@ public class ShareRepository : IShareRepository
 
     public IEnumerable<Share> StreamSharesBefore(IDbConnection con, string poolId, DateTime before, bool inclusive)
     {
+        return StreamSharesBefore(con, poolId, before, inclusive, ascending: false);
+    }
+
+    public IEnumerable<Share> StreamSharesBefore(IDbConnection con, string poolId, DateTime before, bool inclusive, bool ascending)
+    {
         const string query = @"SELECT poolid, blockheight, miner, difficulty, networkdifficulty, created FROM shares
             WHERE poolid = @poolId AND created {0} @before
-            ORDER BY created DESC";
+            ORDER BY created {1}";
 
-        var sql = string.Format(query, inclusive ? "<=" : "<");
+        var sql = string.Format(query, inclusive ? "<=" : "<", ascending ? "ASC" : "DESC");
 
         var entities = con.Query<Entities.Share>(sql, new { poolId, before }, buffered: false);
+
+        foreach (var entity in entities)
+            yield return mapper.Map<Share>(entity);
+    }
+
+    public IEnumerable<Share> StreamSharesBetween(IDbConnection con, string poolId, DateTime after, DateTime before, bool beforeInclusive, bool ascending)
+    {
+        const string query = @"SELECT poolid, blockheight, miner, difficulty, networkdifficulty, created FROM shares
+            WHERE poolid = @poolId AND created > @after AND created {0} @before
+            ORDER BY created {1}";
+
+        var sql = string.Format(query, beforeInclusive ? "<=" : "<", ascending ? "ASC" : "DESC");
+
+        var entities = con.Query<Entities.Share>(sql, new { poolId, after, before }, buffered: false);
 
         foreach (var entity in entities)
             yield return mapper.Map<Share>(entity);
@@ -136,6 +155,25 @@ public class ShareRepository : IShareRepository
         const string query = "DELETE FROM shares WHERE poolid = @poolId AND created < @before";
 
         await con.ExecuteAsync(new CommandDefinition(query, new { poolId, before }, tx, cancellationToken: ct));
+    }
+
+    public Task<int> DeleteSharesBeforeAsync(IDbConnection con, IDbTransaction tx, string poolId, DateTime before, int pageSize, CancellationToken ct)
+    {
+        const string query = @"WITH candidates AS (
+                SELECT ctid FROM shares
+                WHERE poolid = @poolId AND created < @before
+                ORDER BY created
+                LIMIT @pageSize
+            ), deleted AS (
+                DELETE FROM shares s
+                USING candidates c
+                WHERE s.ctid = c.ctid
+                RETURNING 1
+            )
+            SELECT COUNT(*) FROM deleted";
+
+        return con.ExecuteScalarAsync<int>(new CommandDefinition(query,
+            new { poolId, before, pageSize }, tx, cancellationToken: ct));
     }
 
     public Task<double?> GetAccumulatedShareDifficultyBetweenAsync(IDbConnection con, string poolId, DateTime start, DateTime end, CancellationToken ct)

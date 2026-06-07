@@ -22,3 +22,13 @@ public interface IPayoutScheme
 {
     Task UpdateBalancesAsync(IDbConnection con, IDbTransaction tx, IMiningPool pool, IPayoutHandler payoutHandler, Block block, decimal blockReward, CancellationToken ct);
 }
+
+public readonly record struct ConfirmedBlockPayout(Block Block, decimal BlockReward);
+
+public readonly record struct BatchPayoutResult(DateTime? ProcessedShareCutoff);
+
+public interface IBatchPayoutScheme
+{
+    Task<BatchPayoutResult> UpdateBalancesAsync(IDbConnection con, IDbTransaction tx, IMiningPool pool, IPayoutHandler payoutHandler,
+        IReadOnlyList<ConfirmedBlockPayout> payouts, CancellationToken ct);
+}

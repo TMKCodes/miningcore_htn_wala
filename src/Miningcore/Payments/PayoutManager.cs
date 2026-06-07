@@ -23,6 +23,8 @@ namespace Miningcore.Payments;
 /// </summary>
 public class PayoutManager : BackgroundService
 {
+    private const int DeferredShareCleanupBatchSize = 25000;
+
     public PayoutManager(IComponentContext ctx,
         IConnectionFactory cf,
         IBlockRepository blockRepo,
@@ -59,6 +61,8 @@ public class PayoutManager : BackgroundService
     private readonly IMessageBus messageBus;
     private readonly TimeSpan interval;
     private readonly ConcurrentDictionary<string, IMiningPool> pools = new();
+    private readonly ConcurrentDictionary<string, DateTime> pendingShareCleanupCutoffs = new();
+    private readonly ConcurrentDictionary<string, SemaphoreSlim> shareCleanupLocks = new();
     private readonly ClusterConfig clusterConfig;
     private readonly CompositeDisposable disposables = new();
 
@@ -162,49 +166,103 @@ public class PayoutManager : BackgroundService
 
         if (updatedBlocks.Any())
         {
-            foreach (var block in updatedBlocks.OrderBy(x => x.Created))
+            var confirmedBatch = new List<Block>();
+
+            async Task FlushConfirmedBatchAsync()
             {
-                Console.WriteLine($"elva Debug HoosatJobManager -----> Processing payments for pool {poolConfig.Id}, block {block.BlockHeight}");
+                if (confirmedBatch.Count == 0)
+                    return;
 
-                await cf.RunTx(async (con, tx) =>
+                var confirmedBlocks = confirmedBatch.ToArray();
+                confirmedBatch.Clear();
+
+                if (scheme is IBatchPayoutScheme batchScheme)
                 {
-                    if (!block.Effort.HasValue)  // fill block effort if empty
+                    var batchResult = await cf.RunTx(async (con, tx) =>
                     {
-                        Console.WriteLine($"elva Debug HoosatJobManager -----> Calculating block effort for pool {poolConfig.Id}, block {block.BlockHeight}");
-                        await CalculateBlockEffortAsync(pool, poolConfig, block, handler, ct);
-                        Console.WriteLine($"elva Debug HoosatJobManager -----> Block effort calculated for block {block.BlockHeight}: {block.Effort}");
+                        var payouts = new List<ConfirmedBlockPayout>(confirmedBlocks.Length);
 
-                        if (!block.MinerEffort.HasValue)  // fill block miner effort if empty
-                            await CalculateMinerEffortAsync(pool, poolConfig, block, handler, ct);
-
-                    }
-
-                    if (!block.MinerEffort.HasValue)  // fill miner effort if empty
-                    {
-                        Console.WriteLine($"elva Debug HoosatJobManager -----> Calculating miner effort for pool {poolConfig.Id}, block {block.BlockHeight}");
-                        await CalculateMinerEffortAsync(pool, poolConfig, block, handler, ct);
-                        Console.WriteLine($"elva Debug HoosatJobManager -----> Miner effort calculated for block {block.BlockHeight}: {block.MinerEffort}");
-                    }
-
-                    switch (block.Status)
-                    {
-                        case BlockStatus.Confirmed:
+                        foreach (var block in confirmedBlocks)
+                        {
                             Console.WriteLine($"elva Debug HoosatJobManager -----> Processing confirmed block {block.BlockHeight} for pool {poolConfig.Id}");
-
-                            // Blockchains that do not support block-reward payments via coinbase Tx
-                            // must generate balance records for all reward recipients instead
                             Console.WriteLine($"elva Debug HoosatJobManager -----> Block reward updated for block {block.BlockHeight}: {poolConfig.Id}");
 
                             var blockReward = await handler.UpdateBlockRewardBalancesAsync(con, tx, pool, block, ct);
                             Console.WriteLine($"elva Debug HoosatJobManager -----> Block reward updated for block {block.BlockHeight}: {blockReward}");
 
-                            await scheme.UpdateBalancesAsync(con, tx, pool, handler, block, blockReward, ct);
-                            Console.WriteLine($"elva Debug HoosatJobManager -----> Balances updated for block {block.BlockHeight}");
+                            payouts.Add(new ConfirmedBlockPayout(block, blockReward));
+                        }
 
+                        var result = await batchScheme.UpdateBalancesAsync(con, tx, pool, handler, payouts, ct);
+
+                        foreach (var block in confirmedBlocks)
+                        {
+                            Console.WriteLine($"elva Debug HoosatJobManager -----> Balances updated for block {block.BlockHeight}");
                             await blockRepo.UpdateBlockAsync(con, tx, block);
                             Console.WriteLine($"elva Debug HoosatJobManager -----> Block {block.BlockHeight} status updated to confirmed in database");
-                            break;
+                        }
 
+                        return result;
+                    });
+
+                    if (batchResult.ProcessedShareCutoff.HasValue)
+                        ScheduleDeferredShareCleanup(poolConfig.Id, batchResult.ProcessedShareCutoff.Value, ct);
+
+                    return;
+                }
+
+                foreach (var block in confirmedBlocks)
+                {
+                    await cf.RunTx(async (con, tx) =>
+                    {
+                        Console.WriteLine($"elva Debug HoosatJobManager -----> Processing confirmed block {block.BlockHeight} for pool {poolConfig.Id}");
+                        Console.WriteLine($"elva Debug HoosatJobManager -----> Block reward updated for block {block.BlockHeight}: {poolConfig.Id}");
+
+                        var blockReward = await handler.UpdateBlockRewardBalancesAsync(con, tx, pool, block, ct);
+                        Console.WriteLine($"elva Debug HoosatJobManager -----> Block reward updated for block {block.BlockHeight}: {blockReward}");
+
+                        await scheme.UpdateBalancesAsync(con, tx, pool, handler, block, blockReward, ct);
+                        Console.WriteLine($"elva Debug HoosatJobManager -----> Balances updated for block {block.BlockHeight}");
+
+                        await blockRepo.UpdateBlockAsync(con, tx, block);
+                        Console.WriteLine($"elva Debug HoosatJobManager -----> Block {block.BlockHeight} status updated to confirmed in database");
+                    });
+                }
+            }
+
+            foreach (var block in updatedBlocks.OrderBy(x => x.Created))
+            {
+                Console.WriteLine($"elva Debug HoosatJobManager -----> Processing payments for pool {poolConfig.Id}, block {block.BlockHeight}");
+
+                if (!block.Effort.HasValue)
+                {
+                    Console.WriteLine($"elva Debug HoosatJobManager -----> Calculating block effort for pool {poolConfig.Id}, block {block.BlockHeight}");
+                    await CalculateBlockEffortAsync(pool, poolConfig, block, handler, ct);
+                    Console.WriteLine($"elva Debug HoosatJobManager -----> Block effort calculated for block {block.BlockHeight}: {block.Effort}");
+
+                    if (!block.MinerEffort.HasValue)
+                        await CalculateMinerEffortAsync(pool, poolConfig, block, handler, ct);
+                }
+
+                if (!block.MinerEffort.HasValue)
+                {
+                    Console.WriteLine($"elva Debug HoosatJobManager -----> Calculating miner effort for pool {poolConfig.Id}, block {block.BlockHeight}");
+                    await CalculateMinerEffortAsync(pool, poolConfig, block, handler, ct);
+                    Console.WriteLine($"elva Debug HoosatJobManager -----> Miner effort calculated for block {block.BlockHeight}: {block.MinerEffort}");
+                }
+
+                if (block.Status == BlockStatus.Confirmed)
+                {
+                    confirmedBatch.Add(block);
+                    continue;
+                }
+
+                await FlushConfirmedBatchAsync();
+
+                await cf.RunTx(async (con, tx) =>
+                {
+                    switch (block.Status)
+                    {
                         case BlockStatus.Orphaned:
                             Console.WriteLine($"elva Debug HoosatJobManager -----> Block {block.BlockHeight} is orphaned. Updating status in database for pool {poolConfig.Id}");
                             await blockRepo.UpdateBlockAsync(con, tx, block);
@@ -219,6 +277,8 @@ public class PayoutManager : BackgroundService
                     }
                 });
             }
+
+            await FlushConfirmedBatchAsync();
         }
         else
         {
@@ -279,6 +339,62 @@ public class PayoutManager : BackgroundService
         messageBus.SendMessage(new PaymentNotification(pool.Id, ex.Message, balances.Sum(x => x.Amount), pool.Template.Symbol));
 
         return Task.CompletedTask;
+    }
+
+    private void ScheduleDeferredShareCleanup(string poolId, DateTime cutoff, CancellationToken ct)
+    {
+        pendingShareCleanupCutoffs.AddOrUpdate(poolId, cutoff, (_, existing) => cutoff > existing ? cutoff : existing);
+        _ = ProcessDeferredShareCleanupAsync(poolId, ct);
+    }
+
+    private async Task ProcessDeferredShareCleanupAsync(string poolId, CancellationToken ct)
+    {
+        var gate = shareCleanupLocks.GetOrAdd(poolId, _ => new SemaphoreSlim(1, 1));
+
+        if (!await gate.WaitAsync(0, ct))
+            return;
+
+        try
+        {
+            while (pendingShareCleanupCutoffs.TryRemove(poolId, out var cutoff))
+            {
+                try
+                {
+                    logger.Info(() => $"Payout: Deleting processed shares through {cutoff:O} in batches of {DeferredShareCleanupBatchSize}");
+
+                    var totalDeleted = 0;
+
+                    await cf.Run(async con =>
+                    {
+                        while (true)
+                        {
+                            var deleted = await shareRepo.DeleteSharesBeforeAsync(con, null, poolId, cutoff,
+                                DeferredShareCleanupBatchSize, ct);
+
+                            if (deleted == 0)
+                                break;
+
+                            totalDeleted += deleted;
+
+                            if (deleted < DeferredShareCleanupBatchSize)
+                                break;
+                        }
+                    });
+
+                    logger.Info(() => $"Payout: Deferred share cleanup removed {totalDeleted} share(s) for pool {poolId} through {cutoff:O}");
+                }
+                catch (Exception ex)
+                {
+                    pendingShareCleanupCutoffs.AddOrUpdate(poolId, cutoff, (_, existing) => existing > cutoff ? existing : cutoff);
+                    logger.Warn(ex, () => $"Payout: Deferred share cleanup failed for pool {poolId} through {cutoff:O}");
+                    break;
+                }
+            }
+        }
+        finally
+        {
+            gate.Release();
+        }
     }
 
     private async Task CalculateBlockEffortAsync(IMiningPool pool, PoolConfig poolConfig, Block block, IPayoutHandler handler, CancellationToken ct)

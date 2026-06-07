@@ -60,6 +60,9 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
     private HoosatPaymentProcessingConfigExtra extraPoolPaymentProcessingConfig;
     private const int BlockFetchMaxAttempts = 5;
     private static readonly TimeSpan BlockFetchRetryDelay = TimeSpan.FromSeconds(2);
+    private const ulong MinPayoutConfirmations = 10;
+    private static readonly TimeSpan PayoutConfirmationPollInterval = TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan PayoutConfirmationTimeout = TimeSpan.FromSeconds(30);
 
     protected override string LogCategory => "Hoosat Payout Handler";
 
@@ -409,6 +412,72 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
         return 0.0d;
     }
 
+    private async Task WaitForTransactionConfirmationAsync(string txId, string address, decimal amount, CancellationToken ct)
+    {
+        var zeroConfirmationStarted = clock.Now;
+
+        while (true)
+        {
+            var (confirmations, status) = await GetTransactionConfirmationsAsync(txId, ct);
+
+            if (status == htnd.TransactionStatus.Accepted)
+            {
+                logger.Info(() => $"[{LogCategory}] Transaction {txId} for {address} is accepted (status=ACCEPTED, confirmations={confirmations})");
+                return;
+            }
+
+            if (confirmations >= MinPayoutConfirmations)
+            {
+                logger.Info(() => $"[{LogCategory}] Transaction {txId} for {address} reached {confirmations} confirmation(s)");
+                return;
+            }
+
+            if (confirmations == 0)
+            {
+                if (clock.Now - zeroConfirmationStarted >= PayoutConfirmationTimeout)
+                    throw new PaymentException($"Transaction {txId} for {address} stayed at 0 confirmations for {PayoutConfirmationTimeout.TotalSeconds:0} seconds");
+
+                logger.Debug(() => $"[{LogCategory}] Transaction {txId} for {address} still unconfirmed after sending {FormatAmount(amount)}. Waiting for confirmation...");
+            }
+            else
+            {
+                logger.Debug(() => $"[{LogCategory}] Transaction {txId} for {address} has {confirmations} confirmation(s) after sending {FormatAmount(amount)}. Continuing to wait for {MinPayoutConfirmations} confirmations...");
+            }
+
+            await Task.Delay(PayoutConfirmationPollInterval, ct);
+        }
+    }
+
+    private async Task<(ulong Confirmations, htnd.TransactionStatus Status)> GetTransactionConfirmationsAsync(string txId, CancellationToken ct)
+    {
+        using var stream = rpc.MessageStream(null, null, ct);
+        var request = new htnd.GetTransactionStatusRequestMessage { TxId = txId };
+
+        await Guard(() => stream.RequestStream.WriteAsync(new htnd.HtndMessage { GetTransactionStatusRequest = request }),
+            ex => logger.Debug(ex));
+
+        while (await stream.ResponseStream.MoveNext(ct))
+        {
+            var response = stream.ResponseStream.Current;
+
+            if (response?.GetTransactionStatusResponse == null)
+                continue;
+
+            if (!string.IsNullOrEmpty(response.GetTransactionStatusResponse.Error?.Message))
+            {
+                await Guard(() => stream.RequestStream.CompleteAsync(), ex => logger.Debug(ex));
+                logger.Debug(() => $"[{LogCategory}] Transaction status for {txId} is not available yet: {response.GetTransactionStatusResponse.Error.Message}");
+                return (0, htnd.TransactionStatus.Unknown);
+            }
+
+            await Guard(() => stream.RequestStream.CompleteAsync(), ex => logger.Debug(ex));
+            return (response.GetTransactionStatusResponse.Confirmations, response.GetTransactionStatusResponse.Status);
+        }
+
+        await Guard(() => stream.RequestStream.CompleteAsync(), ex => logger.Debug(ex));
+        return (0, htnd.TransactionStatus.Unknown);
+    }
+
     private async Task MarkBlockAsOrphaned(Block block, string poolId, CoinTemplate coin, IBlockRepository blockRepo)
     {
         logger.Warn(() => $"[{LogCategory}] Marking block {block.BlockHeight} as orphaned");
@@ -511,10 +580,40 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
 
         logger.Info(() => $"Base --- PayoutAsync - Current wallet balance - Total: [{FormatAmount(walletBalancePending + walletBalanceAvailable)}] - Pending: [{FormatAmount(walletBalancePending)}] - Available: [{FormatAmount(walletBalanceAvailable)}]");
 
+        if (walletBalanceAvailable <= 0)
+        {
+            logger.Warn(() => "Base --- PayoutAsync - Wallet available balance is zero. Will try again");
+            return;
+        }
+
+        var balancesToProcess = balanceMap.Values
+            .OrderBy(x => x.Amount)
+            .ToList();
+
         if (walletBalanceAvailable < balancesTotal)
         {
-            logger.Warn(() => $"Base --- PayoutAsync - Wallet balance currently short of {FormatAmount(balancesTotal - walletBalanceAvailable)}. Will try again");
-            return;
+            logger.Warn(() => $"Base --- PayoutAsync - Wallet balance currently short of {FormatAmount(balancesTotal - walletBalanceAvailable)}. Will process what fits in available balance");
+
+            var selectedBalances = new List<Balance>();
+            var runningTotal = 0m;
+
+            foreach (var balance in balancesToProcess)
+            {
+                if (runningTotal + balance.Amount > walletBalanceAvailable)
+                    break;
+
+                selectedBalances.Add(balance);
+                runningTotal += balance.Amount;
+            }
+
+            if (selectedBalances.Count == 0)
+            {
+                logger.Warn(() => $"Base --- PayoutAsync - No balance entry can fit into currently available wallet balance [{FormatAmount(walletBalanceAvailable)}]");
+                return;
+            }
+
+            balancesToProcess = selectedBalances;
+            logger.Info(() => $"Base --- PayoutAsync - Processing {balancesToProcess.Count} payout(s) totaling {FormatAmount(runningTotal)} this round");
         }
 
         var txFailures = new List<Tuple<KeyValuePair<string, decimal>, Exception>>();
@@ -526,7 +625,7 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
             CancellationToken = ct
         };
 
-        await Parallel.ForEachAsync(balanceMap.Values, parallelOptions, async (balance, _ct) =>
+        await Parallel.ForEachAsync(balancesToProcess, parallelOptions, async (balance, _ct) =>
         {
             var address = balance.Address;
             var amount = balance.Amount;
@@ -536,7 +635,7 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
             Exception lastException = null;
             string txId = null;
 
-            while (attempt < maxAttempts && !success)
+            while (attempt < maxAttempts && string.IsNullOrEmpty(txId))
             {
                 attempt++;
                 var transferId = CorrelationIdGenerator.GetNextId();
@@ -561,12 +660,6 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
                         throw new Exception($"[{transferId}] htnWalletd did not return a transaction id!");
 
                     logger.Info(() => $"Base --- PayoutAsync - [{transferId}] Payment transaction id: {txId}");
-
-                    lock (successBalances)
-                    {
-                        successBalances.Add(balance, txId);
-                    }
-                    success = true;
                 }
                 catch (Exception ex)
                 {
@@ -577,6 +670,26 @@ public class HoosatPayoutHandler : PayoutHandlerBase,
                         logger.Info(() => $"Base --- PayoutAsync - Waiting 10 seconds before retrying payment to {address}...");
                         await Task.Delay(TimeSpan.FromSeconds(10), ct);
                     }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(txId))
+            {
+                try
+                {
+                    await WaitForTransactionConfirmationAsync(txId, address, amount, ct);
+
+                    lock (successBalances)
+                    {
+                        successBalances.Add(balance, txId);
+                    }
+
+                    success = true;
+                }
+                catch (Exception ex)
+                {
+                    lastException = ex;
+                    logger.Warn(() => $"Base --- PayoutAsync - Transaction {txId} for {address} was not confirmed in time: {ex.Message}");
                 }
             }
 

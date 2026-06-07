@@ -27,18 +27,23 @@ namespace Miningcore.Payments.PaymentSchemes;
 ///
 /// This is the classic PPS model with delayed crediting for safety.
 /// </summary>
-public class DFPPSPlusPaymentScheme : IPayoutScheme
+public class DFPPSPlusPaymentScheme : IPayoutScheme, IBatchPayoutScheme
 {
+    private const int DeferredShareCleanupBatchSize = 25000;
+
     public DFPPSPlusPaymentScheme(
         IConnectionFactory cf,
+        IBlockRepository blockRepo,
         IShareRepository shareRepo,
         IBalanceRepository balanceRepo)
     {
         Contract.RequiresNonNull(cf);
+        Contract.RequiresNonNull(blockRepo);
         Contract.RequiresNonNull(shareRepo);
         Contract.RequiresNonNull(balanceRepo);
 
         this.cf = cf;
+        this.blockRepo = blockRepo;
         this.shareRepo = shareRepo;
         this.balanceRepo = balanceRepo;
 
@@ -46,12 +51,12 @@ public class DFPPSPlusPaymentScheme : IPayoutScheme
     }
 
     private readonly IConnectionFactory cf;
+    private readonly IBlockRepository blockRepo;
     private readonly IShareRepository shareRepo;
     private readonly IBalanceRepository balanceRepo;
 
     private static readonly ILogger logger = LogManager.GetLogger("DFPPS+ Payment");
     private const int RetryCount = 4;
-    private const long PostgresTimestampPrecisionTicks = 10;
     private IAsyncPolicy shareReadFaultPolicy;
 
     #region IPayoutScheme
@@ -59,64 +64,108 @@ public class DFPPSPlusPaymentScheme : IPayoutScheme
     public async Task UpdateBalancesAsync(IDbConnection con, IDbTransaction tx, IMiningPool pool,
         IPayoutHandler payoutHandler, Block block, decimal blockReward, CancellationToken ct)
     {
+        _ = await UpdateBalancesAsync(con, tx, pool, payoutHandler,
+            new[] { new ConfirmedBlockPayout(block, blockReward) }, ct);
+    }
+
+    public async Task<BatchPayoutResult> UpdateBalancesAsync(IDbConnection con, IDbTransaction tx, IMiningPool pool,
+        IPayoutHandler payoutHandler, IReadOnlyList<ConfirmedBlockPayout> payouts, CancellationToken ct)
+    {
+        if (payouts == null || payouts.Count == 0)
+            return default;
+
         var poolConfig = pool.Config;
-        var netReward = CalculateNetReward(blockReward, poolConfig);
+        var payableBlocks = payouts
+            .OrderBy(x => x.Block.Created)
+            .Select(x => new PendingBlockPayout(x.Block, CalculateNetReward(x.BlockReward, poolConfig)))
+            .ToArray();
 
-        if (netReward <= 0)
+        foreach (var payout in payableBlocks.Where(x => x.NetReward <= 0))
         {
-            logger.Info(() => $"Payout: Net reward for pool {poolConfig.Id}, block {block.BlockHeight} is {netReward}. Skipping.");
-            return;
+            logger.Info(() => $"Payout: Net reward for pool {poolConfig.Id}, block {payout.Block.BlockHeight} is {payout.NetReward}. Skipping.");
         }
 
-        logger.Info(() => $"Payout: Block {block.BlockHeight} | Net Reward for DFPPS+: {payoutHandler.FormatAmount(netReward)}");
+        var activeBlocks = payableBlocks
+            .Where(x => x.NetReward > 0)
+            .ToArray();
 
-        var sharesDict = new Dictionary<string, double>();      // miner -> total adjusted difficulty
-        var rewardsDict = new Dictionary<string, decimal>();    // miner -> reward
+        if (activeBlocks.Length == 0)
+            return default;
 
-        var shareCutOffDate = await CalculatePPSRewardsAsync(con, pool, payoutHandler, block, netReward,
-            sharesDict, rewardsDict, ct);
+        var previousConfirmedBlock = await blockRepo.GetBlockBeforeAsync(con, poolConfig.Id,
+            new[] { BlockStatus.Confirmed }, activeBlocks[0].Block.Created);
 
-        if (rewardsDict.Count == 0)
+        foreach (var payout in activeBlocks)
         {
-            HandleNoSharesFound(poolConfig, block, payoutHandler, rewardsDict, netReward);
+            logger.Info(() => $"Payout: Block {payout.Block.BlockHeight} | Net Reward for DFPPS+: {payoutHandler.FormatAmount(payout.NetReward)}");
         }
 
-        // === CREDIT BALANCES ===
-        decimal totalCredited = 0m;
+        var shareCutOffDate = await CalculatePPSRewardsAsync(con, pool, payoutHandler, activeBlocks,
+            previousConfirmedBlock?.Created, ct);
 
-        foreach (var address in rewardsDict.Keys.OrderByDescending(a => rewardsDict[a]))
+        foreach (var payout in activeBlocks)
         {
-            var amount = rewardsDict[address];
-            var shareDiff = sharesDict.GetValueOrDefault(address);
+            if (payout.Rewards.Count == 0)
+                HandleNoSharesFound(poolConfig, payout.Block, payoutHandler, payout.Rewards, payout.NetReward);
 
-            if (amount > 0)
+            decimal totalCredited = 0m;
+
+            foreach (var address in payout.Rewards.Keys.OrderByDescending(a => payout.Rewards[a]))
             {
-                logger.Info(() => $"Payout: Crediting {address} with {payoutHandler.FormatAmount(amount)} " +
-                                  $"for {FormatUtil.FormatQuantity(shareDiff)} share difficulty (block {block.BlockHeight})");
+                var amount = payout.Rewards[address];
+                var shareDiff = payout.Shares.GetValueOrDefault(address);
 
-                await balanceRepo.AddAmountAsync(con, tx, poolConfig.Id, address, amount,
-                    $"DFPPS+ reward for {FormatUtil.FormatQuantity(shareDiff)} share difficulty - block {block.BlockHeight}");
+                if (amount > 0)
+                {
+                    logger.Info(() => $"Payout: Crediting {address} with {payoutHandler.FormatAmount(amount)} " +
+                                      $"for {FormatUtil.FormatQuantity(shareDiff)} share difficulty (block {payout.Block.BlockHeight})");
 
-                totalCredited += amount;
+                    await balanceRepo.AddAmountAsync(con, tx, poolConfig.Id, address, amount,
+                        $"DFPPS+ reward for {FormatUtil.FormatQuantity(shareDiff)} share difficulty - block {payout.Block.BlockHeight}");
+
+                    totalCredited += amount;
+                }
+            }
+
+            logger.Info(() => $"Payout: Total credited to balances for block {payout.Block.BlockHeight}: {payoutHandler.FormatAmount(totalCredited)}");
+
+            if (totalCredited > payout.NetReward * 1.02m)
+            {
+                var warningMessage = $"Payout: Total credited {payoutHandler.FormatAmount(totalCredited)} exceeds net reward {payoutHandler.FormatAmount(payout.NetReward)} for block {payout.Block.BlockHeight}";
+                logger.Warn(() => warningMessage);
+                Console.WriteLine($"[DFPPS+ Payment] {warningMessage}");
             }
         }
 
-        logger.Info(() => $"Payout: Total credited to balances for block {block.BlockHeight}: {payoutHandler.FormatAmount(totalCredited)}");
-
-        if (totalCredited > netReward * 1.02m) // Allow small tolerance for rounding
+        if (shareCutOffDate.HasValue)
         {
-            var warningMessage = $"Payout: Total credited {payoutHandler.FormatAmount(totalCredited)} exceeds net reward {payoutHandler.FormatAmount(netReward)} for block {block.BlockHeight}";
-            logger.Warn(() => warningMessage);
-            Console.WriteLine($"[DFPPS+ Payment] {warningMessage}");
+            var processedThrough = shareCutOffDate.Value;
+            var cleanupBefore = processedThrough == DateTime.MaxValue
+                ? processedThrough
+                : processedThrough.AddTicks(10);
+
+            logger.Info(() => $"Payout: Processed shares through {processedThrough:O}; deleting in batches of {DeferredShareCleanupBatchSize}");
+
+            var totalDeleted = 0;
+
+            while (true)
+            {
+                var deleted = await shareRepo.DeleteSharesBeforeAsync(con, tx, poolConfig.Id, cleanupBefore,
+                    DeferredShareCleanupBatchSize, ct);
+
+                if (deleted == 0)
+                    break;
+
+                totalDeleted += deleted;
+
+                if (deleted < DeferredShareCleanupBatchSize)
+                    break;
+            }
+
+            logger.Info(() => $"Payout: Removed {totalDeleted} processed share(s) for pool {poolConfig.Id} through {processedThrough:O}");
         }
 
-        // === DELETE PROCESSED SHARES ===
-        if (shareCutOffDate.HasValue && totalCredited > 0)
-        {
-            var deleteCutOffDate = shareCutOffDate.Value.AddTicks(PostgresTimestampPrecisionTicks);
-            logger.Info(() => $"Payout: Deleting processed shares through {shareCutOffDate.Value:O}");
-            await shareRepo.DeleteSharesBeforeAsync(con, tx, poolConfig.Id, deleteCutOffDate, ct);
-        }
+        return default;
     }
 
     #endregion
@@ -137,70 +186,75 @@ public class DFPPSPlusPaymentScheme : IPayoutScheme
         IDbConnection con,
         IMiningPool pool,
         IPayoutHandler payoutHandler,
-        Block block,
-        decimal netReward,
-        Dictionary<string, double> sharesDict,
-        Dictionary<string, decimal> rewardsDict,
+        IReadOnlyList<PendingBlockPayout> payouts,
+        DateTime? lowerBoundExclusive,
         CancellationToken ct)
     {
-        var networkDifficulty = block.NetworkDifficulty > 0 ? block.NetworkDifficulty : 1.0;
-        var ppsRate = netReward / (decimal)networkDifficulty;
-
         DateTime? shareCutOffDate = null;
-        long totalSharesProcessed = 0;
-        double totalShareDifficulty = 0.0;
+        var payoutIndex = 0;
 
         await shareReadFaultPolicy.ExecuteAsync(async () =>
         {
-            foreach (var share in shareRepo.StreamSharesBefore(con, pool.Config.Id, block.Created, true))
+            var upperBound = payouts[^1].Block.Created;
+            var shares = lowerBoundExclusive.HasValue
+                ? shareRepo.StreamSharesBetween(con, pool.Config.Id, lowerBoundExclusive.Value, upperBound, true, ascending: true)
+                : shareRepo.StreamSharesBefore(con, pool.Config.Id, upperBound, true, ascending: true);
+
+            foreach (var share in shares)
             {
-                totalSharesProcessed++;
+                while (payoutIndex < payouts.Count && share.Created > payouts[payoutIndex].Block.Created)
+                    payoutIndex++;
+
+                if (payoutIndex >= payouts.Count)
+                    break;
+
+                var payout = payouts[payoutIndex];
+                payout.TotalSharesProcessed++;
 
                 var address = share.Miner;
                 var shareDiffAdjusted = payoutHandler.AdjustShareDifficulty(share.Difficulty);
 
-                sharesDict[address] = sharesDict.GetValueOrDefault(address) + shareDiffAdjusted;
-                totalShareDifficulty += shareDiffAdjusted;
+                payout.Shares[address] = payout.Shares.GetValueOrDefault(address) + shareDiffAdjusted;
+                payout.TotalShareDifficulty += shareDiffAdjusted;
 
-                var rawReward = (decimal)shareDiffAdjusted * ppsRate;
+                var rawReward = (decimal)shareDiffAdjusted * payout.PpsRate;
 
                 if (rawReward > 0)
-                {
-                    rewardsDict[address] = rewardsDict.GetValueOrDefault(address) + rawReward;
-                }
+                    payout.Rewards[address] = payout.Rewards.GetValueOrDefault(address) + rawReward;
 
-                if (shareCutOffDate == null || share.Created > shareCutOffDate.Value)
-                    shareCutOffDate = share.Created;
+                payout.ShareCutOffDate = share.Created;
+                shareCutOffDate = share.Created;
             }
         });
 
-        // === LIMIT TO 100% OF BLOCK REWARD (Critical for high-BPS) ===
-        decimal totalRawReward = rewardsDict.Values.Sum();
-
-        if (totalShareDifficulty > 0 && totalRawReward > netReward)
+        foreach (var payout in payouts)
         {
-            var normalizationFactor = netReward / totalRawReward;
+            decimal totalRawReward = payout.Rewards.Values.Sum();
 
-            foreach (var address in rewardsDict.Keys.ToList())
+            if (payout.TotalShareDifficulty > 0 && totalRawReward > payout.NetReward)
             {
-                rewardsDict[address] *= normalizationFactor;
+                var normalizationFactor = payout.NetReward / totalRawReward;
+
+                foreach (var address in payout.Rewards.Keys.ToList())
+                    payout.Rewards[address] *= normalizationFactor;
+
+                logger.Warn(() => $"DFPPS+ overpay protection triggered for block {payout.Block.BlockHeight} | " +
+                                  $"Raw total: {payoutHandler.FormatAmount(totalRawReward)} -> " +
+                                  $"Capped to: {payoutHandler.FormatAmount(payout.NetReward)} | " +
+                                  $"Factor: {normalizationFactor:F6} | " +
+                                  $"Total share diff: {payout.TotalShareDifficulty:F2} vs NetDiff: {payout.NetworkDifficulty:F2}");
+            }
+            else if (totalRawReward > 0)
+            {
+                logger.Info(() => $"DFPPS+ payout within limit for block {payout.Block.BlockHeight} | " +
+                                  $"Total share diff: {payout.TotalShareDifficulty:F2} | " +
+                                  $"Final total: {payoutHandler.FormatAmount(totalRawReward)}");
             }
 
-            logger.Warn(() => $"DFPPS+ overpay protection triggered for block {block.BlockHeight} | " +
-                              $"Raw total: {payoutHandler.FormatAmount(totalRawReward)} → " +
-                              $"Capped to: {payoutHandler.FormatAmount(netReward)} | " +
-                              $"Factor: {normalizationFactor:F6} | " +
-                              $"Total share diff: {totalShareDifficulty:F2} vs NetDiff: {networkDifficulty:F2}");
+            logger.Info(() => $"DFPPS+ processed {payout.TotalSharesProcessed:N0} shares | " +
+                              $"PPS Rate: {payout.PpsRate:F8} per difficulty unit | " +
+                              $"Block {payout.Block.BlockHeight}");
         }
-        else if (totalRawReward > 0)
-        {
-            logger.Info(() => $"DFPPS+ payout within limit for block {block.BlockHeight} | " +
-                              $"Total share diff: {totalShareDifficulty:F2} | " +
-                              $"Final total: {payoutHandler.FormatAmount(totalRawReward)}");
-        }
-
-        logger.Info(() => $"DFPPS+ processed {totalSharesProcessed:N0} shares | " +
-                          $"PPS Rate: {ppsRate:F8} per difficulty unit");
 
         return shareCutOffDate;
     }
@@ -233,5 +287,26 @@ public class DFPPSPlusPaymentScheme : IPayoutScheme
     private static void OnPolicyRetry(Exception ex, int retry, object context)
     {
         logger.Warn(() => $"Payout: Retry {retry} due to {ex.GetType().Name}: {ex.Message}");
+    }
+
+    private sealed class PendingBlockPayout
+    {
+        public PendingBlockPayout(Block block, decimal netReward)
+        {
+            Block = block;
+            NetReward = netReward;
+            NetworkDifficulty = block.NetworkDifficulty > 0 ? block.NetworkDifficulty : 1.0;
+            PpsRate = netReward / (decimal) NetworkDifficulty;
+        }
+
+        public Block Block { get; }
+        public decimal NetReward { get; }
+        public double NetworkDifficulty { get; }
+        public decimal PpsRate { get; }
+        public Dictionary<string, double> Shares { get; } = new();
+        public Dictionary<string, decimal> Rewards { get; } = new();
+        public DateTime? ShareCutOffDate { get; set; }
+        public long TotalSharesProcessed { get; set; }
+        public double TotalShareDifficulty { get; set; }
     }
 }

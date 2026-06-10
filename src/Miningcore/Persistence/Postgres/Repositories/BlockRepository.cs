@@ -105,17 +105,22 @@ public class BlockRepository : IBlockRepository
 
     public async Task<Block> GetBlockBeforeAsync(IDbConnection con, string poolId, BlockStatus[] status, DateTime before)
     {
-        const string query = @"SELECT * FROM blocks WHERE poolid = @poolid AND status = ANY(@status) AND created < @before
-            ORDER BY created DESC LIMIT 1";
+        const string query = @"
+        SELECT * FROM blocks 
+        WHERE poolid = @poolId 
+          AND status = ANY(@status) 
+          AND created < @before
+        ORDER BY created DESC 
+        LIMIT 1";
 
-        return (await con.QueryAsync<Entities.Block>(query, new
+        var entity = await con.QueryFirstOrDefaultAsync<Entities.Block>(query, new
         {
             poolId,
-            status = status.Select(x => x.ToString().ToLower()).ToArray(),
+            status = status.Select(x => x.ToString().ToLowerInvariant()).ToArray(),
             before
-        }))
-            .Select(mapper.Map<Block>)
-            .FirstOrDefault();
+        });
+
+        return entity != null ? mapper.Map<Block>(entity) : null;
     }
 
     public async Task<Block> GetMinerBlockBeforeAsync(IDbConnection con, string poolId, string miner, BlockStatus[] status, DateTime before, CancellationToken ct)

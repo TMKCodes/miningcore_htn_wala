@@ -168,17 +168,6 @@ public class PayoutManager : BackgroundService
 
                 await cf.RunTx(async (con, tx) =>
                 {
-                    if (!block.Effort.HasValue)  // fill block effort if empty
-                    {
-                        Console.WriteLine($"elva Debug HoosatJobManager -----> Calculating block effort for pool {poolConfig.Id}, block {block.BlockHeight}");
-                        await CalculateBlockEffortAsync(pool, poolConfig, block, handler, ct);
-                        Console.WriteLine($"elva Debug HoosatJobManager -----> Block effort calculated for block {block.BlockHeight}: {block.Effort}");
-
-                        if (!block.MinerEffort.HasValue)  // fill block miner effort if empty
-                            await CalculateMinerEffortAsync(pool, poolConfig, block, handler, ct);
-
-                    }
-
                     if (!block.MinerEffort.HasValue)  // fill miner effort if empty
                     {
                         Console.WriteLine($"elva Debug HoosatJobManager -----> Calculating miner effort for pool {poolConfig.Id}, block {block.BlockHeight}");

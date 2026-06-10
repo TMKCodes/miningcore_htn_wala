@@ -61,13 +61,13 @@ public class DFPPSPlusPaymentScheme : IPayoutScheme, IBatchPayoutScheme
     #region IPayoutScheme
 
     public async Task UpdateBalancesAsync(IDbConnection con, IDbTransaction tx, IMiningPool pool,
-        IPayoutHandler payoutHandler, Block block, decimal blockReward, CancellationToken ct)
+        IPayoutHandler payoutHandler, Block block, Block lastConfirmedBlock, decimal blockReward, CancellationToken ct)
     {
-        await UpdateBalancesAsync(con, tx, pool, payoutHandler,
+        await UpdateBalancesAsync(con, tx, lastConfirmedBlock, pool, payoutHandler,
             new[] { new ConfirmedBlockPayout(block, blockReward) }, ct);
     }
 
-    public async Task<BatchPayoutResult> UpdateBalancesAsync(IDbConnection con, IDbTransaction tx, IMiningPool pool,
+    public async Task<BatchPayoutResult> UpdateBalancesAsync(IDbConnection con, IDbTransaction tx, Block lastConfirmedBlock, IMiningPool pool,
     IPayoutHandler payoutHandler, IReadOnlyList<ConfirmedBlockPayout> payouts, CancellationToken ct)
     {
         if (payouts == null || payouts.Count == 0)
@@ -91,7 +91,8 @@ public class DFPPSPlusPaymentScheme : IPayoutScheme, IBatchPayoutScheme
         if (activeBlocks.Length == 0)
             return default;
 
-        var previousConfirmedBlock = await blockRepo.GetBlockBeforeAsync(con, poolConfig.Id,
+        var previousConfirmedBlock = lastConfirmedBlock;
+        previousConfirmedBlock ??= await blockRepo.GetBlockBeforeAsync(con, poolConfig.Id,
             new[] { BlockStatus.Confirmed }, activeBlocks[0].Block.Created);
 
         foreach (var payout in activeBlocks)

@@ -56,7 +56,7 @@ public class PPLNS10PaymentScheme : IPayoutScheme
     #region IPayoutScheme
 
     public async Task UpdateBalancesAsync(IDbConnection con, IDbTransaction tx, IMiningPool pool, IPayoutHandler payoutHandler,
-        Block block, decimal blockReward, CancellationToken ct)
+        Block block, Block lastConfirmedBlock, decimal blockReward, CancellationToken ct)
     {
 
         logger.Info(() => $"elva PPLNS10 - CalculateRewardsAsync Strating");

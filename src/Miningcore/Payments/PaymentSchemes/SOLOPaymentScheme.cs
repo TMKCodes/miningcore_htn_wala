@@ -31,7 +31,7 @@ public class SOLOPaymentScheme : IPayoutScheme
     #region IPayoutScheme
 
     public async Task UpdateBalancesAsync(IDbConnection con, IDbTransaction tx, IMiningPool pool, IPayoutHandler payoutHandler,
-        Block block, decimal blockReward, CancellationToken ct)
+        Block block, Block lastConfirmedBlock, decimal blockReward, CancellationToken ct)
     {
         var poolConfig = pool.Config;
 

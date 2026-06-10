@@ -175,6 +175,7 @@ public class PayoutManager : BackgroundService
         if (updatedBlocks.Any())
         {
             Block lastBlock = null;
+            Block lastConfirmedBlock = null;
             foreach (var block in updatedBlocks.OrderBy(x => x.Created))
             {
                 await cf.RunTx(async (con, tx) =>
@@ -203,7 +204,7 @@ public class PayoutManager : BackgroundService
                             Console.WriteLine($"[Timing] UpdateBlockAsync (Confirmed) took {swUpdateBlock.ElapsedMilliseconds} ms");
 
                             var swBalances = Stopwatch.StartNew();
-                            await scheme.UpdateBalancesAsync(con, tx, pool, handler, block, blockReward, ct);
+                            await scheme.UpdateBalancesAsync(con, tx, pool, handler, block, lastConfirmedBlock, blockReward, ct);
                             swBalances.Stop();
                             Console.WriteLine($"[Timing] UpdateBalancesAsync took {swBalances.ElapsedMilliseconds} ms");
                             break;
@@ -221,6 +222,10 @@ public class PayoutManager : BackgroundService
                         block.Status == BlockStatus.Pending)
                     {
                         lastBlock = block;
+                    }
+                    if (block.Status == BlockStatus.Confirmed)
+                    {
+                        lastConfirmedBlock = block;
                     }
                 });
             }
@@ -259,11 +264,6 @@ public class PayoutManager : BackgroundService
         messageBus.SendMessage(new PaymentNotification(pool.Id, ex.Message, balances.Sum(x => x.Amount), pool.Template.Symbol));
 
         return Task.CompletedTask;
-    }
-
-    private async Task GetLastBlockBeforeAsync()
-    {
-
     }
 
     private async Task CalculateBlockEffortAsync(IMiningPool pool, PoolConfig poolConfig, Block block, Block lastBlock, IPayoutHandler handler, CancellationToken ct)

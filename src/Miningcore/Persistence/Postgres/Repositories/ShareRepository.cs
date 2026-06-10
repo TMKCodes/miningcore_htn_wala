@@ -23,19 +23,19 @@ public class ShareRepository : IShareRepository
         // NOTE: Even though the tx parameter is completely ignored here,
         // the COPY command still honors a current ambient transaction
 
-        var pgCon = (NpgsqlConnection) con;
+        var pgCon = (NpgsqlConnection)con;
 
         const string query = @"COPY shares (poolid, blockheight, difficulty,
             networkdifficulty, miner, worker, useragent, ipaddress, source, created) FROM STDIN (FORMAT BINARY)";
 
-        await using(var writer = await pgCon.BeginBinaryImportAsync(query, ct))
+        await using (var writer = await pgCon.BeginBinaryImportAsync(query, ct))
         {
-            foreach(var share in shares)
+            foreach (var share in shares)
             {
                 await writer.StartRowAsync(ct);
 
                 await writer.WriteAsync(share.PoolId, ct);
-                await writer.WriteAsync((long) share.BlockHeight, NpgsqlDbType.Bigint, ct);
+                await writer.WriteAsync((long)share.BlockHeight, NpgsqlDbType.Bigint, ct);
                 await writer.WriteAsync(share.Difficulty, NpgsqlDbType.Double, ct);
                 await writer.WriteAsync(share.NetworkDifficulty, NpgsqlDbType.Double, ct);
                 await writer.WriteAsync(share.Miner, ct);
@@ -126,7 +126,7 @@ public class ShareRepository : IShareRepository
     {
         const string query = "SELECT count(*) FROM shares WHERE poolid = @poolId AND miner = @miner";
 
-        return con.QuerySingleAsync<long>(new CommandDefinition(query, new { poolId, miner}, tx, cancellationToken: ct));
+        return con.QuerySingleAsync<long>(new CommandDefinition(query, new { poolId, miner }, tx, cancellationToken: ct));
     }
 
     public Task<double?> GetEffortBetweenCreatedAsync(IDbConnection con, string poolId, double shareConst, DateTime start, DateTime end, CancellationToken ct)
@@ -147,7 +147,7 @@ public class ShareRepository : IShareRepository
     {
         const string query = "DELETE FROM shares WHERE poolid = @poolId AND miner = @miner";
 
-        await con.ExecuteAsync(new CommandDefinition(query, new { poolId, miner}, tx, cancellationToken: ct));
+        await con.ExecuteAsync(new CommandDefinition(query, new { poolId, miner }, tx, cancellationToken: ct));
     }
 
     public async Task DeleteSharesBeforeAsync(IDbConnection con, IDbTransaction tx, string poolId, DateTime before, CancellationToken ct)
@@ -190,11 +190,19 @@ public class ShareRepository : IShareRepository
         return con.QuerySingleAsync<double?>(new CommandDefinition(query, new { poolId, miner, start, end }, cancellationToken: ct));
     }
 
-    public Task<double?> GetEffectiveAccumulatedShareDifficultyBetweenAsync(IDbConnection con, string poolId, DateTime start, DateTime end, CancellationToken ct)
+    public async Task<double?> GetEffectiveAccumulatedShareDifficultyBetweenAsync(IDbConnection con, string poolId, DateTime start, DateTime end, CancellationToken ct)
     {
-        const string query = "SELECT SUM(difficulty / networkdifficulty) FROM shares WHERE poolid = @poolId AND created > @start AND created < @end";
+        const string query = @"
+        SELECT SUM(difficulty / networkdifficulty) 
+        FROM shares 
+        WHERE poolid = @poolId 
+          AND created >= @start 
+          AND created < @end";
 
-        return con.QuerySingleAsync<double?>(new CommandDefinition(query, new { poolId, start, end }, cancellationToken: ct));
+        var result = await con.QuerySingleAsync<double?>(
+            new CommandDefinition(query, new { poolId, start, end }, cancellationToken: ct));
+
+        return result;
     }
 
     public async Task<MinerWorkerHashes[]> GetHashAccumulationBetweenAsync(IDbConnection con, string poolId, DateTime start, DateTime end, CancellationToken ct)

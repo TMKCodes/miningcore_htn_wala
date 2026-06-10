@@ -106,7 +106,7 @@ public class BlockRepository : IBlockRepository
     public async Task<Block> GetBlockBeforeAsync(IDbConnection con, string poolId, BlockStatus[] status, DateTime before)
     {
         const string query = @"SELECT * FROM blocks WHERE poolid = @poolid AND status = ANY(@status) AND created < @before
-            ORDER BY created DESC FETCH NEXT 1 ROWS ONLY";
+            ORDER BY created DESC LIMIT 1";
 
         return (await con.QueryAsync<Entities.Block>(query, new
         {
@@ -121,7 +121,7 @@ public class BlockRepository : IBlockRepository
     public async Task<Block> GetMinerBlockBeforeAsync(IDbConnection con, string poolId, string miner, BlockStatus[] status, DateTime before, CancellationToken ct)
     {
         const string query = @"SELECT * FROM blocks WHERE poolid = @poolid AND miner = @miner AND status = ANY(@status) AND created < @before
-            ORDER BY created DESC FETCH NEXT 1 ROWS ONLY";
+            ORDER BY created DESC LIMIT 1";
         return (await con.QueryAsync<Entities.Block>(new CommandDefinition(query, new
         {
             poolId,

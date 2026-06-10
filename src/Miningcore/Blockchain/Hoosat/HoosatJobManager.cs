@@ -480,7 +480,7 @@ public class HoosatJobManager : JobManagerBase<HoosatJob>
 
             // Sérialisation et affichage du message en JSON pour le log
             var requestJson = JsonConvert.SerializeObject(request, Formatting.Indented);
-            Console.WriteLine("elva Debug HoosatJobManager -----> SubmitBlockAsync --- Full SubmitBlockRequestMessage: ");
+            // Console.WriteLine("elva Debug HoosatJobManager -----> SubmitBlockAsync --- Full SubmitBlockRequestMessage: ");
             Console.WriteLine(requestJson);
 
             // Envoi de la requête
